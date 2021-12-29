@@ -19,7 +19,7 @@ void kernel_main(multiboot_info_t* mb_info) {
     idt_init();
     pit_init(60);
     ps2_init();
-
+  
     serial_printf("Hello, %s!\n", "there");
 
     for (;;) {
