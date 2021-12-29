@@ -31,6 +31,8 @@ typedef struct {
     } base_frame;
 } isr_context_t;
 
+uint8_t ps2_keyboard_id;
+
 void isr_exception_handler(isr_context_t* ctx);
 
 void isr_irq0(isr_context_t* ctx);

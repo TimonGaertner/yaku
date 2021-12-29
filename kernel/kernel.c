@@ -7,13 +7,14 @@
 #include <drivers/serial.h>
 #include <drivers/vga_text.h>
 #include <interrupts/idt.h>
+#include <interrupts/isr.h>
 #include <interrupts/pic.h>
 #include <multiboot.h>
 #include <types.h>
 
 void input_init() {
     ps2_init();
-    input_device_create_device("keyboard", "keyboard", keyboard_keymap);
+    ps2_keyboard_id = input_device_create_device("keyboard", "keyboard", keyboard_keymap);
 }
 
 void kernel_main(multiboot_info_t* mb_info) {

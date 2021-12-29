@@ -6,6 +6,8 @@
 #include <io.h>
 #include <printf.h>
 
+uint8_t ps2_keyboard_id = 0;
+
 static const char* exception_messages[] = {
     "Divide-by-zero Error",
     "Debug",
@@ -56,7 +58,7 @@ void isr_irq0(isr_context_t* ctx) {
 
 void isr_irq1(isr_context_t* ctx) {
     uint8_t scan_code = io_inb(0x60);
-    serial_printf("SCANCODE: %d\n", scan_code);
+    input_device_send_key(ps2_keyboard_id, scan_code);
 }
 
 void isr_irq2(isr_context_t* ctx) {}
