@@ -5,7 +5,7 @@ struct input_device devices[64];
 uint8_t device_count = 0;
 
 /**
- * @return uint8_t device "id" 
+ * @return uint8_t device "id"
  */
 uint8_t input_device_create_device(char* name, char* type, uint8_t keymap[512]) {
     devices[device_count].name = name;
@@ -19,10 +19,35 @@ uint8_t input_device_create_device(char* name, char* type, uint8_t keymap[512]) 
     return device_count - 1;
 }
 
+struct input_device_info input_device_get_info() {
+    struct input_device_info info;
+
+    for (int i = 0; i < device_count; i++) {
+        info.id[i] = i;
+        info.name[i] = devices[i].name;
+        info.type[i] = devices[i].type;
+    }
+    return info;
+}
+
+struct input_device_info input_device_of_type_get_info(char* type) {
+    struct input_device_info info;
+
+    for (int i = 0; i < device_count; i++) {
+        if (strcmp(devices[i].type, type) == 1) {
+            info.id[i] = i;
+            info.name[i] = devices[i].name;
+            info.type[i] = devices[i].type;
+        }
+    }
+    return info;
+}
+
 /**
- * @return id used to remove listener
+ * @return id used to remove input_device_listener
  */
-uint8_t input_device_add_listener(uint8_t device_id, char* name, void (*callback)(uint8_t)) {
+uint8_t input_device_add_listener(uint8_t device_id, char* name,
+                                  void (*callback)(uint8_t)) {
     for (uint8_t i = 0; i < 64; i++) {
         if (devices[device_id].listeners[i].used == false) {
             devices[device_id].listeners[i].name = name;
