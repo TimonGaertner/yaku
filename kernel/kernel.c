@@ -14,7 +14,8 @@
 
 void input_init() {
     ps2_init();
-    ps2_keyboard_id = input_device_create_device("keyboard", "keyboard", keyboard_keymap);
+    //ps2_keyboard_id = 
+    input_device_create_device("keyboard", "keyboard", keyboard_keymap);
 }
 
 void kernel_main(multiboot_info_t* mb_info) {

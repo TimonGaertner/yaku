@@ -1,3 +1,5 @@
+#pragma once
+
 #include <types.h>
 
-uint8_t keyboard_keymap[512] = {0}
+uint8_t keyboard_keymap[512];
