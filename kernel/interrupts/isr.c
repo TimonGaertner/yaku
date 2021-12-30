@@ -1,6 +1,7 @@
 #include "isr.h"
 
 #include <drivers/pit.h>
+#include <drivers/input/input_device.h>>
 #include <drivers/serial.h>
 #include <interrupts/pic.h>
 #include <io.h>
@@ -57,6 +58,7 @@ void isr_irq0(isr_context_t* ctx) {
 void isr_irq1(isr_context_t* ctx) {
     uint8_t scan_code = io_inb(0x60);
     serial_printf("SCANCODE: %d\n", scan_code);
+    input_device_send_key(1, scan_code);
 }
 
 void isr_irq2(isr_context_t* ctx) {}

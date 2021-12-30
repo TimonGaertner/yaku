@@ -1,13 +1,23 @@
+
 #include <printf.h>
 
+#include <drivers/input/input_device.h>
+#include <drivers/input/keyboard_keymap.h>
 #include <drivers/input/ps2.h>
 #include <drivers/pit.h>
 #include <drivers/serial.h>
 #include <drivers/vga_text.h>
 #include <interrupts/idt.h>
+#include <interrupts/isr.h>
 #include <interrupts/pic.h>
 #include <multiboot.h>
 #include <types.h>
+#include <strcmp.h>
+
+void input_init() {
+    ps2_init();
+    input_device_create_device("keyboard", "keyboard", get_keyboard_keympap());
+}
 
 void kernel_main(multiboot_info_t* mb_info) {
     serial_init();
@@ -18,7 +28,8 @@ void kernel_main(multiboot_info_t* mb_info) {
     pic_init();
     idt_init();
     pit_init(60);
-    ps2_init();
+
+    input_init();
 
     serial_printf("Hello, %s!\n", "there");
 
