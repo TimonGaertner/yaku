@@ -2,6 +2,7 @@
 #include <strcmp.h>
 #include <types.h>
 #include <drivers/vga_text.h>
+#include <drivers/serial.h>
 input_device devices[64];
 uint8_t device_count = 0;
 
@@ -14,6 +15,7 @@ uint8_t input_device_create_device(char* name, char* type, uint8_t keymap[512]) 
 
     for (int i = 0; i < 512; i++) {
         devices[device_count].keymap[i] = keymap[i];
+        serial_printf("map2: %d\n", devices[device_count].keymap[i]);
     }
 
     device_count++;

@@ -15,6 +15,7 @@ kernel_c_srcs = files([
     'drivers/input/ps2.c',
     'drivers/input/keyboard_keymap.c',
     'drivers/input/input_device.c',
+    'lib/input/read_input.c',
     'interrupts/isr.c',
     'interrupts/idt.c',
     'interrupts/pic.c'

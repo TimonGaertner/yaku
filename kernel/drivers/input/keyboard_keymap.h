@@ -2,4 +2,4 @@
 
 #include <types.h>
 
-uint8_t *get_keyboard_keympap();
+extern const uint8_t* keyboard_keymap[512];
