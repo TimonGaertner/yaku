@@ -24,7 +24,7 @@ typedef struct input_device {
     char* name;
     char* type;
 
-    uint8_t keymap[512];
+    uint8_t keymap[105];
 
     struct input_device_listener listeners[64];
 } input_device;
