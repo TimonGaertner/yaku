@@ -32,9 +32,9 @@ input_device_info input_device_get_info() {
         info.id[i] = i;
         info.name[i] = devices[i].name;
         info.type[i] = devices[i].type;
-        // for (int j = 0; j < 512; j++) {
-        //     info.keymap[i][j] = devices[i].keymap[j];
-        // }
+        for (int j = 0; j < 512; j++) {
+            info.keymap[i][j] = devices[i].keymap[j];
+        }
     }
     return info;
 }
@@ -47,9 +47,9 @@ input_device_info input_device_of_type_get_info(char* type) {
             info.id[i] = i;
             info.name[i] = devices[i].name;
             info.type[i] = devices[i].type;
-            // for (int j = 0; j < 512; j++) {
-            //     info.keymap[i][j] = devices[i].keymap[j];
-            // }
+            for (int j = 0; j < 512; j++) {
+                info.keymap[i][j] = devices[i].keymap[j];
+            }
         }
     }
     return info;

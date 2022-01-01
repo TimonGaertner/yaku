@@ -33,7 +33,7 @@ typedef struct input_device_info {
     uint8_t id[64];
     char* name[64];
     char* type[64];
-    //uint8_t keymap[64][512];
+    uint8_t keymap[64][512];
 } input_device_info;
 
 uint8_t input_device_create_device(char* name, char* type, uint8_t keymap[512]);
