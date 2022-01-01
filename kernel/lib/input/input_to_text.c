@@ -59,12 +59,13 @@ void input_to_text_handle_keystroke(uint8_t keystroke, read_input_listener* this
                 return;
             }
             if (cursor == strlen(input_to_text_field)) {
-                input_to_text_field[cursor] = '\0';
                 input_to_text_field[cursor - 1] = '\0';
                 return;
-            }
-            
+            }            
         }
+    }
+    if (keystroke_str[0] == 'SPACE') {
+        if (curso)
     }
 }
 
