@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "string_view": "c",
+        "array": "c",
+        "types.h": "c",
+        "keyboard_keymap.h": "c",
+        "string.h": "c"
+    }
+}
