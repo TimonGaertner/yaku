@@ -11,7 +11,6 @@ bool listener_existent = false;
 void read_input_handle_keystroke(uint8_t keystroke, read_input_listener* this) {
     this->buffer[(this->current_buffer_pointer + 1) % 256] = keystroke;
     this->current_buffer_pointer += 1;
-    serial_printf("stroke: %d, char: %s\n", keystroke, keyboard_stringmap[keystroke][0]);
 }
 
 /**
@@ -45,7 +44,7 @@ void read_input_init_listener(read_input_listener* listener) {
         input_device_add_listener(0, "read_input_library", &read_input_handle);
         listener_existent = true;
     }
-    for (int i = 0; i < 256; i++) {
+    for (int i = 0; i < 255; i++) {
         if (listeners[i] == NULL) {
             listeners[i] = listener;
             return;

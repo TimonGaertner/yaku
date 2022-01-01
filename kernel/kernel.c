@@ -15,12 +15,16 @@
 #include <input/read_input.h>
 #include <multiboot.h>
 #include <types.h>
+#include <lib/string.h>
+#include <lib/input/input_to_text.h>
 
 #include <input/read_input.h>
 
 void input_init() {
     ps2_init();
     input_device_create_device("keyboard", "keyboard", keyboard_keymap);
+    input_to_text_init();
+
 }
 
 void kernel_main(multiboot_info_t* mb_info) {
@@ -40,7 +44,9 @@ void kernel_main(multiboot_info_t* mb_info) {
     uint8_t buffer[256];
     read_input_get_keystrokes(&listener, buffer);
     serial_printf("lol: %s\n", buffer[0]);
-    serial_printf("Hello, %s!\n", "there");
+    char* str = "hello world";
+    serial_printf("Hello, %s!\n", strcat_inbetween(str, " ", 12));
+
     for (;;) {
         asm("hlt");
     }

@@ -16,12 +16,12 @@ kernel_c_srcs = files([
     'misc/keyboard_keymap.c',
     'misc/keyboard_stringmap.c',
     'drivers/input/input_device.c',
-    'lib/string.c',
     'lib/input/read_input.c',
     'interrupts/isr.c',
     'interrupts/idt.c',
     'interrupts/pic.c',
-    'lib/string.c'
+    'lib/string.c',
+    'lib/input/input_to_text.c',
 ])
 
 kernel_asmflags = ['-f', 'elf64']

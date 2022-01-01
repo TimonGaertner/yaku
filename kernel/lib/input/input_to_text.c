@@ -4,6 +4,7 @@
 #include <lib/input/read_input.h>
 #include <string.h>
 #include <types.h>
+#include <drivers/serial.h>
 
 char* input_to_text_field = "";
 read_input_listener input_to_text_listener;
@@ -18,6 +19,9 @@ uint32_t cursor = 0;
 
 void input_to_text_handle_keystroke(uint8_t keystroke, read_input_listener* this) {
     if (keystroke < 0) {
+        return;
+    }
+    if (keystroke > 105) {
         return;
     }
     if (keystroke == 105) {
@@ -46,7 +50,7 @@ void input_to_text_handle_keystroke(uint8_t keystroke, read_input_listener* this
         return;
     }
     if (keystroke_str[0] == 'ENTER') {
-        input_to_text_on_enter_callback();
+
         return;
     }
 
@@ -56,22 +60,61 @@ void input_to_text_handle_keystroke(uint8_t keystroke, read_input_listener* this
                 for (int i = cursor; i < strlen(input_to_text_field); i++) {
                     input_to_text_field[i] = input_to_text_field[i + 1];
                 }
+                cursor--;
                 return;
             }
             if (cursor == strlen(input_to_text_field)) {
                 input_to_text_field[cursor - 1] = '\0';
+                cursor--;
                 return;
-            }            
+            }
         }
     }
     if (keystroke_str[0] == 'SPACE') {
-        if (curso)
+        input_to_text_field = strcat_inbetween(input_to_text_field, " ", cursor);
+        cursor++;
+        return;
     }
+    if (keystroke_str[0] == 'TAB') {
+        input_to_text_field = strcat_inbetween(input_to_text_field, "\t", cursor);
+        return;
+    }
+    if (input_to_text_altgr_pressed) {
+        input_to_text_field =
+            strcat_inbetween(input_to_text_field, keystroke_str[2], cursor);
+        cursor++;
+        return;
+    }
+    if (input_to_text_shift_pressed) {
+        if (input_to_text_caps_pressed) {
+            input_to_text_field =
+                strcat_inbetween(input_to_text_field, keystroke_str[0], cursor);
+            cursor++;
+            return;
+        }
+        input_to_text_field =
+            strcat_inbetween(input_to_text_field, keystroke_str[1], cursor);
+            cursor++;
+        return;
+    }
+    if (input_to_text_caps_pressed) {
+        input_to_text_field =
+            strcat_inbetween(input_to_text_field, keystroke_str[1], cursor);
+            cursor++;
+        return;
+    }
+    input_to_text_field = strcat_inbetween(input_to_text_field, keystroke_str[0], cursor);
+    serial_printf("text: %s\n", input_to_text_field);
+    cursor++;
 }
 
-void input_to_text_init(void* on_enter_callback) {
+char* input_to_text_field_get() {
+    return input_to_text_field;
+}
+
+void input_to_text_init() {
     input_to_text_field = "";
     read_input_init_listener(&input_to_text_listener);
     input_to_text_listener.keystroke_handler = &input_to_text_handle_keystroke;
-    input_to_text_on_enter_callback = &on_enter_callback;
+    // input_to_text_on_enter_callback = &on_enter_callback;
 }
