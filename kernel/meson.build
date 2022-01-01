@@ -20,7 +20,8 @@ kernel_c_srcs = files([
     'lib/input/read_input.c',
     'interrupts/isr.c',
     'interrupts/idt.c',
-    'interrupts/pic.c'
+    'interrupts/pic.c',
+    'lib/string.c'
 ])
 
 kernel_asmflags = ['-f', 'elf64']
