@@ -81,7 +81,7 @@ void input_device_remove_listener(uint8_t device_id, uint8_t listener_id) {
 void input_device_send_key(uint8_t device_id, uint8_t key) {
     for (uint8_t i = 0; i < 64; i++) {
         if (devices[device_id].listeners[i].used == true) {
-            devices[device_id].listeners[i].callback(devices[device_id].keymap[key]);
+            devices[device_id].listeners[i].callback(devices[device_id].keymap[key-1]);
         }
     }
 }

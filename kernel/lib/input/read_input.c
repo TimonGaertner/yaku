@@ -4,11 +4,14 @@
 #include <drivers/serial.h>
 #include <types.h>
 
+#include <misc/keyboard_stringmap.h>
+
 read_input_listener* listeners[256];
 bool listener_existent = false;
 void read_input_handle_keystroke(uint8_t keystroke, read_input_listener* this) {
     this->buffer[(this->current_buffer_pointer + 1) % 256] = keystroke;
     this->current_buffer_pointer += 1;
+    serial_printf("stroke: %d, char: %s\n", keystroke, keyboard_stringmap[keystroke][0]);
 }
 
 /**
@@ -34,7 +37,7 @@ void read_input_handle(uint8_t keystroke) {
 }
 
 void read_input_init_listener(read_input_listener* listener) {
-    listener->current_buffer_pointer = 255;
+    listener->current_buffer_pointer = 0;
     listener->last_read_buffer_pointer = 0;
     listener->keystroke_handler = &read_input_handle_keystroke;
     listener->get_keystrokes = &read_input_get_keystrokes;

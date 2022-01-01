@@ -3,6 +3,7 @@
 
 #include <drivers/input/input_device.h>
 #include <keyboard_keymap.h>
+#include <keyboard_stringmap.h>
 #include <drivers/input/ps2.h>
 #include <drivers/pit.h>
 #include <drivers/serial.h>
@@ -38,10 +39,8 @@ void kernel_main(multiboot_info_t* mb_info) {
     timer_sleep_ticks(1000);
     uint8_t buffer[256];
     read_input_get_keystrokes(&listener, buffer);
-    serial_printf("lol: %d\n", buffer[0]);
-
+    serial_printf("lol: %s\n", buffer[0]);
     serial_printf("Hello, %s!\n", "there");
-
     for (;;) {
         asm("hlt");
     }

@@ -59,7 +59,6 @@ void isr_irq0(isr_context_t* ctx) {
 void isr_irq1(isr_context_t* ctx) {
     if (ps2_data_response_req == false) {
         uint8_t scan_code = io_inb(0x60);
-        serial_printf("SCANCODE: %d\n", scan_code);
         input_device_send_key(0, scan_code);
     } else {
         if (ps2_response_count == 1) {
