@@ -1,5 +1,5 @@
 #include "input_device.h"
-#include <strcmp.h>
+#include <string.h>
 #include <types.h>
 #include <drivers/vga_text.h>
 #include <drivers/serial.h>
@@ -15,11 +15,15 @@ uint8_t input_device_create_device(char* name, char* type, uint8_t keymap[512]) 
 
     for (int i = 0; i < 512; i++) {
         devices[device_count].keymap[i] = keymap[i];
-        serial_printf("map2: %d\n", devices[device_count].keymap[i]);
     }
 
     device_count++;
     return device_count - 1;
+}
+void input_device_set_keymap(uint8_t device_id, uint8_t keymap[512]){
+    for (int i = 0; i < 512; i++) {
+        devices[device_id].keymap[i] = keymap[i];
+    }
 }
 
 input_device_info input_device_get_info() {
@@ -29,6 +33,9 @@ input_device_info input_device_get_info() {
         info.id[i] = i;
         info.name[i] = devices[i].name;
         info.type[i] = devices[i].type;
+        for (int j = 0; j < 512; j++) {
+            info.keymap[i][j] = devices[i].keymap[j];
+        }
     }
     return info;
 }
