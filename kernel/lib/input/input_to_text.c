@@ -1,10 +1,10 @@
 #include "input_to_text.h"
 
+#include <drivers/serial.h>
 #include <keyboard_stringmap.h>
 #include <lib/input/read_input.h>
 #include <string.h>
 #include <types.h>
-#include <drivers/serial.h>
 
 char* input_to_text_field = "";
 read_input_listener input_to_text_listener;
@@ -17,8 +17,14 @@ bool function_key = false;
 
 uint32_t cursor = 0;
 
-void input_to_text_handle_keystroke(uint8_t keystroke, read_input_listener* this) {
+void input_to_text_handle_keystroke(char keystroke, read_input_listener* this) {
+    serial_printf("1:%d\n", keystroke);
+    serial_printf(": %s\n", input_to_text_field);
     if (keystroke < 0) {
+        if (keystroke == -74) {
+            input_to_text_shift_pressed = false;
+        }
+
         return;
     }
     if (keystroke > 105) {
@@ -28,33 +34,43 @@ void input_to_text_handle_keystroke(uint8_t keystroke, read_input_listener* this
         function_key = true;
         return;
     }
+    char* keystroke_str[3] = {keyboard_stringmap[keystroke][0],
+                              keyboard_stringmap[keystroke][1],
+                              keyboard_stringmap[keystroke][2]};
 
-    char* keystroke_str = keyboard_stringmap[keystroke];
     if (keystroke_str == NULL) {
         return;
     }
-    if (keystroke_str == "") {
+    if (strcmp("", keystroke_str[0])) {
         return;
     }
-
-    if (keystroke_str[0] == 'SHIFT') {
+    if (strcmp("SHIFT", keystroke_str[0])) {
         input_to_text_shift_pressed = true;
         return;
     }
-    if (keystroke_str[0] == 'ALT' && function_key == true) {
+    if (strcmp("ALT_GR", keystroke_str[0]) && function_key == true) {
         input_to_text_altgr_pressed = true;
         return;
     }
-    if (keystroke_str[0] == 'CAPS') {
+    if (strcmp("CAPS", keystroke_str[0])) {
         input_to_text_caps_pressed = !input_to_text_caps_pressed;
         return;
     }
-    if (keystroke_str[0] == 'ENTER') {
+    if (strcmp("ENTER", keystroke_str[0])) {
 
         return;
     }
+    if (strcmp("ALT", keystroke_str[0])) {
+        return;
+    }
+    if (strcmp("CTRL", keystroke_str[0])) {
+        return;
+    }
+    if (strcmp("DEL", keystroke_str[0])) {
+        return;
+    }
 
-    if (keystroke_str[0] == 'BACKSPACE') {
+    if (strcmp("BACKSPACE", keystroke_str[0])) {
         if (strlen(input_to_text_field) > 0) {
             if (cursor != strlen(input_to_text_field)) {
                 for (int i = cursor; i < strlen(input_to_text_field); i++) {
@@ -64,18 +80,18 @@ void input_to_text_handle_keystroke(uint8_t keystroke, read_input_listener* this
                 return;
             }
             if (cursor == strlen(input_to_text_field)) {
-                input_to_text_field[cursor - 1] = '\0';
+                input_to_text_field[cursor - 1] = "\0";
                 cursor--;
                 return;
             }
         }
     }
-    if (keystroke_str[0] == 'SPACE') {
+    if (strcmp("SPACE", keystroke_str[0])) {
         input_to_text_field = strcat_inbetween(input_to_text_field, " ", cursor);
         cursor++;
         return;
     }
-    if (keystroke_str[0] == 'TAB') {
+    if (strcmp("TAB", keystroke_str[0])) {
         input_to_text_field = strcat_inbetween(input_to_text_field, "\t", cursor);
         return;
     }
@@ -94,17 +110,17 @@ void input_to_text_handle_keystroke(uint8_t keystroke, read_input_listener* this
         }
         input_to_text_field =
             strcat_inbetween(input_to_text_field, keystroke_str[1], cursor);
-            cursor++;
+        cursor++;
         return;
     }
     if (input_to_text_caps_pressed) {
         input_to_text_field =
             strcat_inbetween(input_to_text_field, keystroke_str[1], cursor);
-            cursor++;
+        cursor++;
         return;
     }
+    //strcat_inbetween, 2str becomes end of 1str
     input_to_text_field = strcat_inbetween(input_to_text_field, keystroke_str[0], cursor);
-    serial_printf("text: %s\n", input_to_text_field);
     cursor++;
 }
 

@@ -24,7 +24,7 @@ typedef struct input_device {
     char* name;
     char* type;
 
-    uint8_t keymap[512];
+    char keymap[512];
 
     struct input_device_listener listeners[64];
 } input_device;
@@ -33,11 +33,11 @@ typedef struct input_device_info {
     uint8_t id[64];
     char* name[64];
     char* type[64];
-    uint8_t keymap[64][512];
+    char keymap[64][512];
 } input_device_info;
 
-uint8_t input_device_create_device(char* name, char* type, uint8_t keymap[512]);
-void input_device_set_keymap(uint8_t device_id, uint8_t keymap[512]);
+uint8_t input_device_create_device(char* name, char* type, char keymap[512]);
+void input_device_set_keymap(uint8_t device_id, char keymap[512]);
 uint8_t input_device_add_listener(uint8_t device_id, char* name,
                                   void (*callback)(uint8_t));
 void input_device_remove_listener(uint8_t device_id, uint8_t listener_id);

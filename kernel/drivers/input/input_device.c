@@ -9,7 +9,7 @@ uint8_t device_count = 0;
 /**
  * @return uint8_t device "id"
  */
-uint8_t input_device_create_device(char* name, char* type, uint8_t keymap[512]) {
+uint8_t input_device_create_device(char* name, char* type, char keymap[512]) {
     devices[device_count].name = name;
     devices[device_count].type = type;
 
@@ -20,7 +20,7 @@ uint8_t input_device_create_device(char* name, char* type, uint8_t keymap[512]) 
     device_count++;
     return device_count - 1;
 }
-void input_device_set_keymap(uint8_t device_id, uint8_t keymap[512]) {
+void input_device_set_keymap(uint8_t device_id, char keymap[512]) {
     for (int i = 0; i < 512; i++) {
         devices[device_id].keymap[i] = keymap[i];
     }
@@ -81,7 +81,7 @@ void input_device_remove_listener(uint8_t device_id, uint8_t listener_id) {
 void input_device_send_key(uint8_t device_id, uint8_t key) {
     for (uint8_t i = 0; i < 64; i++) {
         if (devices[device_id].listeners[i].used == true) {
-            devices[device_id].listeners[i].callback(devices[device_id].keymap[key-1]);
+            devices[device_id].listeners[i].callback(devices[device_id].keymap[key - 1]);
         }
     }
 }

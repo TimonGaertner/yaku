@@ -41,12 +41,7 @@ size_t strlen(const char* s) {
 }
 
 void strcpy(char* dest, const char* src) {
-    while (*src) {
-        *dest = *src;
-        dest++;
-        src++;
-    }
-    *dest = '\0';
+    return memcpy(dest, src, strlen (src) + 1);
 }
 void strncpy(char* dest, const char* src, size_t n) {
     for (size_t i = 0; i < n; i++) {
@@ -75,10 +70,14 @@ char* strcat(char* s1, const char* s2) {
     return s;
 }
 
-char* strcat_inbetween(const char* s1, const char* s2, size_t index){
-    if (index > strlen(s1)) {
-        return strcat(s1, s2);
+char* strcat_inbetween(const char* str1, const char* str2, size_t index){
+    if (index > strlen(str1)) {
+        index = strlen(str1);
     }
+    char* s1;
+    strcpy(s1, str1);
+    char* s2;
+    strcpy(s2, str2);
     char* str3;
     strncpy(str3, s1, index);
     str3[index] = '\0';

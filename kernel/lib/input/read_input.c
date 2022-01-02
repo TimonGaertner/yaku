@@ -8,7 +8,7 @@
 
 read_input_listener* listeners[256];
 bool listener_existent = false;
-void read_input_handle_keystroke(uint8_t keystroke, read_input_listener* this) {
+void read_input_handle_keystroke(char keystroke, read_input_listener* this) {
     this->buffer[(this->current_buffer_pointer + 1) % 256] = keystroke;
     this->current_buffer_pointer += 1;
 }
@@ -27,7 +27,7 @@ void read_input_get_keystrokes(read_input_listener* this, uint8_t* buffer[256]) 
     this->last_read_buffer_pointer = this->current_buffer_pointer;
 }
 
-void read_input_handle(uint8_t keystroke) {
+void read_input_handle(char keystroke) {
     for (int i = 0; i < 256; i++) {
         if (listeners[i] != NULL) {
             listeners[i]->keystroke_handler(keystroke, listeners[i]);

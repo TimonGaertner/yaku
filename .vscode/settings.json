@@ -5,6 +5,7 @@
         "serial.h": "c",
         "pit.h": "c",
         "ps2.h": "c",
-        "read_input.h": "c"
+        "read_input.h": "c",
+        "cstring": "c"
     }
 }
