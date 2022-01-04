@@ -25,14 +25,14 @@ void strcat_inbetween(char* buffer, const char* str1, const char* str2, size_t i
 
 void str_remove_inbetween(char* buffer, const char* str1, size_t index) {
     uint16_t len = strlen(str1);
-    if (len<=0) {
+    if (len <= 0) {
         strcpy(buffer, str1);
         return;
     }
     if (index >= len) {
         index = len;
-        strncpy(buffer, str1, index-2);
-        buffer[index-1] = '\0';
+        strncpy(buffer, str1, index - 2);
+        buffer[index - 1] = '\0';
         return;
     }
     if (index < 0) {
