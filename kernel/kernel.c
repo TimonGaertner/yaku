@@ -7,9 +7,6 @@
 #include <drivers/vga_text.h>
 #include <interrupts/idt.h>
 #include <interrupts/pic.h>
-#include <lib/input/input_to_text.h>
-#include <lib/input/read_input.h>
-#include <lib/string.h>
 #include <misc/keyboard_keymap.h>
 #include <lib/string.h>
 #include <multiboot.h>
@@ -26,11 +23,8 @@ void kernel_main(multiboot_info_t* mb_info) {
     pit_init(60);
     ps2_init();
     input_device_create_device("keyboard", "keyboard", keyboard_keymap);
-    input_to_text_init();
 
-    char* a[40];
-    str_remove_inbetween(a, "fa", 0);
-    serial_printf("%s\n", a);
+    serial_printf("Hello, %s!\n", "there");
 
     for (;;) {
         asm("hlt");
