@@ -8,7 +8,6 @@
 #include <interrupts/idt.h>
 #include <interrupts/pic.h>
 #include <resources/keyboard_keymap.h>
-#include <lib/string.h>
 #include <multiboot.h>
 #include <types.h>
 

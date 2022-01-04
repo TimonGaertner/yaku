@@ -4,7 +4,7 @@
 #include <drivers/serial.h>
 #include <types.h>
 
-#include <misc/keyboard_stringmap.h>
+#include <resources/keyboard_stringmap.h>
 
 read_input_listener* listeners[256];
 bool listener_existent = false;
