@@ -9,7 +9,8 @@
  */
 void strcat_inbetween(char* buffer, const char* str1, const char* str2, size_t index) {
     if (index >= strlen(str1)) {
-        strcat(buffer, str1);
+        strcpy(buffer, str1);
+        buffer[strlen(str1)] = '\0';
         strcat(buffer, str2);
         return;
     }
