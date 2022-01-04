@@ -37,7 +37,6 @@ foreach include_dir : kernel_third_party_include_dirs
 endforeach
 kernel_include_flags += ['-I', meson.current_source_dir()]
 kernel_include_flags += ['-I', meson.current_source_dir() + '/misc']
-kernel_include_flags += ['-I', meson.current_source_dir() + '/lib']
 
 kernel_c_objs = cc_gen.process(kernel_c_srcs,
     extra_args: [kernel_ccflags, kernel_include_flags]

@@ -43,7 +43,7 @@ input_device_info input_device_of_type_get_info(char* type) {
     input_device_info info;
 
     for (int i = 0; i < device_count; i++) {
-        if (strcmp(devices[i].type, type) == 1) {
+        if (!strcmp(devices[i].type, type) == 1) {
             info.id[i] = i;
             info.name[i] = devices[i].name;
             info.type[i] = devices[i].type;

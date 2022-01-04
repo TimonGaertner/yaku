@@ -9,6 +9,7 @@
 #include <interrupts/pic.h>
 #include <lib/input/input_to_text.h>
 #include <lib/input/read_input.h>
+#include <lib/string.h>
 #include <misc/keyboard_keymap.h>
 #include <lib/string.h>
 #include <multiboot.h>
@@ -27,8 +28,9 @@ void kernel_main(multiboot_info_t* mb_info) {
     input_device_create_device("keyboard", "keyboard", keyboard_keymap);
     input_to_text_init();
 
-
-    serial_printf("Hello, %s!\n", strcat_inbetween("world", "!",6));
+    char* a[40];
+    strcat_inbetween(a, "Hello", "World", 3);
+    serial_printf("%s\n", a);
 
     for (;;) {
         asm("hlt");
