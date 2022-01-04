@@ -29,7 +29,7 @@ void kernel_main(multiboot_info_t* mb_info) {
     input_to_text_init();
 
     char* a[40];
-    strcat_inbetween(a, "Hello", "World", 3);
+    str_remove_inbetween(a, "fa", 0);
     serial_printf("%s\n", a);
 
     for (;;) {
