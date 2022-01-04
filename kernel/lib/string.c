@@ -31,8 +31,8 @@ void str_remove_inbetween(char* buffer, const char* str1, size_t index) {
     }
     if (index >= len) {
         index = len;
-        strncpy(buffer, str1, index-1);
-        buffer[index] = '\0';
+        strncpy(buffer, str1, index-2);
+        buffer[index-1] = '\0';
         return;
     }
     if (index < 0) {
