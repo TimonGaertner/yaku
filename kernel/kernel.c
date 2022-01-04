@@ -7,7 +7,7 @@
 #include <drivers/vga_text.h>
 #include <interrupts/idt.h>
 #include <interrupts/pic.h>
-#include <misc/keyboard_keymap.h>
+#include <resources/keyboard_keymap.h>
 #include <lib/string.h>
 #include <multiboot.h>
 #include <types.h>
