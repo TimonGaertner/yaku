@@ -1,3 +1,7 @@
 {
-    "mesonbuild.buildFolder": "build"
+    "mesonbuild.buildFolder": "build",
+    "files.associations": {
+        "input_device.h": "c",
+        "keyboard_handler.h": "c"
+    }
 }
