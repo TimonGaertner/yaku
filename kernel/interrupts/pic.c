@@ -2,6 +2,7 @@
 
 #include <io.h>
 #include <types.h>
+#include <drivers/serial.h>
 
 void pic_mask_irq(uint8_t irq) {
     uint16_t port;
@@ -73,6 +74,8 @@ void pic_init(void) {
     }
     pic_unmask_irq(0);
     pic_unmask_irq(1);
+    pic_unmask_irq(9);
+    pic_unmask_irq(12);
 }
 
 static uint16_t __pic_get_irq_reg(uint16_t ocw3) {

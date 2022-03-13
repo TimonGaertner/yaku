@@ -2,11 +2,11 @@
 
 void keyboard_handler(char keystroke) {
     input_event_t event;
-    event.type = EVENT_KEYBOARD;
+    event.kind = EVENT_KEYBOARD;
     if (keystroke >= 0) {
-        event.keyboard.s_type = KEYBOARD_KEY_DOWN;
+        event.keyboard.s_kind = KEYBOARD_KEY_DOWN;
     } else {
-        event.keyboard.s_type = KEYBOARD_KEY_UP;
+        event.keyboard.s_kind = KEYBOARD_KEY_UP;
     }
     if (keystroke >= 0) {
         event.keyboard.keycode = keystroke;

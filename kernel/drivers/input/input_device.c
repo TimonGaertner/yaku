@@ -7,11 +7,14 @@ uint8_t device_count = 0;
 /**
  * @return uint8_t device "id"
  */
-uint8_t input_device_create_device(char* name, char* type, char keymap[512], void (*handler)(uint8_t)) {
+uint8_t input_device_create_device(char* name, char* type, char keymap[512],
+                                   void (*handler)(uint8_t)) {
     devices[device_count].name = name;
     devices[device_count].type = type;
-    for (int i = 0; i < 512; i++) {
-        devices[device_count].keymap[i] = keymap[i];
+    if (keymap != NULL) {
+        for (int i = 0; i < 512; i++) {
+            devices[device_count].keymap[i] = keymap[i];
+        }
     }
 
     devices[device_count].handler = handler;
@@ -54,5 +57,10 @@ input_device_info_t input_device_of_type_get_info(char* type) {
 }
 
 void input_device_send_key(uint8_t device_id, uint8_t key) {
-    devices[device_id].handler(devices[device_id].keymap[key - 1]);
+    if (devices[device_id].keymap != NULL) {
+        devices[device_id].handler(devices[device_id].keymap[key - 1]);
+    }
+    else {
+        devices[device_id].handler(key);
+    }
 }

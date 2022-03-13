@@ -6,6 +6,7 @@
 #include <interrupts/idt.h>
 #include <interrupts/pic.h>
 #include <lib/input/keyboard_handler.h>
+#include <lib/input/mouse_handler.h>
 #include <memory/pmm.h>
 #include <printf.h>
 #include <resources/keyboard_keymap.h>
@@ -72,7 +73,7 @@ void start(stivale2_struct_t* stivale2_struct) {
     pmm_init(memory_map);
     ps2_init();
     input_device_create_device("keyboard", "keyboard", keyboard_keymap, &keyboard_handler);
-
+    input_device_create_device("mouse", "mouse", NULL, &mouse_handler);
     char* message = malloc(1);
     strcpy(message, "Hello, there!");
 

@@ -1,15 +1,15 @@
 #include "ps2.h"
 
+#include <drivers/serial.h>
 #include <interrupts/pic.h>
 #include <io.h>
 #include <types.h>
-#include <drivers/serial.h>
 
-bool ps2_data_response_req=false; // if true don't handle irq as normal
+bool ps2_data_response_req = false; // if true don't handle irq as normal
 static bool dual_channel;
 static bool ps2_port1;
 static bool ps2_port2;
-uint8_t ps2_response_count=0;
+uint8_t ps2_response_count = 0;
 
 // Wait until the PS/2 controller's input buffer is clear.
 // Use this before WRITING to the controller.
@@ -115,9 +115,11 @@ void ps2_init(void) {
 
     // Enable interrupt lines, enable translation.
     uint8_t status = ps2_write_command_read_data(PS2_READ_CONFIG);
+
     status |= (PS2_PORT1_IRQ | PS2_PORT2_IRQ | PS2_PORT1_TLATE);
     ps2_write_command_arg(PS2_WRITE_CONFIG, status);
-
+    status = ps2_write_command_read_data(PS2_READ_CONFIG);
+    serial_printf("ps2: status: %d\n", status);
     if (ps2_write_command_read_data(0xAA) != 0x55) {
         // panic(ps2: self-test on init failed)
         ;
@@ -156,6 +158,19 @@ void ps2_init(void) {
     // mouse not implemented yet
     if (ps2_port2) {
         ps2_write_command(PS2_ENABLE_PORT2);
+        ps2_write_command(0xD4);
+        ps2_write_data(0xFF);
+        ps2_read_data();
+        ps2_read_data();
+        ps2_write_command(0xD4);
+        ps2_write_data(0xF6);
+        ps2_read_data();
+        ps2_read_data();
+        ps2_write_command(0xD4);
+        ps2_write_data(0xF4);
+        ps2_read_data();
+
+        // serial_printf("ps2: mouse init, %d\n", ps2_read_data());
         // 0xD4: sends next byte to PS/2-Port: 2
         // ps2_write_command_arg(0xD4, 0xFF);
     }
