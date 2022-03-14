@@ -12,6 +12,10 @@
 #include <string.h>
 #include <types.h>
 
+//https://wiki.osdev.org/Brendan%27s_Multi-tasking_Tutorial
+//https://github.com/SamuelYvon/Multitasking
+// https://github.com/jagatsastry/deepos/blob/d73f4c4260fdfbf61a2e40c8d467241e9836fcdb/sys/scheduler.c
+//https://wiki.osdev.org/Cooperative_Multitasking
 extern int enable_sse();
 
 static uint8_t stack[8192];
