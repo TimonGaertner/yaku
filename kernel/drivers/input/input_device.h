@@ -14,7 +14,7 @@ typedef struct {
     char* type;
 
     char keymap[512];
-
+    bool has_keymap;
     void (*handler)(uint8_t);
 } input_device_t;
 
@@ -23,6 +23,7 @@ typedef struct {
     char* name[64];
     char* type[64];
     char keymap[64][512];
+    bool has_keymap[64];
 } input_device_info_t;
 
 uint8_t input_device_create_device(char* name, char* type, char keymap[512], void (*handler)(uint8_t));

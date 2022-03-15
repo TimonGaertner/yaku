@@ -42,5 +42,7 @@
         "valarray": "cpp",
         "variant": "cpp",
         "*.inc": "cpp"
-    }
+    },
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true
 }

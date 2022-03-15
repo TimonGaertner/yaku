@@ -73,12 +73,12 @@ void start(stivale2_struct_t* stivale2_struct) {
     pmm_init(memory_map);
     ps2_init();
     input_device_create_device("keyboard", "keyboard", keyboard_keymap, &keyboard_handler);
-    input_device_create_device("mouse", "mouse", NULL, &mouse_handler);
+    serial_printf("geraet: %d\n", input_device_create_device("mouse", "mouse", NULL, &mouse_handler));
     char* message = malloc(1);
     strcpy(message, "Hello, there!");
 
-    serial_printf("%s\n", message);
     
+
     for (;;) {
         asm("hlt");
     }

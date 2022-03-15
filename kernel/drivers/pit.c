@@ -2,7 +2,8 @@
 
 #include <io.h>
 #include <types.h>
-
+#include <lib/input/input_event.h>
+#include <drivers/serial.h>
 static uint32_t tick = 0;
 
 void pit_init(uint32_t frequency) {
@@ -19,6 +20,7 @@ void pit_init(uint32_t frequency) {
 
 void pit_tick_increment(void) {
     tick++;
+    input_event_get_event();
 }
 
 uint32_t pit_tick_get(void) {

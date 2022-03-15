@@ -72,8 +72,8 @@ void pic_init(void) {
     for (uint8_t irq = 0; irq < 16; irq++) {
         pic_mask_irq(irq);
     }
-    // pic_unmask_irq(0);
-    // pic_unmask_irq(1);
+    pic_unmask_irq(0);
+    pic_unmask_irq(1);
     pic_unmask_irq(2); // cascade irq for com between PICs (needed for IRQs >= 8)
     // pic_unmask_irq(3);
     // pic_unmask_irq(4);

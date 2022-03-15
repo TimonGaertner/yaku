@@ -165,11 +165,10 @@ void ps2_init(void) {
         ps2_write_data(0xF6);
         ps2_write_command(0xD4);
         ps2_write_data(0xF4);
-
-        ps2_write_command(0xD4);
-        ps2_write_data(0xF2);
         // serial_printf("ps2: mouse init, %d\n", ps2_read_data());
         // 0xD4: sends next byte to PS/2-Port: 2
         // ps2_write_command_arg(0xD4, 0xFF);
     }
+    ps2_responses_awaited = 0;
+    ps2_data_response_req = false;
 }

@@ -16,8 +16,7 @@ int32_t mouse_handler_x_delta = 0;
 int32_t mouse_handler_y_delta = 0;
 
 void mouse_handler(uint8_t byte) {
-
-    if (mouse_handler_byte_count == 1) {
+    if (mouse_handler_byte_count == 1 && (byte & (1 << 3))) {
         if (byte & (1 << 5)) {
             mouse_handler_y_negative = true;
         }
@@ -56,7 +55,6 @@ void mouse_handler(uint8_t byte) {
             input_event_append_event(event);
         }
         if (!mouse_handler_left_button_pressed && (byte & (1 << 0))) {
-            serial_printf("button pressed");
             mouse_handler_left_button_pressed = true;
             input_event_t event;
             event.kind = EVENT_MOUSE_BUTTON;
