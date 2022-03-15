@@ -57,13 +57,11 @@ void isr_irq0(isr_context_t* ctx) {
 }
 
 void isr_irq1(isr_context_t* ctx) {
-    serial_printf("IRQ1\n");
-
     if (ps2_data_response_req == false) {
         uint8_t scan_code = io_inb(0x60);
         input_device_send_key(0, scan_code);
     } else {
-        if (ps2_response_count == 1) {
+        if (ps2_response_count >= ps2_responses_awaited) {
             ps2_response_count = 0;
             ps2_data_response_req = false;
             uint8_t scan_code = io_inb(0x60);
@@ -74,22 +72,58 @@ void isr_irq1(isr_context_t* ctx) {
     }
 }
 
-void isr_irq2(isr_context_t* ctx) {serial_printf("IRQ2\n");}
-void isr_irq3(isr_context_t* ctx) {serial_printf("IRQ3\n");}
-void isr_irq4(isr_context_t* ctx) {serial_printf("IRQ4\n");}
-void isr_irq5(isr_context_t* ctx) {serial_printf("IRQ5\n");}
-void isr_irq6(isr_context_t* ctx) {serial_printf("IRQ6\n");}
-void isr_irq7(isr_context_t* ctx) {serial_printf("IRQ7\n");}
-void isr_irq8(isr_context_t* ctx) {serial_printf("IRQ8\n");}
-void isr_irq9(isr_context_t* ctx) {serial_printf("IRQ9\n");}
-void isr_irq10(isr_context_t* ctx) {serial_printf("IRQ10\n");}
-void isr_irq11(isr_context_t* ctx) {serial_printf("IRQ11\n");}
+void isr_irq2(isr_context_t* ctx) {
+    serial_printf("IRQ2\n");
+}
+void isr_irq3(isr_context_t* ctx) {
+    serial_printf("IRQ3\n");
+}
+void isr_irq4(isr_context_t* ctx) {
+    serial_printf("IRQ4\n");
+}
+void isr_irq5(isr_context_t* ctx) {
+    serial_printf("IRQ5\n");
+}
+void isr_irq6(isr_context_t* ctx) {
+    serial_printf("IRQ6\n");
+}
+void isr_irq7(isr_context_t* ctx) {
+    serial_printf("IRQ7\n");
+}
+void isr_irq8(isr_context_t* ctx) {
+    serial_printf("IRQ8\n");
+}
+void isr_irq9(isr_context_t* ctx) {
+    serial_printf("IRQ9\n");
+}
+void isr_irq10(isr_context_t* ctx) {
+    serial_printf("IRQ10\n");
+}
+void isr_irq11(isr_context_t* ctx) {
+    serial_printf("IRQ11\n");
+}
 
 void isr_irq12(isr_context_t* ctx) {
-    serial_printf("IRQ12\n");
-    uint8_t mouse_byte = io_inb(0x60);
-    input_device_send_key(1, mouse_byte);
+    if (ps2_data_response_req == false) {
+        uint8_t mouse_byte = io_inb(0x60);
+        input_device_send_key(1, mouse_byte);
+    } else {
+        if (ps2_response_count >= ps2_responses_awaited) {
+            ps2_response_count = 0;
+            ps2_data_response_req = false;
+            uint8_t scan_code = io_inb(0x60);
+        } else {
+            ps2_response_count++;
+            uint8_t scan_code = io_inb(0x60);
+        }
+    }
 }
-void isr_irq13(isr_context_t* ctx) {serial_printf("IRQ13\n");}
-void isr_irq14(isr_context_t* ctx) {serial_printf("IRQ14\n");}
-void isr_irq15(isr_context_t* ctx) {serial_printf("IRQ15\n");}
+void isr_irq13(isr_context_t* ctx) {
+    serial_printf("IRQ13\n");
+}
+void isr_irq14(isr_context_t* ctx) {
+    serial_printf("IRQ14\n");
+}
+void isr_irq15(isr_context_t* ctx) {
+    serial_printf("IRQ15\n");
+}

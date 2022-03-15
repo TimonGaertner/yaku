@@ -34,3 +34,4 @@ void ps2_init(void);
 
 extern bool ps2_data_response_req;
 extern uint8_t ps2_response_count;
+extern uint8_t ps2_responses_awaited;

@@ -1,8 +1,9 @@
 #include "mouse_handler.h"
 #include <types.h>
+#include <drivers/serial.h>
 
 uint8_t mouse_handler_byte_count = 1;
-uint8_t mouse_handler_byte_buffer[4];
+uint8_t mouse_handler_byte_buffer[3];
 
 bool mouse_handler_middle_button_pressed = false;
 bool mouse_handler_right_button_pressed = false;
@@ -55,6 +56,7 @@ void mouse_handler(uint8_t byte) {
             input_event_append_event(event);
         }
         if (!mouse_handler_left_button_pressed && (byte & (1 << 0))) {
+            serial_printf("button pressed");
             mouse_handler_left_button_pressed = true;
             input_event_t event;
             event.kind = EVENT_MOUSE_BUTTON;
@@ -98,16 +100,20 @@ void mouse_handler(uint8_t byte) {
             mouse_handler_x_delta = 0;
             mouse_handler_y_delta = 0;
         }
+        mouse_handler_byte_count = 1;
+        mouse_handler_x_negative = false;
+        mouse_handler_y_negative = false;
+        return;
     }
     if (mouse_handler_byte_count == 4) {
 
         if (byte != 0){
             // todo: implement wheel
         }
-        mouse_handler_byte_count = 1;
-        mouse_handler_x_negative = false;
-        mouse_handler_y_negative = false;
-        return;
+        // mouse_handler_byte_count = 1;
+        // mouse_handler_x_negative = false;
+        // mouse_handler_y_negative = false;
+        // return;
 
     }
     mouse_handler_byte_buffer[mouse_handler_byte_count] = byte;
