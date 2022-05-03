@@ -11,7 +11,7 @@
 #include <stivale2.h>
 #include <string.h>
 #include <types.h>
-
+#include <multitasking/task.h>
 //https://wiki.osdev.org/Brendan%27s_Multi-tasking_Tutorial
 //https://github.com/SamuelYvon/Multitasking
 // https://github.com/jagatsastry/deepos/blob/d73f4c4260fdfbf61a2e40c8d467241e9836fcdb/sys/scheduler.c
@@ -61,13 +61,17 @@ void* stivale2_get_tag(stivale2_struct_t* stivale2_struct, uint64_t id) {
     }
 }
 
+void task_test1(){
+    serial_printf("hallo\n");
+    serial_printf("task1\n");
+}
 void start(stivale2_struct_t* stivale2_struct) {
 
     enable_sse();
     serial_init();
     pic_init();
     idt_init();
-    pit_init(60);
+    pit_init(1000);
 
     stivale2_struct_tag_memmap_t* memory_map;
     memory_map = stivale2_get_tag(stivale2_struct, STIVALE2_STRUCT_TAG_MEMMAP_ID);
@@ -75,11 +79,15 @@ void start(stivale2_struct_t* stivale2_struct) {
     pmm_init(memory_map);
     ps2_init();
     input_device_create_device("keyboard", "keyboard", keyboard_keymap);
-
-    char* message = malloc(1);
-    strcpy(message, "Hello, there!");
-
-    serial_printf("%s\n", message);
+    
+    // asm volatile("movq %%cr3, %%rax; movq %%rax, %0;":"=m"(task1.regs.cr3)::"%rax");
+    // asm volatile("pushfq; movq (%%rsp), %%rax; movq %%rax, %0; popfq;":"=m"(task1.regs.eflags)::"%rax");
+    uint64_t *rsp;
+    task_t *task1 = task_create(&task_test1);
+    serial_printf("%p\n", &(task1->stack[MAX_TASKS-1]));
+    serial_printf("%p\n", task1->rsp);
+    // switch_task(&rsp, task1->rsp);
+    // serial_printf("%p\n", rsp);
 
     for (;;) {
         asm("hlt");

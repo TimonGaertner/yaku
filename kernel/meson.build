@@ -1,7 +1,8 @@
 kernel_asm_srcs = files([
     'interrupts/isr.asm',
     'interrupts/idt.asm',
-    'drivers/sse.asm'
+    'drivers/sse.asm',
+    'multitasking/context_switch.asm',
 ])
 
 kernel_c_srcs = files([
@@ -22,7 +23,8 @@ kernel_c_srcs = files([
     'lib/input/read_input.c',
     'lib/input/input_to_text.c',
     'lib/datetime.c',
-    'memory/pmm.c'
+    'memory/pmm.c',
+    'multitasking/task.c',
 ])
 
 kernel_asmflags = ['-f', 'elf64']
