@@ -1,3 +1,8 @@
 {
-    "mesonbuild.buildFolder": "build"
+    "mesonbuild.buildFolder": "build",
+    "files.associations": {
+        "functional": "c",
+        "types.h": "c",
+        "task.h": "c"
+    }
 }

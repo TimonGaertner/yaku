@@ -27,3 +27,4 @@ typedef struct task {
 extern switch_task(uint64_t *from, uint64_t *to);
 // extern switch_task_and_jump(task_t* task);
 task_t* task_create(void* function);
+void print();

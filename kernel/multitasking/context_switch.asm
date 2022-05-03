@@ -1,11 +1,10 @@
 ; x86_64
 %macro pusha 0
+    push rbp
     push rax
+    push rbx
     push rcx
     push rdx
-    push rbx
-    ; push rsp
-    push rbp
     push rsi
     push rdi
     push r8
@@ -29,14 +28,13 @@
     pop r8
     pop rdi
     pop rsi
-    pop rbp
-    ; pop rsp
-    pop rbx
     pop rdx
     pop rcx
+    pop rbx
     pop rax
+    pop rbp
 %endmacro
-
+extern print
 ; void switchTask(uint64_t *from_rsp, uint64_t *to_rsp);
 global switch_task
 switch_task:

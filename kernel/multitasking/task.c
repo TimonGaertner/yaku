@@ -1,5 +1,5 @@
 #include "task.h"
-
+#include <drivers/serial.h>
 // task_exists = false;
 // // The task list
 // static task_t task_list[MAX_TASKS];
@@ -139,8 +139,11 @@ void memset(void* dest, uint8_t val, size_t len) {
 task_t* task_create(void* function) {
     task_t* new_task = (task_t*)malloc(sizeof(task_t));
     memset(new_task->stack, 0, TASK_STACK_SIZE);
-    new_task->rsp = &(new_task->stack[TASK_STACK_SIZE - 18]); // 15 regs for poping in task_switch, 1 for return address
+    new_task->rsp = &(new_task->stack[TASK_STACK_SIZE - 16]); // 15 regs for poping in task_switch, 1 for return address
     new_task->stack[TASK_STACK_SIZE-1] = function; // return address
     new_task->stack[TASK_STACK_SIZE-2] = &(new_task->stack[TASK_STACK_SIZE-1]); // rbp
     return new_task;
+}
+void print(){
+    serial_printf("test");
 }

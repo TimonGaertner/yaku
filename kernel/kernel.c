@@ -6,16 +6,16 @@
 #include <interrupts/idt.h>
 #include <interrupts/pic.h>
 #include <memory/pmm.h>
+#include <multitasking/task.h>
 #include <printf.h>
 #include <resources/keyboard_keymap.h>
 #include <stivale2.h>
 #include <string.h>
 #include <types.h>
-#include <multitasking/task.h>
-//https://wiki.osdev.org/Brendan%27s_Multi-tasking_Tutorial
-//https://github.com/SamuelYvon/Multitasking
-// https://github.com/jagatsastry/deepos/blob/d73f4c4260fdfbf61a2e40c8d467241e9836fcdb/sys/scheduler.c
-//https://wiki.osdev.org/Cooperative_Multitasking
+// https://wiki.osdev.org/Brendan%27s_Multi-tasking_Tutorial
+// https://github.com/SamuelYvon/Multitasking
+//  https://github.com/jagatsastry/deepos/blob/d73f4c4260fdfbf61a2e40c8d467241e9836fcdb/sys/scheduler.c
+// https://wiki.osdev.org/Cooperative_Multitasking
 extern int enable_sse();
 
 static uint8_t stack[8192];
@@ -61,7 +61,7 @@ void* stivale2_get_tag(stivale2_struct_t* stivale2_struct, uint64_t id) {
     }
 }
 
-void task_test1(){
+void task_test1() {
     serial_printf("hallo\n");
     serial_printf("task1\n");
 }
@@ -79,15 +79,17 @@ void start(stivale2_struct_t* stivale2_struct) {
     pmm_init(memory_map);
     ps2_init();
     input_device_create_device("keyboard", "keyboard", keyboard_keymap);
-    
+
     // asm volatile("movq %%cr3, %%rax; movq %%rax, %0;":"=m"(task1.regs.cr3)::"%rax");
-    // asm volatile("pushfq; movq (%%rsp), %%rax; movq %%rax, %0; popfq;":"=m"(task1.regs.eflags)::"%rax");
-    uint64_t *rsp;
-    task_t *task1 = task_create(&task_test1);
-    serial_printf("%p\n", &(task1->stack[MAX_TASKS-1]));
-    serial_printf("%p\n", task1->rsp);
-    // switch_task(&rsp, task1->rsp);
-    // serial_printf("%p\n", rsp);
+    // asm volatile("pushfq; movq (%%rsp), %%rax; movq %%rax, %0;
+    // popfq;":"=m"(task1.regs.eflags)::"%rax");
+
+    task_t* task1 = task_create(&task_test1);
+    uint64_t* rsp = &(task1->stack[TASK_STACK_SIZE-1]);
+    serial_printf("%p\n", task1->stack[TASK_STACK_SIZE-1]);
+    serial_printf("%p\n", &task_test1);
+    switch_task(&rsp, &task1->rsp);
+    serial_printf("%p\n", rsp);
 
     for (;;) {
         asm("hlt");
