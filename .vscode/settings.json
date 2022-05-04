@@ -3,6 +3,11 @@
     "files.associations": {
         "functional": "c",
         "types.h": "c",
-        "task.h": "c"
+        "task.h": "c",
+        "schedule.h": "c",
+        "cstdlib": "c",
+        "*.tcc": "c",
+        "memory": "c",
+        "new": "c"
     }
 }

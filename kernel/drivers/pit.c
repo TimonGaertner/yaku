@@ -2,7 +2,8 @@
 
 #include <io.h>
 #include <types.h>
-#include <multitasking/scheduler.h>
+#include <multitasking/schedule.h>
+#include <drivers/serial.h>
 
 static uint32_t tick = 0;
 
@@ -17,21 +18,12 @@ void pit_init(uint32_t frequency) {
     io_outb(0x40, lower);
     io_outb(0x40, upper);
 }
-enum task_priority task_repetition = TASK_PRIORITY_LOW;
 void pit_tick_increment(void) {
     tick++;
-    // if (++task_repetition < current_task->priority) {
-    //     return;
-    // }
-    // while (current_task->sleep_till > tick) {
-    //     current_task = current_task->next;
-    // }
-    // if (current_task->sleep_till > 0) {
-    //     current_task->sleep_till = 0;
-    // }
-    // task_t *old_task = &current_task;
-    // current_task = current_task->next;
-    // switch_task(&old_task->regs /*old task*/, &current_task->regs /*new task*/);
+    serial_printf("Tick: %d\n", tick);
+    // void (*schedule_task)(void) = schedule_switch_task;
+    // (*schedule_task)();
+    schedule_switch();
 }
 
 uint32_t pit_tick_get(void) {

@@ -80,16 +80,51 @@ isr_stub_%+%1:
     call isr_exception_handler
     isr_wrapper_after
 %endmacro
+%macro pusha 0
+    push rbp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+    push rsi
+    push rdi
+    push r8
+    push r9
+    push r10
+    push r11
+    push r12
+    push r13
+    push r14
+    push r15
+%endmacro 
 
+%macro popa 0
+    pop r15
+    pop r14
+    pop r13
+    pop r12
+    pop r11
+    pop r10
+    pop r9
+    pop r8
+    pop rdi
+    pop rsi
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+    pop rbp
+%endmacro
 %macro isr_irq_stub 2
 isr_stub_%+%1:
-    push 0
-    push %1
-    isr_wrapper_before
+    cli
+    pusha
     call isr_irq%+%2
     mov rdi, %2
     call pic_send_eoi
-    isr_wrapper_after
+    popa
+    sti
+    iretq
 %endmacro
 
 

@@ -34,15 +34,53 @@
     pop rax
     pop rbp
 %endmacro
-extern print
+%macro popagrd 0
+    pop rdi
+    pop rsi
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+%endmacro
+%macro popacrd 0
+    pop rax
+    mov cr4, rax
+    pop rax
+    mov cr3, rax
+    pop rax
+    mov cr2, rax
+    pop rax
+    mov cr0, rax
+%endmacro
 ; void switchTask(uint64_t *from_rsp, uint64_t *to_rsp);
+%macro isr_wrapper_after 0
+    pop rax
+    pop rax
+    popacrd
+    popagrd
+    pop rbp
+    add rsp, 0x10
+    iretq
+%endmacro
+
+extern pic_send_eoi
 global switch_task
 switch_task:
-    pusha ; push all registers
+    ; pusha ; push all registers
     mov [rdi], rsp ; save rsp into from_rsp
     mov rsp, [rsi] ; load rsp from to_rsp into rsp
     popa ; pop all registers
+
+    mov rdi, 0
+    call pic_send_eoi
+    iretq
+    ; ret ; return to the new task
+    ; isr_wrapper_after
+
+
+global switch_to_task
+switch_to_task:
+    mov rsp, [rdi] ; load rsp from to_rsp into rsp
+    popa ; pop all registers
     ret
-
-
 

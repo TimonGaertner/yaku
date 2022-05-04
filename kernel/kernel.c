@@ -60,10 +60,17 @@ void* stivale2_get_tag(stivale2_struct_t* stivale2_struct, uint64_t id) {
         current_tag = (void*)current_tag->next;
     }
 }
-
-void task_test1() {
-    serial_printf("hallo\n");
+void test_task() {
     serial_printf("task1\n");
+    for (;;) {
+        asm("hlt");
+    }
+}
+void test_task2() {
+    serial_printf("task2\n");
+}
+void kernel_function() {
+    serial_printf("Hello from kernel!\n");
 }
 void start(stivale2_struct_t* stivale2_struct) {
 
@@ -79,18 +86,12 @@ void start(stivale2_struct_t* stivale2_struct) {
     pmm_init(memory_map);
     ps2_init();
     input_device_create_device("keyboard", "keyboard", keyboard_keymap);
-
-    // asm volatile("movq %%cr3, %%rax; movq %%rax, %0;":"=m"(task1.regs.cr3)::"%rax");
-    // asm volatile("pushfq; movq (%%rsp), %%rax; movq %%rax, %0;
-    // popfq;":"=m"(task1.regs.eflags)::"%rax");
-
-    task_t* task1 = task_create(&task_test1);
-    uint64_t* rsp = &(task1->stack[TASK_STACK_SIZE-1]);
-    serial_printf("%p\n", task1->stack[TASK_STACK_SIZE-1]);
-    serial_printf("%p\n", &task_test1);
-    switch_task(&rsp, &task1->rsp);
-    serial_printf("%p\n", rsp);
-
+    // uint64_t* ptr;
+    // task_t* eins = task_create(&kernel_function);
+    // switch_task(ptr, &eins->rsp);
+    
+    // task_t* zwei = task_create(&test_task);
+    schedule_init(&kernel_function);
     for (;;) {
         asm("hlt");
     }

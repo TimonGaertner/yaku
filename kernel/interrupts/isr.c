@@ -8,6 +8,7 @@
 #include <io.h>
 #include <printf.h>
 
+
 static const char* exception_messages[] = {
     "Divide-by-zero Error",
     "Debug",
@@ -57,6 +58,7 @@ void isr_irq0(isr_context_t* ctx) {
 }
 
 void isr_irq1(isr_context_t* ctx) {
+    serial_printf("IRQ1\n");
     if (ps2_data_response_req == false) {
         uint8_t scan_code = io_inb(0x60);
         input_device_send_key(0, scan_code);
