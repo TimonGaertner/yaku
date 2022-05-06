@@ -70,7 +70,7 @@ switch_task:
     mov [rdi], rsp ; save rsp into from_rsp
     mov rsp, [rsi] ; load rsp from to_rsp into rsp
     ; popa ; pop all registers
-
+    ret
     ; mov rdi, 0
     ; call pic_send_eoi
     ; sti
@@ -82,6 +82,13 @@ global switch_to_task
 switch_to_task:
     mov rsp, [rdi] ; load rsp from to_rsp into rsp
     popa ; pop all registers
+    sti
+    iretq
+
+global switch_from_to_task
+switch_from_to_task:
+    mov [rdi], rsp ; save rsp into from_rsp
+    mov rsp, [rsi] ; load rsp from to_rsp into rsp
     sti
     iretq
 

@@ -14,7 +14,6 @@ void schedule_task(task_t* task) {
         current_task->next = task;
     }
     current_task = task;
-    switch_to_task(&task->rsp);
 }
 
 void scheduler_task() {
@@ -38,16 +37,15 @@ void schedule_nothing() {}
 static void* schedule_switch_task = &schedule_nothing;
 static enum task_priority task_repetition = TASK_PRIORITY_LOW;
 void schedule_switch() {
-
     // serial_printf("Switching");
     if (current_task == NULL) {
         return;
     }
-    if (++task_repetition < current_task->priority) {
-        return;
-    }
+    // if (++task_repetition < current_task->priority) {
+    //     return;
+    // }
 
-    task_t* old_task = &current_task;
+    task_t* old_task = current_task;
     current_task = current_task->next;
     // while (current_task->task_state == TASK_STATE_TERMINATED) {
     //     current_task = current_task->next;
@@ -66,14 +64,23 @@ void schedule_switch() {
     if (current_task->task_state == TASK_STATE_RUNNING) {
         switch_task(&old_task->rsp /*old task*/, &current_task->rsp /*new task*/);
     } else if (current_task->task_state == TASK_STATE_WAITING) {
-        // current_task->task_state = TASK_STATE_RUNNING;
-        switch_to_task(&current_task->rsp);
+        if (old_task->task_state == TASK_STATE_RUNNING) {
+
+            serial_printf("switching to2 %d\n", current_task->pid);
+            current_task->task_state = TASK_STATE_RUNNING;
+            switch_from_to_task(&old_task->rsp, &current_task->rsp);
+        } else {
+            serial_printf("switching to %d\n", current_task->pid);
+            current_task->task_state = TASK_STATE_RUNNING;
+            switch_to_task(&current_task->rsp);
+        }
     }
 }
 
 void schedule_init(void* kernel_function) {
     serial_printf("Scheduler init\n");
+    pic_mask_irq(0);
     task_add(kernel_function, TASK_PRIORITY_MEDIUM, 0);
-    task_add(scheduler_task, TASK_PRIORITY_VERY_HIGH, 0);
-    schedule_switch_task = &schedule_switch;
+    // task_add(scheduler_task, TASK_PRIORITY_VERY_HIGH, 0);
+    pic_unmask_irq(0);
 }

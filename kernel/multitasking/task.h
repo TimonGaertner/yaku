@@ -38,3 +38,4 @@ task_t* task_get_ptr_by_pid(uint32_t pid);
 task_t* task_get_ptr_by_parent_pid(uint32_t pid);
 void task_kill(uint32_t pid);
 extern switch_to_task(uint64_t *to);
+extern switch_from_to_task(uint64_t *from, uint64_t *to);

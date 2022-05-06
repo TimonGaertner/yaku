@@ -13,6 +13,7 @@ void task_add(void* function, enum task_priority priority, uint32_t parent_pid)
     task->pid = number_of_tasks;
     task->task_state = TASK_STATE_WAITING;
     schedule_task(task);
+    asm("sti");
 }
 
 // adds sleeping to task
