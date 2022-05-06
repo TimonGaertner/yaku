@@ -3,7 +3,7 @@
 
 static uint32_t number_of_tasks = 0;
 // Add a task to the task list
-void task_add(void* function, enum task_priority priority, uint32_t parent_pid) {
+task_t* task_add(void* function, enum task_priority priority, uint32_t parent_pid) {
     asm("cli");
     if (number_of_tasks == MAX_TASKS) {
         serial_printf("Max tasks reached\n");
@@ -18,6 +18,7 @@ void task_add(void* function, enum task_priority priority, uint32_t parent_pid) 
     task->task_state = TASK_STATE_WAITING;
     schedule_task(task);
     asm("sti");
+    return task;
 }
 
 // adds sleeping to task

@@ -8,6 +8,11 @@
         "cstdlib": "c",
         "*.tcc": "c",
         "memory": "c",
-        "new": "c"
+        "new": "c",
+        "pit.h": "c",
+        "ps2.h": "c",
+        "timer.h": "c",
+        "printf.h": "c",
+        "keyboard_keymap.h": "c"
     }
 }

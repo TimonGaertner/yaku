@@ -30,13 +30,11 @@ typedef struct task {
 // task_t* current_task;
 
 // switch to task
-extern switch_task(uint64_t *from, uint64_t *to);
-void task_add(void* function, enum task_priority priority, uint32_t parent_pid);
+task_t* task_add(void* function, enum task_priority priority, uint32_t parent_pid);
 task_t* task_create(void* function);
 void task_exit();
 void task_terminate(task_t *task);
 task_t* task_get_ptr_by_pid(uint32_t pid);
 task_t* task_get_ptr_by_parent_pid(uint32_t pid);
 void task_kill(uint32_t pid);
-extern switch_to_task(uint64_t *to);
-extern switch_from_to_task(uint64_t *from, uint64_t *to);
+void task_sleep(task_t* task, uint32_t ticks);

@@ -7,6 +7,7 @@
 #include <interrupts/pic.h>
 #include <memory/pmm.h>
 #include <multitasking/task.h>
+#include <drivers/timer.h>
 #include <printf.h>
 #include <resources/keyboard_keymap.h>
 #include <stivale2.h>
@@ -67,12 +68,16 @@ void test_task() {
     }
 }
 void test_task2() {
-    serial_printf("task2\n");
+    for(;;){
+        serial_printf("task2\n");
+    }
 }
 void kernel_function() {
-    task_add(&test_task2, TASK_PRIORITY_LOW, 0);
+    task_t* ptr = task_add(&test_task2, TASK_PRIORITY_LOW, 0);
+    // task_sleep(ptr, 1000);
     for (;;) {
-        serial_printf("Hello from kernel!\n");
+        serial_printf("kernel\n");
+        // asm("hlt");
     }
 }
 void print_reg() {

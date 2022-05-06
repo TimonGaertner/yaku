@@ -2,6 +2,7 @@
 #include <drivers/pit.h>
 #include <drivers/serial.h>
 #include <interrupts/pic.h>
+#include <drivers/timer.h>
 static task_t* current_task;
 static uint64_t task_count = 0;
 // Schedule Tasks
@@ -34,25 +35,40 @@ void scheduler_task() {
 void schedule_set_task_terminated() {
     current_task->task_state = TASK_STATE_TERMINATED;
 }
+void schedule_sleep(uint32_t ticks){
+    task_sleep(current_task, ticks);
+    timer_sleep_ticks(ticks);
+}
 static enum task_priority task_repetition = TASK_PRIORITY_LOW;
+task_t* get_current_task(){
+    return current_task;
+}
 void schedule_switch(uint64_t* rsp) {
     // serial_printf("Switching");
     if (current_task == NULL || task_repetition++ < current_task->priority) {
         return;
     }
+
     task_repetition = TASK_PRIORITY_LOW;
     task_t* old_task = current_task;
     current_task = current_task->next;
     if (current_task->task_state == TASK_STATE_WAITING) {
         current_task->task_state = TASK_STATE_RUNNING;
     }
-
     if (old_task->task_state != TASK_STATE_WAITING) {
         old_task->rsp = rsp;
     }
     if (current_task->task_state == TASK_STATE_TERMINATED) {
         current_task = current_task->next;
     }
+    if (current_task->task_state == TASK_STATE_SLEEP){
+        if (current_task->sleep_till > pit_tick_get()){
+            current_task=current_task->next;
+        } else {
+            current_task->task_state = TASK_STATE_RUNNING;
+        }
+    }
+    // serial_printf("Switching to task %d\n", current_task->pid);
     pic_send_eoi(0);
     switch_to_task(&current_task->rsp);
 }
