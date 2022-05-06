@@ -63,20 +63,19 @@ void* stivale2_get_tag(stivale2_struct_t* stivale2_struct, uint64_t id) {
 }
 void test_task() {
     serial_printf("task1\n");
-    for (;;) {
-        asm("hlt");
-    }
 }
 void test_task2() {
+    schedule_sleep(1000);
     for(;;){
         serial_printf("task2\n");
     }
 }
 void kernel_function() {
     task_t* ptr = task_add(&test_task2, TASK_PRIORITY_LOW, 0);
+    task_add(&test_task, TASK_PRIORITY_LOW, 0);
     // task_sleep(ptr, 1000);
     for (;;) {
-        serial_printf("kernel\n");
+        asm("hlt");
         // asm("hlt");
     }
 }
