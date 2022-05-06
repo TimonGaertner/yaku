@@ -5,6 +5,7 @@ static uint32_t number_of_tasks = 0;
 // Add a task to the task list
 void task_add(void* function, enum task_priority priority, uint32_t parent_pid)
 {
+    asm("cli");
     task_t* task = task_create(function);
     number_of_tasks++;
     task->priority = priority;
@@ -87,10 +88,15 @@ void task_exit() {
 task_t* task_create(void* function) {
     task_t* new_task = (task_t*)malloc(sizeof(task_t));
     memset(new_task->stack, 0, TASK_STACK_SIZE);
-    new_task->rsp = &(new_task->stack[TASK_STACK_SIZE - 17]); // 15 regs for poping in task_switch, 1 for return address
+    new_task->rsp = &(new_task->stack[TASK_STACK_SIZE - 21]); // 15 regs for poping in task_switch, 5 for return address
     new_task->stack[TASK_STACK_SIZE-1] = &task_exit;
-    new_task->stack[TASK_STACK_SIZE-2] = function; // return address
-    new_task->stack[TASK_STACK_SIZE-3] = &(new_task->stack[TASK_STACK_SIZE-1]); // rbp
+    new_task->stack[TASK_STACK_SIZE-2] = 0x30; // return SS
+    new_task->stack[TASK_STACK_SIZE-3] = &(new_task->stack[TASK_STACK_SIZE-1]); // return RSP
+    new_task->stack[TASK_STACK_SIZE-4] = 0x203;//   return RFLAGS
+    new_task->stack[TASK_STACK_SIZE-5] = 0x28; // return cs
+    new_task->stack[TASK_STACK_SIZE-6] = function; // return address -> rip
+    new_task->stack[TASK_STACK_SIZE-7] = &(new_task->stack[TASK_STACK_SIZE-1]); // rbp popped manually
+    //TODO: add stack needed for iretq
     return new_task;
 }
 

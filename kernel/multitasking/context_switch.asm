@@ -69,18 +69,19 @@ switch_task:
     ; pusha ; push all registers
     mov [rdi], rsp ; save rsp into from_rsp
     mov rsp, [rsi] ; load rsp from to_rsp into rsp
-    popa ; pop all registers
+    ; popa ; pop all registers
 
-    mov rdi, 0
-    call pic_send_eoi
-    iretq
+    ; mov rdi, 0
+    ; call pic_send_eoi
+    ; sti
+    ; iretq
     ; ret ; return to the new task
     ; isr_wrapper_after
-
 
 global switch_to_task
 switch_to_task:
     mov rsp, [rdi] ; load rsp from to_rsp into rsp
     popa ; pop all registers
-    ret
+    sti
+    iretq
 

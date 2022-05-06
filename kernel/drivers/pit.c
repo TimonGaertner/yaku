@@ -20,7 +20,7 @@ void pit_init(uint32_t frequency) {
 }
 void pit_tick_increment(void) {
     tick++;
-    serial_printf("Tick: %d\n", tick);
+    // serial_printf("Tick: %d\n", tick);
     // void (*schedule_task)(void) = schedule_switch_task;
     // (*schedule_task)();
     schedule_switch();

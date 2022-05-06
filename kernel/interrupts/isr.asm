@@ -115,6 +115,7 @@ isr_stub_%+%1:
     pop rax
     pop rbp
 %endmacro
+extern print_reg
 %macro isr_irq_stub 2
 isr_stub_%+%1:
     cli
@@ -123,6 +124,12 @@ isr_stub_%+%1:
     mov rdi, %2
     call pic_send_eoi
     popa
+    ; pop rdi
+    ; pop rdi
+    ; pop rdi
+    ; pop rdi
+    ; pop rdi
+    ; call print_reg
     sti
     iretq
 %endmacro

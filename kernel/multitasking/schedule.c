@@ -13,6 +13,8 @@ void schedule_task(task_t* task) {
         task->next = current_task->next;
         current_task->next = task;
     }
+    current_task = task;
+    switch_to_task(&task->rsp);
 }
 
 void scheduler_task() {
@@ -37,7 +39,7 @@ static void* schedule_switch_task = &schedule_nothing;
 static enum task_priority task_repetition = TASK_PRIORITY_LOW;
 void schedule_switch() {
 
-    serial_printf("Switching");
+    // serial_printf("Switching");
     if (current_task == NULL) {
         return;
     }
@@ -60,9 +62,11 @@ void schedule_switch() {
     // }
 
     serial_printf("Switching\n");
+    pic_send_eoi(0);
     if (current_task->task_state == TASK_STATE_RUNNING) {
         switch_task(&old_task->rsp /*old task*/, &current_task->rsp /*new task*/);
     } else if (current_task->task_state == TASK_STATE_WAITING) {
+        // current_task->task_state = TASK_STATE_RUNNING;
         switch_to_task(&current_task->rsp);
     }
 }
