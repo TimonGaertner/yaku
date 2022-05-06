@@ -64,31 +64,9 @@
 %endmacro
 
 extern pic_send_eoi
-global switch_task
-switch_task:
-    ; pusha ; push all registers
-    mov [rdi], rsp ; save rsp into from_rsp
-    mov rsp, [rsi] ; load rsp from to_rsp into rsp
-    ; popa ; pop all registers
-    ret
-    ; mov rdi, 0
-    ; call pic_send_eoi
-    ; sti
-    ; iretq
-    ; ret ; return to the new task
-    ; isr_wrapper_after
-
 global switch_to_task
 switch_to_task:
     mov rsp, [rdi] ; load rsp from to_rsp into rsp
-    popa ; pop all registers
-    sti
-    iretq
-extern print_reg
-global switch_from_to_task
-switch_from_to_task:
-    mov [rdi], rsp ; save rsp into from_rsp
-    mov rsp, [rsi] ; load rsp from to_rsp into rsp
     popa ; pop all registers
     sti
     iretq

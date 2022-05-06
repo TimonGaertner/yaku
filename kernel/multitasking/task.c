@@ -32,17 +32,22 @@ void memset(void* dest, uint8_t val, size_t len) {
         *ptr++ = val;
     return dest;
 }
-void task_terminate(task_t* task) {
+void task_terminate(task_t* task) {    
     pic_mask_irq(0); // dont switch tasks anymore
     if (task == NULL) {
         return;
     }
     bool task_found = false;
-    task_t* task_pointing_to = current_task;
+    task_t* task_pointing_to = task;
+    serial_printf("task_terminate: %d\n", task_pointing_to->pid);
     while (!task_found) {
         if (task_pointing_to->next == task) {
+            serial_printf("Found task pointing to: %d\n", task_pointing_to->pid);
             task_found = true;
             task_pointing_to->next = task->next;
+        } else{
+            serial_printf("Not found task pointing to: %d\n", task_pointing_to->pid);
+            task_pointing_to = task_pointing_to->next;
         }
     }
     free(task, sizeof(task_t)/4096); // sizeof(task_t) is 8192 bytes
@@ -70,6 +75,8 @@ task_t* task_get_ptr_by_parent_pid(uint32_t pid) {
 }
 
 void task_kill(uint32_t pid) {
+    serial_printf("Killing task %d\n", pid);
+    asm("cli");
     task_t* task = task_get_ptr_by_pid(pid);
     task_terminate(task);
     bool nothing_left = false;
@@ -80,9 +87,10 @@ void task_kill(uint32_t pid) {
             nothing_left = true;
         }
     }
+    asm("sti");
 }
 void task_exit() {
-    // schedule_set_task_terminated();
+    schedule_set_task_terminated();
     for (;;) {
         asm("hlt");
     }
