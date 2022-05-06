@@ -72,8 +72,8 @@ void test_task2() {
 void kernel_function() {
     serial_printf("Hello from kernel!\n");
 }
-void print_reg(uint64_t reg){
-    serial_printf("reg: %x\n", reg);
+void print_reg(){
+    serial_printf("testpoint\n");
 }
 void start(stivale2_struct_t* stivale2_struct) {
 

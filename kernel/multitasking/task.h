@@ -4,7 +4,7 @@
 #include <types.h>
 #include <multitasking/schedule.h>
 #include <interrupts/pic.h>
-#define TASK_STACK_SIZE 1024
+#define TASK_STACK_SIZE 1019
 
 
 enum task_state {

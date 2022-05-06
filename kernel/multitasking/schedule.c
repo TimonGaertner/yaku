@@ -41,6 +41,13 @@ void schedule_switch() {
     if (current_task == NULL) {
         return;
     }
+    if (current_task->task_state == TASK_STATE_WAITING) {
+        serial_printf("switching to %d\n", current_task->pid);
+
+        pic_send_eoi(0);
+        current_task->task_state = TASK_STATE_RUNNING;
+        switch_to_task(&current_task->rsp);
+    }
     // if (++task_repetition < current_task->priority) {
     //     return;
     // }
@@ -59,21 +66,19 @@ void schedule_switch() {
     //     }
     // }
 
-    serial_printf("Switching\n");
-    pic_send_eoi(0);
+    // serial_printf("Switching\n");
     if (current_task->task_state == TASK_STATE_RUNNING) {
-        switch_task(&old_task->rsp /*old task*/, &current_task->rsp /*new task*/);
-    } else if (current_task->task_state == TASK_STATE_WAITING) {
-        if (old_task->task_state == TASK_STATE_RUNNING) {
 
-            serial_printf("switching to2 %d\n", current_task->pid);
-            current_task->task_state = TASK_STATE_RUNNING;
-            switch_from_to_task(&old_task->rsp, &current_task->rsp);
-        } else {
-            serial_printf("switching to %d\n", current_task->pid);
-            current_task->task_state = TASK_STATE_RUNNING;
-            switch_to_task(&current_task->rsp);
-        }
+        pic_send_eoi(0);
+        switch_task(&old_task->rsp /*old task*/, &current_task->rsp /*new task*/);
+    } else if (old_task->task_state == TASK_STATE_RUNNING &&
+               current_task->task_state == TASK_STATE_WAITING) {
+        serial_printf("switching to2 %d\n", current_task->pid);
+        current_task->task_state = TASK_STATE_RUNNING;
+
+        pic_send_eoi(0);
+        serial_printf("current_task rsp: %p\n", current_task->rsp);
+        switch_from_to_task(&old_task->rsp, &current_task->rsp);
     }
 }
 
@@ -81,6 +86,6 @@ void schedule_init(void* kernel_function) {
     serial_printf("Scheduler init\n");
     pic_mask_irq(0);
     task_add(kernel_function, TASK_PRIORITY_MEDIUM, 0);
-    // task_add(scheduler_task, TASK_PRIORITY_VERY_HIGH, 0);
+    task_add(scheduler_task, TASK_PRIORITY_VERY_HIGH, 0);
     pic_unmask_irq(0);
 }
