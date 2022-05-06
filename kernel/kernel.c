@@ -70,9 +70,11 @@ void test_task2() {
     serial_printf("task2\n");
 }
 void kernel_function() {
-    serial_printf("Hello from kernel!\n");
+    for (;;) {
+        serial_printf("Hello from kernel!\n");
+    }
 }
-void print_reg(){
+void print_reg() {
     serial_printf("testpoint\n");
 }
 void start(stivale2_struct_t* stivale2_struct) {
@@ -92,7 +94,7 @@ void start(stivale2_struct_t* stivale2_struct) {
     // uint64_t* ptr;
     // task_t* eins = task_create(&kernel_function);
     // switch_task(ptr, &eins->rsp);
-    
+
     // task_t* zwei = task_create(&test_task);
     schedule_init(&kernel_function);
     for (;;) {

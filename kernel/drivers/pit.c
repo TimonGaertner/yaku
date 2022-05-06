@@ -18,12 +18,14 @@ void pit_init(uint32_t frequency) {
     io_outb(0x40, lower);
     io_outb(0x40, upper);
 }
-void pit_tick_increment(void) {
+void pit_tick_increment(uint64_t* rsp) {
     tick++;
     // serial_printf("Tick: %d\n", tick);
     // void (*schedule_task)(void) = schedule_switch_task;
     // (*schedule_task)();
-    schedule_switch();
+    serial_printf("Tick: %d\n", tick);
+    serial_printf("RSP: %x\n", rsp);
+    schedule_switch(rsp);
 }
 
 uint32_t pit_tick_get(void) {

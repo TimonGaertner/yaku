@@ -13,3 +13,4 @@ void scheduler_task();
 void schedule_set_task_terminated();
 static void* schedule_switch_task;
 void schedule_init(void* kernel_function);
+void schedule_switch(uint64_t* rsp);

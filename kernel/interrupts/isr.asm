@@ -167,14 +167,38 @@ isr_no_err_stub 28
 isr_no_err_stub 29
 isr_err_stub    30
 isr_no_err_stub 31
-%assign vec 32
-%assign irq 0
-%rep 15
+%assign vec 33
+%assign irq 1
+%rep 14
     extern isr_irq%+irq
     isr_irq_stub vec, irq
     %assign vec vec+1
     %assign irq irq+1
 %endrep
+
+
+%macro isr_irq_stub0 2
+isr_stub_%+%1:
+    cli
+    pusha
+    mov rdi, rsp
+    call isr_irq0
+    mov rdi, 0
+    call pic_send_eoi
+    popa
+    ; pop rdi
+    ; pop rdi
+    ; pop rdi
+    ; pop rdi
+    ; pop rdi
+    ; call print_reg
+    sti
+    iretq
+%endmacro
+%assign vec 32
+%assign irq 0
+extern isr_irq0
+isr_irq_stub0 vec, irq
 
 
 global isr_stub_table

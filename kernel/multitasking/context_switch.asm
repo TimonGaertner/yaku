@@ -89,7 +89,6 @@ global switch_from_to_task
 switch_from_to_task:
     mov [rdi], rsp ; save rsp into from_rsp
     mov rsp, [rsi] ; load rsp from to_rsp into rsp
-    call print_reg
     popa ; pop all registers
     sti
     iretq

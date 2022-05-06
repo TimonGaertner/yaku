@@ -5,6 +5,11 @@ static uint32_t number_of_tasks = 0;
 // Add a task to the task list
 void task_add(void* function, enum task_priority priority, uint32_t parent_pid) {
     asm("cli");
+    if (number_of_tasks == MAX_TASKS) {
+        serial_printf("Max tasks reached\n");
+        asm("sti");
+        return;
+    }
     task_t* task = task_create(function);
     number_of_tasks++;
     task->priority = priority;
@@ -99,6 +104,6 @@ task_t* task_create(void* function) {
         &(new_task->stack[TASK_STACK_SIZE - 1]); // rbp popped manually
                                                  // TODO: add stack needed for iretq
 
-    serial_printf("current_task rsp: %p\n", new_task);
+    serial_printf("newtask rsp: %p\n", new_task->rsp);
     return new_task;
 }
