@@ -14,8 +14,11 @@ void schedule_task(task_t* task) {
         task->next = current_task->next;
         current_task->next = task;
     }
-    current_task = task;
     // task1 = task;
+    serial_printf("Task: %p\n", task);
+    serial_printf("Task-next: %p\n", task->next);
+    serial_printf("Task-next-next: %p\n", task->next->next);
+    serial_printf("Task-next-next-next: %p\n", task->next->next->next);
 }
 
 void scheduler_task() {
@@ -99,6 +102,7 @@ void schedule_switch(uint64_t* rsp) {
     // serial_printf("current_task rsp: %p\n", current_task->rsp);
     // serial_printf("current_task ptr: %p\n", current_task);
     // serial_printf("current_task rsp: %p\n", current_task->rsp);
+    serial_printf("Switching to task %p\n", current_task);
     switch_to_task(&current_task->rsp);
 }
 

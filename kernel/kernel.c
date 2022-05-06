@@ -67,9 +67,12 @@ void test_task() {
     }
 }
 void test_task2() {
-    serial_printf("task2\n");
+    for (;;) {
+        serial_printf("task2\n");
+    }
 }
 void kernel_function() {
+    task_add(&test_task2, TASK_PRIORITY_LOW, 0);
     for (;;) {
         serial_printf("Hello from kernel!\n");
     }
