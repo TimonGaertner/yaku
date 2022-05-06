@@ -5,6 +5,7 @@
 static task_t* current_task;
 static uint64_t task_count = 0;
 // Schedule Tasks
+// static task_t* task1;
 void schedule_task(task_t* task) {
     if (current_task == NULL) {
         current_task = task;
@@ -14,6 +15,7 @@ void schedule_task(task_t* task) {
         current_task->next = task;
     }
     current_task = task;
+    // task1 = task;
 }
 
 void scheduler_task() {
@@ -47,11 +49,15 @@ void schedule_switch(uint64_t* rsp) {
     // }
 
     task_t* old_task = current_task;
-    if (old_task->task_state==TASK_STATE_WAITING){
+    if (old_task->task_state == TASK_STATE_WAITING) {
+        serial_printf("Waiting\n");
         task_t temp_task;
         old_task = &temp_task;
     }
     current_task = current_task->next;
+    if (current_task->task_state == TASK_STATE_WAITING) {
+        current_task->task_state = TASK_STATE_RUNNING;
+    }
     // while (current_task->task_state == TASK_STATE_TERMINATED) {
     //     current_task = current_task->next;
     // }
@@ -63,7 +69,7 @@ void schedule_switch(uint64_t* rsp) {
     //         current_task->sleep_till = 0;
     //     }
     // }
-    old_task->rsp=rsp;
+    old_task->rsp = rsp;
     // serial_printf("Switching\n");
     // if (current_task->task_state == TASK_STATE_RUNNING) {
     //     serial_printf("switching to3 %d\n", current_task->pid);
@@ -82,6 +88,17 @@ void schedule_switch(uint64_t* rsp) {
     //     switch_from_to_task(&old_task->rsp, &current_task->rsp);
     // }
     pic_send_eoi(0);
+    // serial_printf("task1 rsp: %p\n", task1->rsp);
+    // serial_printf("task1 ptr: %p\n", task1);
+    // serial_printf("task1-next rsp: %p\n", task1->next->rsp);
+    // serial_printf("task1-next ptr: %p\n", task1->next);
+    // serial_printf("task1-next-next rsp: %p\n", task1->next->next->rsp);
+    // serial_printf("task1-next-next ptr: %p\n", task1->next->next);
+    // serial_printf("old_task rsp: %p\n", old_task->rsp);
+    // serial_printf("old_task ptr: %p\n", old_task);
+    // serial_printf("current_task rsp: %p\n", current_task->rsp);
+    // serial_printf("current_task ptr: %p\n", current_task);
+    // serial_printf("current_task rsp: %p\n", current_task->rsp);
     switch_to_task(&current_task->rsp);
 }
 

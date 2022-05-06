@@ -53,9 +53,8 @@ void isr_exception_handler(isr_context_t* ctx) {
     asm("cli; hlt");
 }
 
-void isr_irq0(uint64_t rsp) {
-    uint64_t* rsp2 = rsp;
-    pit_tick_increment(rsp2);
+void isr_irq0(uint64_t* rsp) {
+    pit_tick_increment(rsp);
 }
 
 void isr_irq1(isr_context_t* ctx) {
