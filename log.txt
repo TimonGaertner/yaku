@@ -1,0 +1,1914 @@
+ninja: Entering directory `/home/timon/code/yaku_multitasking_threading/build'
+[1/263] Generating 'kernel/kernel.elf.p/sse.asm.o'.
+[2/263] Generating 'kernel/kernel.elf.p/idt.asm.o'.
+[3/263] Generating 'kernel/kernel.elf.p/context_switch.asm.o'.
+[4/263] Generating 'kernel/kernel.elf.p/isr.asm.o'.
+[5/263] Generating 'kernel/kernel.elf.p/pit.c.o'.
+[6/263] Generating 'kernel/kernel.elf.p/timer.c.o'.
+[7/263] Generating 'kernel/kernel.elf.p/fpu.c.o'.
+[8/263] Generating 'kernel/kernel.elf.p/kernel.c.o'.
+In Datei, eingebunden von ../kernel/kernel.c:16:
+/home/timon/code/yaku_multitasking_threading/kernel/thirdparty/string/string.h:11: Warnung: »#pragma mark « wird ignoriert [-Wunknown-pragmas]
+   11 | #pragma mark - memory -
+      | 
+/home/timon/code/yaku_multitasking_threading/kernel/thirdparty/string/string.h:113: Warnung: »#pragma mark « wird ignoriert [-Wunknown-pragmas]
+  113 | #pragma mark - string -
+      | 
+../kernel/kernel.c: In Funktion »start«:
+../kernel/kernel.c:93:56: Warnung: Übergabe des Arguments 3 von »input_device_create_device« entfernt Kennzeichner »const« von Zeiger-Ziel-Typ [-Wdiscarded-qualifiers]
+   93 |     input_device_create_device("keyboard", "keyboard", keyboard_keymap,
+      |                                                        ^~~~~~~~~~~~~~~
+In Datei, eingebunden von ../kernel/kernel.c:1:
+/home/timon/code/yaku_multitasking_threading/kernel/drivers/input/input_device.h:29:65: Anmerkung: »char *« erwartet, aber Argument hat Typ »const char *«
+   29 | uint8_t input_device_create_device(char* name, char* type, char keymap[512],
+      |                                                            ~~~~~^~~~~~~~~~~
+../kernel/kernel.c:94:32: Warnung: Übergabe des Arguments 4 von »input_device_create_device« von inkompatiblem Zeigertyp [-Wincompatible-pointer-types]
+   94 |                                &keyboard_handler);
+      |                                ^~~~~~~~~~~~~~~~~
+      |                                |
+      |                                void (*)(char)
+/home/timon/code/yaku_multitasking_threading/kernel/drivers/input/input_device.h:30:43: Anmerkung: »void (*)(uint8_t)« {alias »void (*)(unsigned char)«} erwartet, aber Argument hat Typ »void (*)(char)«
+   30 |                                    void (*handler)(uint8_t));
+      |                                    ~~~~~~~^~~~~~~~~~~~~~~~~
+[9/263] Generating 'kernel/kernel.elf.p/serial.c.o'.
+[10/263] Generating 'kernel/kernel.elf.p/vga_text.c.o'.
+[11/263] Generating 'kernel/kernel.elf.p/rtc.c.o'.
+[12/263] Generating 'kernel/kernel.elf.p/ps2.c.o'.
+[13/263] Generating 'kernel/kernel.elf.p/isr.c.o'.
+../kernel/interrupts/isr.c: In Funktion »isr_irq1«:
+../kernel/interrupts/isr.c:73:21: Warnung: Variable »scan_code« wird nicht verwendet [-Wunused-variable]
+   73 |             uint8_t scan_code = io_inb(0x60);
+      |                     ^~~~~~~~~
+../kernel/interrupts/isr.c:76:21: Warnung: Variable »scan_code« wird nicht verwendet [-Wunused-variable]
+   76 |             uint8_t scan_code = io_inb(0x60);
+      |                     ^~~~~~~~~
+../kernel/interrupts/isr.c:65:30: Warnung: unverwendeter Parameter »ctx« [-Wunused-parameter]
+   65 | void isr_irq1(isr_context_t* ctx) {
+      |               ~~~~~~~~~~~~~~~^~~
+../kernel/interrupts/isr.c: In Funktion »isr_irq2«:
+../kernel/interrupts/isr.c:81:30: Warnung: unverwendeter Parameter »ctx« [-Wunused-parameter]
+   81 | void isr_irq2(isr_context_t* ctx) {}
+      |               ~~~~~~~~~~~~~~~^~~
+../kernel/interrupts/isr.c: In Funktion »isr_irq3«:
+../kernel/interrupts/isr.c:82:30: Warnung: unverwendeter Parameter »ctx« [-Wunused-parameter]
+   82 | void isr_irq3(isr_context_t* ctx) {}
+      |               ~~~~~~~~~~~~~~~^~~
+../kernel/interrupts/isr.c: In Funktion »isr_irq4«:
+../kernel/interrupts/isr.c:83:30: Warnung: unverwendeter Parameter »ctx« [-Wunused-parameter]
+   83 | void isr_irq4(isr_context_t* ctx) {}
+      |               ~~~~~~~~~~~~~~~^~~
+../kernel/interrupts/isr.c: In Funktion »isr_irq5«:
+../kernel/interrupts/isr.c:84:30: Warnung: unverwendeter Parameter »ctx« [-Wunused-parameter]
+   84 | void isr_irq5(isr_context_t* ctx) {}
+      |               ~~~~~~~~~~~~~~~^~~
+../kernel/interrupts/isr.c: In Funktion »isr_irq6«:
+../kernel/interrupts/isr.c:85:30: Warnung: unverwendeter Parameter »ctx« [-Wunused-parameter]
+   85 | void isr_irq6(isr_context_t* ctx) {}
+      |               ~~~~~~~~~~~~~~~^~~
+../kernel/interrupts/isr.c: In Funktion »isr_irq7«:
+../kernel/interrupts/isr.c:86:30: Warnung: unverwendeter Parameter »ctx« [-Wunused-parameter]
+   86 | void isr_irq7(isr_context_t* ctx) {}
+      |               ~~~~~~~~~~~~~~~^~~
+../kernel/interrupts/isr.c: In Funktion »isr_irq8«:
+../kernel/interrupts/isr.c:87:30: Warnung: unverwendeter Parameter »ctx« [-Wunused-parameter]
+   87 | void isr_irq8(isr_context_t* ctx) {}
+      |               ~~~~~~~~~~~~~~~^~~
+../kernel/interrupts/isr.c: In Funktion »isr_irq9«:
+../kernel/interrupts/isr.c:88:30: Warnung: unverwendeter Parameter »ctx« [-Wunused-parameter]
+   88 | void isr_irq9(isr_context_t* ctx) {}
+      |               ~~~~~~~~~~~~~~~^~~
+../kernel/interrupts/isr.c: In Funktion »isr_irq10«:
+../kernel/interrupts/isr.c:89:31: Warnung: unverwendeter Parameter »ctx« [-Wunused-parameter]
+   89 | void isr_irq10(isr_context_t* ctx) {}
+      |                ~~~~~~~~~~~~~~~^~~
+../kernel/interrupts/isr.c: In Funktion »isr_irq11«:
+../kernel/interrupts/isr.c:90:31: Warnung: unverwendeter Parameter »ctx« [-Wunused-parameter]
+   90 | void isr_irq11(isr_context_t* ctx) {}
+      |                ~~~~~~~~~~~~~~~^~~
+../kernel/interrupts/isr.c: In Funktion »isr_irq12«:
+../kernel/interrupts/isr.c:100:21: Warnung: Variable »scan_code« wird nicht verwendet [-Wunused-variable]
+  100 |             uint8_t scan_code = io_inb(0x60);
+      |                     ^~~~~~~~~
+../kernel/interrupts/isr.c:103:21: Warnung: Variable »scan_code« wird nicht verwendet [-Wunused-variable]
+  103 |             uint8_t scan_code = io_inb(0x60);
+      |                     ^~~~~~~~~
+../kernel/interrupts/isr.c:92:31: Warnung: unverwendeter Parameter »ctx« [-Wunused-parameter]
+   92 | void isr_irq12(isr_context_t* ctx) {
+      |                ~~~~~~~~~~~~~~~^~~
+../kernel/interrupts/isr.c: In Funktion »isr_irq13«:
+../kernel/interrupts/isr.c:107:31: Warnung: unverwendeter Parameter »ctx« [-Wunused-parameter]
+  107 | void isr_irq13(isr_context_t* ctx) {}
+      |                ~~~~~~~~~~~~~~~^~~
+../kernel/interrupts/isr.c: In Funktion »isr_irq14«:
+../kernel/interrupts/isr.c:108:31: Warnung: unverwendeter Parameter »ctx« [-Wunused-parameter]
+  108 | void isr_irq14(isr_context_t* ctx) {}
+      |                ~~~~~~~~~~~~~~~^~~
+../kernel/interrupts/isr.c: In Funktion »isr_irq15«:
+../kernel/interrupts/isr.c:109:31: Warnung: unverwendeter Parameter »ctx« [-Wunused-parameter]
+  109 | void isr_irq15(isr_context_t* ctx) {}
+      |                ~~~~~~~~~~~~~~~^~~
+[14/263] Generating 'kernel/kernel.elf.p/input_device.c.o'.
+In Datei, eingebunden von ../kernel/drivers/input/input_device.c:2:
+/home/timon/code/yaku_multitasking_threading/kernel/thirdparty/string/string.h:11: Warnung: »#pragma mark « wird ignoriert [-Wunknown-pragmas]
+   11 | #pragma mark - memory -
+      | 
+/home/timon/code/yaku_multitasking_threading/kernel/thirdparty/string/string.h:113: Warnung: »#pragma mark « wird ignoriert [-Wunknown-pragmas]
+  113 | #pragma mark - string -
+      | 
+[15/263] Generating 'kernel/kernel.elf.p/idt.c.o'.
+[16/263] Generating 'kernel/kernel.elf.p/pic.c.o'.
+[17/263] Generating 'kernel/kernel.elf.p/keyboard_keymap.c.o'.
+[18/263] Generating 'kernel/kernel.elf.p/keyboard_stringmap.c.o'.
+[19/263] Generating 'kernel/kernel.elf.p/input_event.c.o'.
+In Datei, eingebunden von ../kernel/lib/input/input_event.c:3:
+/home/timon/code/yaku_multitasking_threading/kernel/thirdparty/string/string.h:11: Warnung: »#pragma mark « wird ignoriert [-Wunknown-pragmas]
+   11 | #pragma mark - memory -
+      | 
+/home/timon/code/yaku_multitasking_threading/kernel/thirdparty/string/string.h:113: Warnung: »#pragma mark « wird ignoriert [-Wunknown-pragmas]
+  113 | #pragma mark - string -
+      | 
+[20/263] Generating 'kernel/kernel.elf.p/keyboard_handler.c.o'.
+[21/263] Generating 'kernel/kernel.elf.p/mouse_handler.c.o'.
+../kernel/lib/input/mouse_handler.c: In Funktion »mouse_handler«:
+../kernel/lib/input/mouse_handler.c:105:39: Warnung: implizite Umwandlung von »enum <anonym>« nach »input_event_mouse_button_kind_t« [-Wenum-conversion]
+  105 |             event.mouse_button.s_kind = MOUSE_WHEEL_DOWN;
+      |                                       ^
+../kernel/lib/input/mouse_handler.c:110:39: Warnung: implizite Umwandlung von »enum <anonym>« nach »input_event_mouse_button_kind_t« [-Wenum-conversion]
+  110 |             event.mouse_button.s_kind = MOUSE_WHEEL_UP;
+      |                                       ^
+[22/263] Generating 'kernel/kernel.elf.p/datetime.c.o'.
+In Datei, eingebunden von ../kernel/lib/datetime.c:5:
+/home/timon/code/yaku_multitasking_threading/kernel/thirdparty/string/string.h:11: Warnung: »#pragma mark « wird ignoriert [-Wunknown-pragmas]
+   11 | #pragma mark - memory -
+      | 
+/home/timon/code/yaku_multitasking_threading/kernel/thirdparty/string/string.h:113: Warnung: »#pragma mark « wird ignoriert [-Wunknown-pragmas]
+  113 | #pragma mark - string -
+      | 
+[23/263] Generating 'kernel/kernel.elf.p/scheduler.c.o'.
+[24/263] Generating 'kernel/kernel.elf.p/pmm.c.o'.
+In Datei, eingebunden von ../kernel/memory/pmm.c:5:
+/home/timon/code/yaku_multitasking_threading/kernel/thirdparty/string/string.h:11: Warnung: »#pragma mark « wird ignoriert [-Wunknown-pragmas]
+   11 | #pragma mark - memory -
+      | 
+/home/timon/code/yaku_multitasking_threading/kernel/thirdparty/string/string.h:113: Warnung: »#pragma mark « wird ignoriert [-Wunknown-pragmas]
+  113 | #pragma mark - string -
+      | 
+[25/263] Generating 'kernel/kernel.elf.p/task.c.o'.
+In Datei, eingebunden von ../kernel/multitasking/task.h:2,
+                 von ../kernel/multitasking/task.c:1:
+/home/timon/code/yaku_multitasking_threading/kernel/multitasking/scheduler.h:10:37: Warnung: das innerhalb der Parameterliste deklarierte »struct task« ist außerhalb dieser Definition oder Deklaration nicht sichtbar
+   10 | void scheduler_schedule_task(struct task* task);
+      |                                     ^~~~
+In Datei, eingebunden von ../kernel/multitasking/task.c:6:
+/home/timon/code/yaku_multitasking_threading/kernel/thirdparty/string/string.h:11: Warnung: »#pragma mark « wird ignoriert [-Wunknown-pragmas]
+   11 | #pragma mark - memory -
+      | 
+/home/timon/code/yaku_multitasking_threading/kernel/thirdparty/string/string.h:113: Warnung: »#pragma mark « wird ignoriert [-Wunknown-pragmas]
+  113 | #pragma mark - string -
+      | 
+../kernel/multitasking/task.c: In Funktion »task_add«:
+../kernel/multitasking/task.c:17:9: Warnung: »return« ohne Wert in nicht-void zurückgebender Funktion [-Wreturn-type]
+   17 |         return;
+      |         ^~~~~~
+../kernel/multitasking/task.c:11:9: Anmerkung: hier deklariert
+   11 | task_t* task_add(void* function, enum task_priority priority, uint32_t parent_pid) {
+      |         ^~~~~~~~
+../kernel/multitasking/task.c:28:29: Warnung: Übergabe des Arguments 1 von »scheduler_schedule_task« von inkompatiblem Zeigertyp [-Wincompatible-pointer-types]
+   28 |     scheduler_schedule_task(task);
+      |                             ^~~~
+      |                             |
+      |                             task_t * {alias struct task *}
+/home/timon/code/yaku_multitasking_threading/kernel/multitasking/scheduler.h:10:43: Anmerkung: »struct task *« erwartet, aber Argument hat Typ »task_t *« {alias »struct task *«}
+   10 | void scheduler_schedule_task(struct task* task);
+      |                              ~~~~~~~~~~~~~^~~~
+../kernel/multitasking/task.c: In Funktion »task_terminate«:
+../kernel/multitasking/task.c:54:5: Warnung: Implizite Deklaration der Funktion »free« [-Wimplicit-function-declaration]
+   54 |     free(task, sizeof(task_t) / 4096); // sizeof(task_t) is 8192 bytes
+      |     ^~~~
+../kernel/multitasking/task.c:7:1: Anmerkung: »free« ist im Header »<stdlib.h>« definiert; haben Sie vergessen, »#include <stdlib.h>« zu schreiben?
+    6 | #include <thirdparty/string/string.h>
+  +++ |+#include <stdlib.h>
+    7 | 
+../kernel/multitasking/task.c: In Funktion »task_create«:
+../kernel/multitasking/task.c:140:33: Warnung: Implizite Deklaration der Funktion »malloc« [-Wimplicit-function-declaration]
+  140 |     task_t* new_task = (task_t*)malloc(sizeof(task_t) / 4096); // sizeof(task_t) = 8192
+      |                                 ^~~~~~
+../kernel/multitasking/task.c:140:33: Anmerkung: »malloc« ist im Header »<stdlib.h>« definiert; haben Sie vergessen, »#include <stdlib.h>« zu schreiben?
+../kernel/multitasking/task.c:140:24: Warnung: Typkonvertierung in Zeiger von Ganzzahl anderer Breite [-Wint-to-pointer-cast]
+  140 |     task_t* new_task = (task_t*)malloc(sizeof(task_t) / 4096); // sizeof(task_t) = 8192
+      |                        ^
+../kernel/multitasking/task.c:148:42: Warnung: Zuweisung an »uint64_t« {alias »long unsigned int«} aus »void (*)()« wandelt einen Zeiger in eine Ganzzahl um, ohne explizite Typkonvertierung [-Wint-conversion]
+  148 |     new_task->stack[TASK_STACK_SIZE - 1] = &task_exit;
+      |                                          ^
+../kernel/multitasking/task.c:150:42: Warnung: Zuweisung an »uint64_t« {alias »long unsigned int«} aus »uint64_t *« {alias »long unsigned int *«} wandelt einen Zeiger in eine Ganzzahl um, ohne explizite Typkonvertierung [-Wint-conversion]
+  150 |     new_task->stack[TASK_STACK_SIZE - 3] =
+      |                                          ^
+../kernel/multitasking/task.c:154:42: Warnung: Zuweisung an »uint64_t« {alias »long unsigned int«} aus »void *« wandelt einen Zeiger in eine Ganzzahl um, ohne explizite Typkonvertierung [-Wint-conversion]
+  154 |     new_task->stack[TASK_STACK_SIZE - 6] = function; // return address -> rip
+      |                                          ^
+../kernel/multitasking/task.c:155:42: Warnung: Zuweisung an »uint64_t« {alias »long unsigned int«} aus »uint64_t *« {alias »long unsigned int *«} wandelt einen Zeiger in eine Ganzzahl um, ohne explizite Typkonvertierung [-Wint-conversion]
+  155 |     new_task->stack[TASK_STACK_SIZE - 7] =
+      |                                          ^
+[26/263] Generating 'kernel/kernel.elf.p/abs.c.o'.
+[27/263] Generating 'kernel/kernel.elf.p/scalbnf.c.o'.
+[28/263] Generating 'kernel/kernel.elf.p/atan2.c.o'.
+../kernel/thirdparty/math/atan2.c: In Funktion »atan2«:
+../kernel/thirdparty/math/atan2.c:55:16: Warnung: Klammern um Arithmetik in Operand von »|« empfohlen [-Wparentheses]
+   55 |         if ((ix-0x3ff00000 | lx) == 0)  /* x = 1.0 */
+      |              ~~^~~~~~~~~~~
+[29/263] Generating 'kernel/kernel.elf.p/fabsl.c.o'.
+[30/263] Generating 'kernel/kernel.elf.p/ldexpl.c.o'.
+[31/263] Generating 'kernel/kernel.elf.p/nexttowardl.c.o'.
+[32/263] Generating 'kernel/kernel.elf.p/__expo2.c.o'.
+[33/263] Generating 'kernel/kernel.elf.p/tanh.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/tanh.c:1:
+../kernel/thirdparty/math/tanh.c: In Funktion »tanh«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/tanh.c:41:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   41 |                 FORCE_EVAL((float)x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/tanh.c:41:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   41 |                 FORCE_EVAL((float)x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/tanh.c:41:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   41 |                 FORCE_EVAL((float)x);
+      |                 ^~~~~~~~~~
+[34/263] Generating 'kernel/kernel.elf.p/frexpl.c.o'.
+[35/263] Generating 'kernel/kernel.elf.p/log2f.c.o'.
+[36/263] Generating 'kernel/kernel.elf.p/sin.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/sin.c:43:
+../kernel/thirdparty/math/sin.c: In Funktion »sin«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/sin.c:59:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   59 |                         FORCE_EVAL(ix < 0x00100000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/sin.c:59:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   59 |                         FORCE_EVAL(ix < 0x00100000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/sin.c:59:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   59 |                         FORCE_EVAL(ix < 0x00100000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+[37/263] Generating 'kernel/kernel.elf.p/remquof.c.o'.
+[38/263] Generating 'kernel/kernel.elf.p/atanl.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/atanl.c:17:
+../kernel/thirdparty/math/atanl.c: In Funktion »atanl«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/atanl.c:149:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  149 |                                 FORCE_EVAL((float)x);
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/atanl.c:149:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  149 |                                 FORCE_EVAL((float)x);
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/atanl.c:149:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  149 |                                 FORCE_EVAL((float)x);
+      |                                 ^~~~~~~~~~
+[39/263] Generating 'kernel/kernel.elf.p/sincos.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/sincos.c:14:
+../kernel/thirdparty/math/sincos.c: In Funktion »sincos«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/sincos.c:30:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   30 |                         FORCE_EVAL(ix < 0x00100000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/sincos.c:30:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   30 |                         FORCE_EVAL(ix < 0x00100000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/sincos.c:30:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   30 |                         FORCE_EVAL(ix < 0x00100000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+[40/263] Generating 'kernel/kernel.elf.p/printf.c.o'.
+[41/263] Generating 'kernel/kernel.elf.p/sincosf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/sincosf.c:18:
+../kernel/thirdparty/math/sincosf.c: In Funktion »sincosf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/sincosf.c:43:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   43 |                         FORCE_EVAL(ix < 0x00100000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/sincosf.c:43:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   43 |                         FORCE_EVAL(ix < 0x00100000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/sincosf.c:43:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   43 |                         FORCE_EVAL(ix < 0x00100000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+[42/263] Generating 'kernel/kernel.elf.p/llrintf.c.o'.
+[43/263] Generating 'kernel/kernel.elf.p/atan2l.c.o'.
+[44/263] Generating 'kernel/kernel.elf.p/__signbitf.c.o'.
+[45/263] Generating 'kernel/kernel.elf.p/ldexp.c.o'.
+[46/263] Generating 'kernel/kernel.elf.p/j0f.c.o'.
+[47/263] Generating 'kernel/kernel.elf.p/llrint.c.o'.
+[48/263] Generating 'kernel/kernel.elf.p/powf.c.o'.
+../kernel/thirdparty/math/powf.c: In Funktion »powf«:
+../kernel/thirdparty/math/powf.c:222:20: Warnung: Vergleich von Ganzzahlausdrücken, von denen nur einer ein Vorzeichen hat: »int32_t« {alias »int«} und »unsigned int« [-Wsign-compare]
+  222 |         else if (j == 0xc3160000) {  /* z == -150 */
+      |                    ^~
+[49/263] Generating 'kernel/kernel.elf.p/fabsf.c.o'.
+[50/263] Generating 'kernel/kernel.elf.p/fminl.c.o'.
+[51/263] Generating 'kernel/kernel.elf.p/llround.c.o'.
+[52/263] Generating 'kernel/kernel.elf.p/__signbitl.c.o'.
+[53/263] Generating 'kernel/kernel.elf.p/log1pf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/log1pf.c:13:
+../kernel/thirdparty/math/log1pf.c: In Funktion »log1pf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/log1pf.c:42:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   42 |                                 FORCE_EVAL(x*x);
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/log1pf.c:42:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   42 |                                 FORCE_EVAL(x*x);
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/log1pf.c:42:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   42 |                                 FORCE_EVAL(x*x);
+      |                                 ^~~~~~~~~~
+[54/263] Generating 'kernel/kernel.elf.p/fdimf.c.o'.
+[55/263] Generating 'kernel/kernel.elf.p/ilogb.c.o'.
+../kernel/thirdparty/math/ilogb.c: In Funktion »ilogb«:
+../kernel/thirdparty/math/ilogb.c:6: Warnung: »#pragma STDC FENV_ACCESS« wird ignoriert [-Wunknown-pragmas]
+    6 |         #pragma STDC FENV_ACCESS ON
+      | 
+In Datei, eingebunden von ../kernel/thirdparty/math/ilogb.c:2:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/ilogb.c:14:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   14 |                         FORCE_EVAL(0/0.0f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/ilogb.c:14:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   14 |                         FORCE_EVAL(0/0.0f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/ilogb.c:14:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   14 |                         FORCE_EVAL(0/0.0f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/ilogb.c:22:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   22 |                 FORCE_EVAL(0/0.0f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/ilogb.c:22:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   22 |                 FORCE_EVAL(0/0.0f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/ilogb.c:22:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   22 |                 FORCE_EVAL(0/0.0f);
+      |                 ^~~~~~~~~~
+[56/263] Generating 'kernel/kernel.elf.p/tan.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/tan.c:42:
+../kernel/thirdparty/math/tan.c: In Funktion »tan«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/tan.c:57:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   57 |                         FORCE_EVAL(ix < 0x00100000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/tan.c:57:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   57 |                         FORCE_EVAL(ix < 0x00100000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/tan.c:57:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   57 |                         FORCE_EVAL(ix < 0x00100000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+[57/263] Generating 'kernel/kernel.elf.p/__rem_pio2.c.o'.
+[58/263] Generating 'kernel/kernel.elf.p/nexttowardf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/nexttowardf.c:1:
+../kernel/thirdparty/math/nexttowardf.c: In Funktion »nexttowardf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/nexttowardf.c:30:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   30 |                 FORCE_EVAL(x+x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/nexttowardf.c:30:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   30 |                 FORCE_EVAL(x+x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/nexttowardf.c:30:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   30 |                 FORCE_EVAL(x+x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/nexttowardf.c:33:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   33 |                 FORCE_EVAL(x*x + ux.f*ux.f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/nexttowardf.c:33:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   33 |                 FORCE_EVAL(x*x + ux.f*ux.f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/nexttowardf.c:33:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   33 |                 FORCE_EVAL(x*x + ux.f*ux.f);
+      |                 ^~~~~~~~~~
+[59/263] Generating 'kernel/kernel.elf.p/fmodl.c.o'.
+[60/263] Generating 'kernel/kernel.elf.p/tgammaf.c.o'.
+[61/263] Generating 'kernel/kernel.elf.p/jnf.c.o'.
+[62/263] Generating 'kernel/kernel.elf.p/log.c.o'.
+[63/263] Generating 'kernel/kernel.elf.p/asinl.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/asinl.c:17:
+../kernel/thirdparty/math/asinl.c: In Funktion »asinl«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/asinl.c:50:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   50 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/asinl.c:50:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   50 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/asinl.c:50:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   50 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+[64/263] Generating 'kernel/kernel.elf.p/__fpclassify.c.o'.
+[65/263] Generating 'kernel/kernel.elf.p/atanf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/atanf.c:17:
+../kernel/thirdparty/math/atanf.c: In Funktion »atanf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/atanf.c:60:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   60 |                                 FORCE_EVAL(x*x);
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/atanf.c:60:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   60 |                                 FORCE_EVAL(x*x);
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/atanf.c:60:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   60 |                                 FORCE_EVAL(x*x);
+      |                                 ^~~~~~~~~~
+[66/263] Generating 'kernel/kernel.elf.p/__tandf.c.o'.
+[67/263] Generating 'kernel/kernel.elf.p/fmaxf.c.o'.
+[68/263] Generating 'kernel/kernel.elf.p/log10f.c.o'.
+[69/263] Generating 'kernel/kernel.elf.p/tgamma.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/tgamma.c:25:
+../kernel/thirdparty/math/tgamma.c: In Funktion »tgamma«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/tgamma.c:137:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  137 |                         FORCE_EVAL((float)(0x1p-126/x));
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/tgamma.c:137:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  137 |                         FORCE_EVAL((float)(0x1p-126/x));
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/tgamma.c:137:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  137 |                         FORCE_EVAL((float)(0x1p-126/x));
+      |                         ^~~~~~~~~~
+[70/263] Generating 'kernel/kernel.elf.p/expm1l.c.o'.
+[71/263] Generating 'kernel/kernel.elf.p/atanhl.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/atanhl.c:1:
+../kernel/thirdparty/math/atanhl.c: In Funktion »atanhl«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/atanhl.c:24:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   24 |                                 FORCE_EVAL((float)x);
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/atanhl.c:24:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   24 |                                 FORCE_EVAL((float)x);
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/atanhl.c:24:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   24 |                                 FORCE_EVAL((float)x);
+      |                                 ^~~~~~~~~~
+[72/263] Generating 'kernel/kernel.elf.p/floor.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/floor.c:1:
+../kernel/thirdparty/math/floor.c: In Funktion »floor«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/floor.c:25:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   25 |                 FORCE_EVAL(y);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/floor.c:25:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   25 |                 FORCE_EVAL(y);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/floor.c:25:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   25 |                 FORCE_EVAL(y);
+      |                 ^~~~~~~~~~
+[73/263] Generating 'kernel/kernel.elf.p/__rem_pio2l.c.o'.
+[74/263] Generating 'kernel/kernel.elf.p/__cosl.c.o'.
+[75/263] Generating 'kernel/kernel.elf.p/floorf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/floorf.c:1:
+../kernel/thirdparty/math/floorf.c: In Funktion »floorf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/floorf.c:15:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   15 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/floorf.c:15:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   15 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/floorf.c:15:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   15 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/floorf.c:20:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   20 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/floorf.c:20:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   20 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/floorf.c:20:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   20 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+[76/263] Generating 'kernel/kernel.elf.p/__rem_pio2_large.c.o'.
+[77/263] Generating 'kernel/kernel.elf.p/fmin.c.o'.
+[78/263] Generating 'kernel/kernel.elf.p/rint.c.o'.
+[79/263] Generating 'kernel/kernel.elf.p/sinf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/sinf.c:17:
+../kernel/thirdparty/math/sinf.c: In Funktion »sinf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/sinf.c:39:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   39 |                         FORCE_EVAL(ix < 0x00800000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/sinf.c:39:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   39 |                         FORCE_EVAL(ix < 0x00800000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/sinf.c:39:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   39 |                         FORCE_EVAL(ix < 0x00800000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+[80/263] Generating 'kernel/kernel.elf.p/sincosl.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/sincosl.c:2:
+../kernel/thirdparty/math/sincosl.c: In Funktion »sincosl«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/sincosl.c:27:42: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   27 |                         if (u.i.se == 0) FORCE_EVAL(x*0x1p-120f);
+      |                                          ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/sincosl.c:27:42: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   27 |                         if (u.i.se == 0) FORCE_EVAL(x*0x1p-120f);
+      |                                          ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/sincosl.c:27:42: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   27 |                         if (u.i.se == 0) FORCE_EVAL(x*0x1p-120f);
+      |                                          ^~~~~~~~~~
+[81/263] Generating 'kernel/kernel.elf.p/asinh.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/asinh.c:1:
+../kernel/thirdparty/math/asinh.c: In Funktion »asinh«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/asinh.c:25:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   25 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/asinh.c:25:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   25 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/asinh.c:25:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   25 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+[82/263] Generating 'kernel/kernel.elf.p/fmax.c.o'.
+[83/263] Generating 'kernel/kernel.elf.p/__cos.c.o'.
+[84/263] Generating 'kernel/kernel.elf.p/acoshf.c.o'.
+[85/263] Generating 'kernel/kernel.elf.p/cosh.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/cosh.c:1:
+../kernel/thirdparty/math/cosh.c: In Funktion »cosh«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/cosh.c:22:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   22 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/cosh.c:22:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   22 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/cosh.c:22:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   22 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+[86/263] Generating 'kernel/kernel.elf.p/fma.c.o'.
+../kernel/thirdparty/math/fma.c: In Funktion »fma«:
+../kernel/thirdparty/math/fma.c:55: Warnung: »#pragma STDC FENV_ACCESS« wird ignoriert [-Wunknown-pragmas]
+   55 |         #pragma STDC FENV_ACCESS ON
+      | 
+../kernel/thirdparty/math/fma.c:83:39: Warnung: Klammern um »-« innerhalb von »>>« empfohlen [-Wparentheses]
+   83 |                         zhi = nz.m>>64-d;
+      |                                     ~~^~
+../kernel/thirdparty/math/fma.c:91:46: Warnung: Klammern um »-« innerhalb von »<<« [-Wparentheses]
+   91 |                                 rlo = rhi<<64-d | rlo>>d | !!(rlo<<64-d);
+      |                                            ~~^~
+../kernel/thirdparty/math/fma.c:91:70: Warnung: Klammern um »-« innerhalb von »<<« [-Wparentheses]
+   91 |                                 rlo = rhi<<64-d | rlo>>d | !!(rlo<<64-d);
+      |                                                                    ~~^~
+../kernel/thirdparty/math/fma.c:104:52: Warnung: Klammern um »-« innerhalb von »<<« [-Wparentheses]
+  104 |                         zlo = nz.m>>d | !!(nz.m<<64-d);
+      |                                                  ~~^~
+../kernel/thirdparty/math/fma.c:136:39: Warnung: Klammern um »-« innerhalb von »>>« empfohlen [-Wparentheses]
+  136 |                 rhi = rhi<<d | rlo>>64-d | !!(rlo<<d);
+      |                                     ~~^~
+../kernel/thirdparty/math/fma.c:187:50: Warnung: Klammern um »-« innerhalb von »<<« [-Wparentheses]
+  187 |                         i = ( rhi>>d | !!(rhi<<64-d) ) << d;
+      |                                                ~~^~
+[87/263] Generating 'kernel/kernel.elf.p/logbl.c.o'.
+[88/263] Generating 'kernel/kernel.elf.p/nexttoward.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/nexttoward.c:1:
+../kernel/thirdparty/math/nexttoward.c: In Funktion »nexttoward«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/nexttoward.c:36:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   36 |                 FORCE_EVAL(x+x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/nexttoward.c:36:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   36 |                 FORCE_EVAL(x+x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/nexttoward.c:36:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   36 |                 FORCE_EVAL(x+x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/nexttoward.c:39:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   39 |                 FORCE_EVAL(x*x + ux.f*ux.f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/nexttoward.c:39:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   39 |                 FORCE_EVAL(x*x + ux.f*ux.f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/nexttoward.c:39:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   39 |                 FORCE_EVAL(x*x + ux.f*ux.f);
+      |                 ^~~~~~~~~~
+[89/263] Generating 'kernel/kernel.elf.p/__fpclassifyl.c.o'.
+[90/263] Generating 'kernel/kernel.elf.p/trunc.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/trunc.c:1:
+../kernel/thirdparty/math/trunc.c: In Funktion »trunc«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/trunc.c:16:9: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   16 |         FORCE_EVAL(x + 0x1p120f);
+      |         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/trunc.c:16:9: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   16 |         FORCE_EVAL(x + 0x1p120f);
+      |         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/trunc.c:16:9: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   16 |         FORCE_EVAL(x + 0x1p120f);
+      |         ^~~~~~~~~~
+[91/263] Generating 'kernel/kernel.elf.p/coshl.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/coshl.c:1:
+../kernel/thirdparty/math/coshl.c: In Funktion »coshl«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/coshl.c:24:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   24 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/coshl.c:24:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   24 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/coshl.c:24:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   24 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+[92/263] Generating 'kernel/kernel.elf.p/remainder.c.o'.
+../kernel/thirdparty/math/remainder.c:11:1: Warnung: Attribut-Direktive »drem« ignoriert [-Wattributes]
+   11 | weak_alias(remainder, drem);
+      | ^~~~~~~~~~
+[93/263] Generating 'kernel/kernel.elf.p/__invtrigl.c.o'.
+[94/263] Generating 'kernel/kernel.elf.p/tanl.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/tanl.c:1:
+../kernel/thirdparty/math/tanl.c: In Funktion »tanl«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/tanl.c:21:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   21 |                         FORCE_EVAL(u.i.se == 0 ? x*0x1p-120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/tanl.c:21:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   21 |                         FORCE_EVAL(u.i.se == 0 ? x*0x1p-120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/tanl.c:21:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   21 |                         FORCE_EVAL(u.i.se == 0 ? x*0x1p-120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+[95/263] Generating 'kernel/kernel.elf.p/modff.c.o'.
+[96/263] Generating 'kernel/kernel.elf.p/atan2f.c.o'.
+[97/263] Generating 'kernel/kernel.elf.p/scalblnf.c.o'.
+[98/263] Generating 'kernel/kernel.elf.p/ldexpf.c.o'.
+[99/263] Generating 'kernel/kernel.elf.p/logf.c.o'.
+[100/263] Generating 'kernel/kernel.elf.p/nan.c.o'.
+../kernel/thirdparty/math/nan.c: In Funktion »nan«:
+../kernel/thirdparty/math/nan.c:3:24: Warnung: unverwendeter Parameter »s« [-Wunused-parameter]
+    3 | double nan(const char *s)
+      |            ~~~~~~~~~~~~^
+[101/263] Generating 'kernel/kernel.elf.p/log1pl.c.o'.
+[102/263] Generating 'kernel/kernel.elf.p/__sindf.c.o'.
+[103/263] Generating 'kernel/kernel.elf.p/sinl.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/sinl.c:1:
+../kernel/thirdparty/math/sinl.c: In Funktion »sinl«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/sinl.c:21:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   21 |                         FORCE_EVAL(u.i.se == 0 ? x*0x1p-120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/sinl.c:21:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   21 |                         FORCE_EVAL(u.i.se == 0 ? x*0x1p-120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/sinl.c:21:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   21 |                         FORCE_EVAL(u.i.se == 0 ? x*0x1p-120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+[104/263] Generating 'kernel/kernel.elf.p/log1p.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/log1p.c:56:
+../kernel/thirdparty/math/log1p.c: In Funktion »log1p«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/log1p.c:87:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   87 |                                 FORCE_EVAL((float)x);
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/log1p.c:87:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   87 |                                 FORCE_EVAL((float)x);
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/log1p.c:87:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   87 |                                 FORCE_EVAL((float)x);
+      |                                 ^~~~~~~~~~
+[105/263] Generating 'kernel/kernel.elf.p/exp10l.c.o'.
+../kernel/thirdparty/math/exp10l.c:34:1: Warnung: Attribut-Direktive »pow10l« ignoriert [-Wattributes]
+   34 | weak_alias(exp10l, pow10l);
+      | ^~~~~~~~~~
+[106/263] Generating 'kernel/kernel.elf.p/expf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/expf.c:16:
+../kernel/thirdparty/math/expf.c: In Funktion »expf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/expf.c:51:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   51 |                         FORCE_EVAL(-0x1p-149f/x);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/expf.c:51:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   51 |                         FORCE_EVAL(-0x1p-149f/x);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/expf.c:51:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   51 |                         FORCE_EVAL(-0x1p-149f/x);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/expf.c:72:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   72 |                 FORCE_EVAL(0x1p127f + x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/expf.c:72:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   72 |                 FORCE_EVAL(0x1p127f + x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/expf.c:72:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   72 |                 FORCE_EVAL(0x1p127f + x);
+      |                 ^~~~~~~~~~
+[107/263] Generating 'kernel/kernel.elf.p/fmodf.c.o'.
+[108/263] Generating 'kernel/kernel.elf.p/logb.c.o'.
+[109/263] Generating 'kernel/kernel.elf.p/expm1.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/expm1.c:107:
+../kernel/thirdparty/math/expm1.c: In Funktion »expm1«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/expm1.c:162:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  162 |                         FORCE_EVAL((float)x);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/expm1.c:162:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  162 |                         FORCE_EVAL((float)x);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/expm1.c:162:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  162 |                         FORCE_EVAL((float)x);
+      |                         ^~~~~~~~~~
+[110/263] Generating 'kernel/kernel.elf.p/__tanl.c.o'.
+[111/263] Generating 'kernel/kernel.elf.p/nanf.c.o'.
+../kernel/thirdparty/math/nanf.c: In Funktion »nanf«:
+../kernel/thirdparty/math/nanf.c:3:24: Warnung: unverwendeter Parameter »s« [-Wunused-parameter]
+    3 | float nanf(const char *s)
+      |            ~~~~~~~~~~~~^
+[112/263] Generating 'kernel/kernel.elf.p/fabs.c.o'.
+[113/263] Generating 'kernel/kernel.elf.p/__rem_pio2f.c.o'.
+[114/263] Generating 'kernel/kernel.elf.p/nextafterf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/nextafterf.c:1:
+../kernel/thirdparty/math/nextafterf.c: In Funktion »nextafterf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/nextafterf.c:25:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   25 |                 FORCE_EVAL(x+x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/nextafterf.c:25:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   25 |                 FORCE_EVAL(x+x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/nextafterf.c:25:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   25 |                 FORCE_EVAL(x+x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/nextafterf.c:28:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   28 |                 FORCE_EVAL(x*x + ux.f*ux.f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/nextafterf.c:28:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   28 |                 FORCE_EVAL(x*x + ux.f*ux.f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/nextafterf.c:28:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   28 |                 FORCE_EVAL(x*x + ux.f*ux.f);
+      |                 ^~~~~~~~~~
+[115/263] Generating 'kernel/kernel.elf.p/fdim.c.o'.
+[116/263] Generating 'kernel/kernel.elf.p/expm1f.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/expm1f.c:16:
+../kernel/thirdparty/math/expm1f.c: In Funktion »expm1f«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/expm1f.c:72:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   72 |                         FORCE_EVAL(x*x);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/expm1f.c:72:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   72 |                         FORCE_EVAL(x*x);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/expm1f.c:72:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   72 |                         FORCE_EVAL(x*x);
+      |                         ^~~~~~~~~~
+[117/263] Generating 'kernel/kernel.elf.p/jn.c.o'.
+[118/263] Generating 'kernel/kernel.elf.p/__signbit.c.o'.
+[119/263] Generating 'kernel/kernel.elf.p/remquo.c.o'.
+[120/263] Generating 'kernel/kernel.elf.p/j1.c.o'.
+[121/263] Generating 'kernel/kernel.elf.p/scalbn.c.o'.
+[122/263] Generating 'kernel/kernel.elf.p/sqrt.c.o'.
+../kernel/thirdparty/math/sqrt.c: In Funktion »sqrt«:
+../kernel/thirdparty/math/sqrt.c:149:39: Warnung: Vergleich von Ganzzahlausdrücken, von denen nur einer ein Vorzeichen hat: »uint32_t« {alias »unsigned int«} und »int32_t« {alias »int«} [-Wsign-compare]
+  149 |                         if ((t1&sign) == sign && (s1&sign) == 0)
+      |                                       ^~
+[123/263] Generating 'kernel/kernel.elf.p/j1f.c.o'.
+[124/263] Generating 'kernel/kernel.elf.p/rintf.c.o'.
+[125/263] Generating 'kernel/kernel.elf.p/sqrtl.c.o'.
+[126/263] Generating 'kernel/kernel.elf.p/frexpf.c.o'.
+[127/263] Generating 'kernel/kernel.elf.p/tanhl.c.o'.
+[128/263] Generating 'kernel/kernel.elf.p/powl.c.o'.
+[129/263] Generating 'kernel/kernel.elf.p/ceill.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/ceill.c:1:
+../kernel/thirdparty/math/ceill.c: In Funktion »ceill«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/ceill.c:27:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   27 |                 FORCE_EVAL(y);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/ceill.c:27:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   27 |                 FORCE_EVAL(y);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/ceill.c:27:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   27 |                 FORCE_EVAL(y);
+      |                 ^~~~~~~~~~
+[130/263] Generating 'kernel/kernel.elf.p/strrchr.c.o'.
+[131/263] Generating 'kernel/kernel.elf.p/lroundf.c.o'.
+[132/263] Generating 'kernel/kernel.elf.p/signgam.c.o'.
+../kernel/thirdparty/math/signgam.c:7:1: Warnung: Attribut-Direktive »signgam« ignoriert [-Wattributes]
+    7 | weak_alias(__signgam, signgam);
+      | ^~~~~~~~~~
+[133/263] Generating 'kernel/kernel.elf.p/modf.c.o'.
+[134/263] Generating 'kernel/kernel.elf.p/scalbf.c.o'.
+[135/263] Generating 'kernel/kernel.elf.p/lroundl.c.o'.
+[136/263] Generating 'kernel/kernel.elf.p/fdiml.c.o'.
+[137/263] Generating 'kernel/kernel.elf.p/nextafter.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/nextafter.c:1:
+../kernel/thirdparty/math/nextafter.c: In Funktion »nextafter«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/nextafter.c:26:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   26 |                 FORCE_EVAL(x+x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/nextafter.c:26:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   26 |                 FORCE_EVAL(x+x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/nextafter.c:26:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   26 |                 FORCE_EVAL(x+x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/nextafter.c:29:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   29 |                 FORCE_EVAL(x*x + ux.f*ux.f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/nextafter.c:29:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   29 |                 FORCE_EVAL(x*x + ux.f*ux.f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/nextafter.c:29:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   29 |                 FORCE_EVAL(x*x + ux.f*ux.f);
+      |                 ^~~~~~~~~~
+[138/263] Generating 'kernel/kernel.elf.p/cbrtf.c.o'.
+[139/263] Generating 'kernel/kernel.elf.p/exp2l.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/exp2l.c:28:
+../kernel/thirdparty/math/exp2l.c: In Funktion »exp2l«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/exp2l.c:218:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  218 |                                 FORCE_EVAL((float)(-0x1p-149/x));
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/exp2l.c:218:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  218 |                                 FORCE_EVAL((float)(-0x1p-149/x));
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/exp2l.c:218:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  218 |                                 FORCE_EVAL((float)(-0x1p-149/x));
+      |                                 ^~~~~~~~~~
+[140/263] Generating 'kernel/kernel.elf.p/cbrtl.c.o'.
+[141/263] Generating 'kernel/kernel.elf.p/significandf.c.o'.
+[142/263] Generating 'kernel/kernel.elf.p/lround.c.o'.
+[143/263] Generating 'kernel/kernel.elf.p/pow.c.o'.
+../kernel/thirdparty/math/pow.c: In Funktion »pow«:
+../kernel/thirdparty/math/pow.c:133:49: Warnung: Vergleich von Ganzzahlausdrücken, von denen nur einer ein Vorzeichen hat: »uint32_t« {alias »unsigned int«} und »int32_t« {alias »int«} [-Wsign-compare]
+  133 |                                 if ((j<<(20-k)) == iy)
+      |                                                 ^~
+[144/263] Generating 'kernel/kernel.elf.p/__polevll.c.o'.
+[145/263] Generating 'kernel/kernel.elf.p/rintl.c.o'.
+[146/263] Generating 'kernel/kernel.elf.p/floorl.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/floorl.c:1:
+../kernel/thirdparty/math/floorl.c: In Funktion »floorl«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/floorl.c:27:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   27 |                 FORCE_EVAL(y);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/floorl.c:27:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   27 |                 FORCE_EVAL(y);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/floorl.c:27:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   27 |                 FORCE_EVAL(y);
+      |                 ^~~~~~~~~~
+[147/263] Generating 'kernel/kernel.elf.p/ilogbf.c.o'.
+../kernel/thirdparty/math/ilogbf.c: In Funktion »ilogbf«:
+../kernel/thirdparty/math/ilogbf.c:6: Warnung: »#pragma STDC FENV_ACCESS« wird ignoriert [-Wunknown-pragmas]
+    6 |         #pragma STDC FENV_ACCESS ON
+      | 
+In Datei, eingebunden von ../kernel/thirdparty/math/ilogbf.c:2:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/ilogbf.c:14:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   14 |                         FORCE_EVAL(0/0.0f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/ilogbf.c:14:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   14 |                         FORCE_EVAL(0/0.0f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/ilogbf.c:14:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   14 |                         FORCE_EVAL(0/0.0f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/ilogbf.c:22:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   22 |                 FORCE_EVAL(0/0.0f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/ilogbf.c:22:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   22 |                 FORCE_EVAL(0/0.0f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/ilogbf.c:22:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   22 |                 FORCE_EVAL(0/0.0f);
+      |                 ^~~~~~~~~~
+[148/263] Generating 'kernel/kernel.elf.p/logbf.c.o'.
+[149/263] Generating 'kernel/kernel.elf.p/lgammal.c.o'.
+../kernel/thirdparty/math/lgammal.c:361:1: Warnung: Attribut-Direktive »lgammal_r« ignoriert [-Wattributes]
+  361 | weak_alias(__lgammal_r, lgammal_r);
+      | ^~~~~~~~~~
+[150/263] Generating 'kernel/kernel.elf.p/erff.c.o'.
+[151/263] Generating 'kernel/kernel.elf.p/llroundl.c.o'.
+[152/263] Generating 'kernel/kernel.elf.p/ceil.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/ceil.c:1:
+../kernel/thirdparty/math/ceil.c: In Funktion »ceil«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/ceil.c:25:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   25 |                 FORCE_EVAL(y);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/ceil.c:25:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   25 |                 FORCE_EVAL(y);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/ceil.c:25:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   25 |                 FORCE_EVAL(y);
+      |                 ^~~~~~~~~~
+[153/263] Generating 'kernel/kernel.elf.p/cos.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/cos.c:43:
+../kernel/thirdparty/math/cos.c: In Funktion »cos«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/cos.c:58:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   58 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/cos.c:58:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   58 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/cos.c:58:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   58 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+[154/263] Generating 'kernel/kernel.elf.p/lgammaf.c.o'.
+[155/263] Generating 'kernel/kernel.elf.p/roundf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/roundf.c:1:
+../kernel/thirdparty/math/roundf.c: In Funktion »roundf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/roundf.c:23:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   23 |                 FORCE_EVAL(x + toint);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/roundf.c:23:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   23 |                 FORCE_EVAL(x + toint);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/roundf.c:23:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   23 |                 FORCE_EVAL(x + toint);
+      |                 ^~~~~~~~~~
+[156/263] Generating 'kernel/kernel.elf.p/nextafterl.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/nextafterl.c:1:
+../kernel/thirdparty/math/nextafterl.c: In Funktion »nextafterl«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/nextafterl.c:41:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   41 |                 FORCE_EVAL(x*x + ux.f*ux.f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/nextafterl.c:41:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   41 |                 FORCE_EVAL(x*x + ux.f*ux.f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/nextafterl.c:41:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   41 |                 FORCE_EVAL(x*x + ux.f*ux.f);
+      |                 ^~~~~~~~~~
+[157/263] Generating 'kernel/kernel.elf.p/ilogbl.c.o'.
+../kernel/thirdparty/math/ilogbl.c: In Funktion »ilogbl«:
+../kernel/thirdparty/math/ilogbl.c:12: Warnung: »#pragma STDC FENV_ACCESS« wird ignoriert [-Wunknown-pragmas]
+   12 |         #pragma STDC FENV_ACCESS ON
+      | 
+In Datei, eingebunden von ../kernel/thirdparty/math/ilogbl.c:2:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/ilogbl.c:19:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   19 |                         FORCE_EVAL(0/0.0f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/ilogbl.c:19:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   19 |                         FORCE_EVAL(0/0.0f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/ilogbl.c:19:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   19 |                         FORCE_EVAL(0/0.0f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/ilogbl.c:27:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   27 |                 FORCE_EVAL(0/0.0f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/ilogbl.c:27:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   27 |                 FORCE_EVAL(0/0.0f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/ilogbl.c:27:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   27 |                 FORCE_EVAL(0/0.0f);
+      |                 ^~~~~~~~~~
+[158/263] Generating 'kernel/kernel.elf.p/log10.c.o'.
+[159/263] Generating 'kernel/kernel.elf.p/exp.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/exp.c:68:
+../kernel/thirdparty/math/exp.c: In Funktion »exp«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/exp.c:102:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  102 |                         FORCE_EVAL((float)(-0x1p-149/x));
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/exp.c:102:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  102 |                         FORCE_EVAL((float)(-0x1p-149/x));
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/exp.c:102:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  102 |                         FORCE_EVAL((float)(-0x1p-149/x));
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/exp.c:123:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  123 |                 FORCE_EVAL(0x1p1023 + x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/exp.c:123:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  123 |                 FORCE_EVAL(0x1p1023 + x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/exp.c:123:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  123 |                 FORCE_EVAL(0x1p1023 + x);
+      |                 ^~~~~~~~~~
+[160/263] Generating 'kernel/kernel.elf.p/lgamma.c.o'.
+[161/263] Generating 'kernel/kernel.elf.p/lrintf.c.o'.
+[162/263] Generating 'kernel/kernel.elf.p/__cosdf.c.o'.
+[163/263] Generating 'kernel/kernel.elf.p/scalbln.c.o'.
+[164/263] Generating 'kernel/kernel.elf.p/fmaxl.c.o'.
+[165/263] Generating 'kernel/kernel.elf.p/log2.c.o'.
+[166/263] Generating 'kernel/kernel.elf.p/tgammal.c.o'.
+[167/263] Generating 'kernel/kernel.elf.p/__sin.c.o'.
+[168/263] Generating 'kernel/kernel.elf.p/scalblnl.c.o'.
+[169/263] Generating 'kernel/kernel.elf.p/erf.c.o'.
+[170/263] Generating 'kernel/kernel.elf.p/sinhf.c.o'.
+[171/263] Generating 'kernel/kernel.elf.p/acoshl.c.o'.
+[172/263] Generating 'kernel/kernel.elf.p/acos.c.o'.
+../kernel/thirdparty/math/acos.c: In Funktion »acos«:
+../kernel/thirdparty/math/acos.c:72:24: Warnung: Klammern um Arithmetik in Operand von »|« empfohlen [-Wparentheses]
+   72 |                 if ((ix-0x3ff00000 | lx) == 0) {
+      |                      ~~^~~~~~~~~~~
+[173/263] Generating 'kernel/kernel.elf.p/lgamma_r.c.o'.
+../kernel/thirdparty/math/lgamma_r.c:285:1: Warnung: Attribut-Direktive »lgamma_r« ignoriert [-Wattributes]
+  285 | weak_alias(__lgamma_r, lgamma_r);
+      | ^~~~~~~~~~
+[174/263] Generating 'kernel/kernel.elf.p/hypot.c.o'.
+[175/263] Generating 'kernel/kernel.elf.p/sinhl.c.o'.
+[176/263] Generating 'kernel/kernel.elf.p/cosl.c.o'.
+[177/263] Generating 'kernel/kernel.elf.p/__tan.c.o'.
+[178/263] Generating 'kernel/kernel.elf.p/lrint.c.o'.
+[179/263] Generating 'kernel/kernel.elf.p/log10l.c.o'.
+[180/263] Generating 'kernel/kernel.elf.p/exp2f.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/exp2f.c:28:
+../kernel/thirdparty/math/exp2f.c: In Funktion »exp2f«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/exp2f.c:102:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  102 |                                 FORCE_EVAL(-0x1p-149f/x);
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/exp2f.c:102:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  102 |                                 FORCE_EVAL(-0x1p-149f/x);
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/exp2f.c:102:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  102 |                                 FORCE_EVAL(-0x1p-149f/x);
+      |                                 ^~~~~~~~~~
+[181/263] Generating 'kernel/kernel.elf.p/fmod.c.o'.
+[182/263] Generating 'kernel/kernel.elf.p/acosh.c.o'.
+[183/263] Generating 'kernel/kernel.elf.p/llroundf.c.o'.
+[184/263] Generating 'kernel/kernel.elf.p/nanl.c.o'.
+../kernel/thirdparty/math/nanl.c: In Funktion »nanl«:
+../kernel/thirdparty/math/nanl.c:3:30: Warnung: unverwendeter Parameter »s« [-Wunused-parameter]
+    3 | long double nanl(const char *s)
+      |                  ~~~~~~~~~~~~^
+[185/263] Generating 'kernel/kernel.elf.p/sinh.c.o'.
+[186/263] Generating 'kernel/kernel.elf.p/finite.c.o'.
+[187/263] Generating 'kernel/kernel.elf.p/remainderl.c.o'.
+[188/263] Generating 'kernel/kernel.elf.p/coshf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/coshf.c:1:
+../kernel/thirdparty/math/coshf.c: In Funktion »coshf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/coshf.c:17:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   17 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/coshf.c:17:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   17 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/coshf.c:17:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   17 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+[189/263] Generating 'kernel/kernel.elf.p/exp10f.c.o'.
+../kernel/thirdparty/math/exp10f.c:24:1: Warnung: Attribut-Direktive »pow10f« ignoriert [-Wattributes]
+   24 | weak_alias(exp10f, pow10f);
+      | ^~~~~~~~~~
+[190/263] Generating 'kernel/kernel.elf.p/copysignl.c.o'.
+[191/263] Generating 'kernel/kernel.elf.p/asinhf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/asinhf.c:1:
+../kernel/thirdparty/math/asinhf.c: In Funktion »asinhf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/asinhf.c:25:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   25 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/asinhf.c:25:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   25 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/asinhf.c:25:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   25 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+[192/263] Generating 'kernel/kernel.elf.p/expl.c.o'.
+[193/263] Generating 'kernel/kernel.elf.p/log2l.c.o'.
+[194/263] Generating 'kernel/kernel.elf.p/scalb.c.o'.
+[195/263] Generating 'kernel/kernel.elf.p/acosf.c.o'.
+[196/263] Generating 'kernel/kernel.elf.p/__expo2f.c.o'.
+[197/263] Generating 'kernel/kernel.elf.p/atan.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/atan.c:33:
+../kernel/thirdparty/math/atan.c: In Funktion »atan«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/atan.c:82:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   82 |                                 FORCE_EVAL((float)x);
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/atan.c:82:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   82 |                                 FORCE_EVAL((float)x);
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/atan.c:82:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   82 |                                 FORCE_EVAL((float)x);
+      |                                 ^~~~~~~~~~
+[198/263] Generating 'kernel/kernel.elf.p/remainderf.c.o'.
+../kernel/thirdparty/math/remainderf.c:11:1: Warnung: Attribut-Direktive »dremf« ignoriert [-Wattributes]
+   11 | weak_alias(remainderf, dremf);
+      | ^~~~~~~~~~
+[199/263] Generating 'kernel/kernel.elf.p/lgammaf_r.c.o'.
+../kernel/thirdparty/math/lgammaf_r.c:220:1: Warnung: Attribut-Direktive »lgammaf_r« ignoriert [-Wattributes]
+  220 | weak_alias(__lgammaf_r, lgammaf_r);
+      | ^~~~~~~~~~
+[200/263] Generating 'kernel/kernel.elf.p/cbrt.c.o'.
+[201/263] Generating 'kernel/kernel.elf.p/atanhf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/atanhf.c:1:
+../kernel/thirdparty/math/atanhf.c: In Funktion »atanhf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/atanhf.c:18:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   18 |                                 FORCE_EVAL((float)(y*y));
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/atanhf.c:18:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   18 |                                 FORCE_EVAL((float)(y*y));
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/atanhf.c:18:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   18 |                                 FORCE_EVAL((float)(y*y));
+      |                                 ^~~~~~~~~~
+[202/263] Generating 'kernel/kernel.elf.p/remquol.c.o'.
+[203/263] Generating 'kernel/kernel.elf.p/__sinl.c.o'.
+[204/263] Generating 'kernel/kernel.elf.p/finitef.c.o'.
+[205/263] Generating 'kernel/kernel.elf.p/logl.c.o'.
+[206/263] Generating 'kernel/kernel.elf.p/modfl.c.o'.
+[207/263] Generating 'kernel/kernel.elf.p/asinf.c.o'.
+[208/263] Generating 'kernel/kernel.elf.p/asinhl.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/asinhl.c:1:
+../kernel/thirdparty/math/asinhl.c: In Funktion »asinhl«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/asinhl.c:31:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   31 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/asinhl.c:31:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   31 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/asinhl.c:31:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   31 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+[209/263] Generating 'kernel/kernel.elf.p/hypotl.c.o'.
+[210/263] Generating 'kernel/kernel.elf.p/significand.c.o'.
+[211/263] Generating 'kernel/kernel.elf.p/copysign.c.o'.
+[212/263] Generating 'kernel/kernel.elf.p/truncl.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/truncl.c:1:
+../kernel/thirdparty/math/truncl.c: In Funktion »truncl«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/truncl.c:22:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   22 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/truncl.c:22:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   22 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/truncl.c:22:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   22 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+[213/263] Generating 'kernel/kernel.elf.p/ceilf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/ceilf.c:1:
+../kernel/thirdparty/math/ceilf.c: In Funktion »ceilf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/ceilf.c:15:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   15 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/ceilf.c:15:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   15 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/ceilf.c:15:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   15 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/ceilf.c:20:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   20 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/ceilf.c:20:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   20 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/ceilf.c:20:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   20 |                 FORCE_EVAL(x + 0x1p120f);
+      |                 ^~~~~~~~~~
+[214/263] Generating 'kernel/kernel.elf.p/tanhf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/tanhf.c:1:
+../kernel/thirdparty/math/tanhf.c: In Funktion »tanhf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/tanhf.c:35:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   35 |                 FORCE_EVAL(x*x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/tanhf.c:35:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   35 |                 FORCE_EVAL(x*x);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/tanhf.c:35:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   35 |                 FORCE_EVAL(x*x);
+      |                 ^~~~~~~~~~
+[215/263] Generating 'kernel/kernel.elf.p/truncf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/truncf.c:1:
+../kernel/thirdparty/math/truncf.c: In Funktion »truncf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/truncf.c:16:9: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   16 |         FORCE_EVAL(x + 0x1p120f);
+      |         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/truncf.c:16:9: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   16 |         FORCE_EVAL(x + 0x1p120f);
+      |         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/truncf.c:16:9: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   16 |         FORCE_EVAL(x + 0x1p120f);
+      |         ^~~~~~~~~~
+[216/263] Generating 'kernel/kernel.elf.p/cosf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/cosf.c:17:
+../kernel/thirdparty/math/cosf.c: In Funktion »cosf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/cosf.c:39:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   39 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/cosf.c:39:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   39 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/cosf.c:39:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   39 |                         FORCE_EVAL(x + 0x1p120f);
+      |                         ^~~~~~~~~~
+[217/263] Generating 'kernel/kernel.elf.p/round.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/round.c:1:
+../kernel/thirdparty/math/round.c: In Funktion »round«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/round.c:22:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   22 |                 FORCE_EVAL(x + toint);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/round.c:22:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   22 |                 FORCE_EVAL(x + toint);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/round.c:22:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   22 |                 FORCE_EVAL(x + toint);
+      |                 ^~~~~~~~~~
+[218/263] Generating 'kernel/kernel.elf.p/atanh.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/atanh.c:1:
+../kernel/thirdparty/math/atanh.c: In Funktion »atanh«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/atanh.c:19:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   19 |                                 FORCE_EVAL((float)y);
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/atanh.c:19:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   19 |                                 FORCE_EVAL((float)y);
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/atanh.c:19:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   19 |                                 FORCE_EVAL((float)y);
+      |                                 ^~~~~~~~~~
+[219/263] Generating 'kernel/kernel.elf.p/hypotf.c.o'.
+[220/263] Generating 'kernel/kernel.elf.p/frexp.c.o'.
+[221/263] Generating 'kernel/kernel.elf.p/asin.c.o'.
+../kernel/thirdparty/math/asin.c: In Funktion »asin«:
+../kernel/thirdparty/math/asin.c:78:24: Warnung: Klammern um Arithmetik in Operand von »|« empfohlen [-Wparentheses]
+   78 |                 if ((ix-0x3ff00000 | lx) == 0)
+      |                      ~~^~~~~~~~~~~
+[222/263] Generating 'kernel/kernel.elf.p/scalbnl.c.o'.
+[223/263] Generating 'kernel/kernel.elf.p/copysignf.c.o'.
+[224/263] Generating 'kernel/kernel.elf.p/exp2.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/exp2.c:28:
+../kernel/thirdparty/math/exp2.c: In Funktion »exp2«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/exp2.c:351:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  351 |                                 FORCE_EVAL((float)(-0x1p-149/x));
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/exp2.c:351:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  351 |                                 FORCE_EVAL((float)(-0x1p-149/x));
+      |                                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/exp2.c:351:33: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+  351 |                                 FORCE_EVAL((float)(-0x1p-149/x));
+      |                                 ^~~~~~~~~~
+[225/263] Generating 'kernel/kernel.elf.p/fminf.c.o'.
+[226/263] Generating 'kernel/kernel.elf.p/erfl.c.o'.
+[227/263] Generating 'kernel/kernel.elf.p/j0.c.o'.
+[228/263] Generating 'kernel/kernel.elf.p/exp10.c.o'.
+../kernel/thirdparty/math/exp10.c:26:1: Warnung: Attribut-Direktive »pow10« ignoriert [-Wattributes]
+   26 | weak_alias(exp10, pow10);
+      | ^~~~~~~~~~
+[229/263] Generating 'kernel/kernel.elf.p/roundl.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/roundl.c:1:
+../kernel/thirdparty/math/roundl.c: In Funktion »roundl«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/roundl.c:23:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   23 |                 FORCE_EVAL(x + toint);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/roundl.c:23:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   23 |                 FORCE_EVAL(x + toint);
+      |                 ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/roundl.c:23:17: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   23 |                 FORCE_EVAL(x + toint);
+      |                 ^~~~~~~~~~
+[230/263] Generating 'kernel/kernel.elf.p/tanf.c.o'.
+In Datei, eingebunden von ../kernel/thirdparty/math/tanf.c:17:
+../kernel/thirdparty/math/tanf.c: In Funktion »tanf«:
+../kernel/thirdparty/math/libm.h:68:32: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   68 |                 volatile float __x;               \
+      |                                ^~~
+../kernel/thirdparty/math/tanf.c:39:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   39 |                         FORCE_EVAL(ix < 0x00800000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:71:33: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   71 |                 volatile double __x;              \
+      |                                 ^~~
+../kernel/thirdparty/math/tanf.c:39:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   39 |                         FORCE_EVAL(ix < 0x00800000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+../kernel/thirdparty/math/libm.h:74:38: Warnung: Variable »__x« gesetzt, aber nicht verwendet [-Wunused-but-set-variable]
+   74 |                 volatile long double __x;         \
+      |                                      ^~~
+../kernel/thirdparty/math/tanf.c:39:25: Anmerkung: bei Substitution des Makros »FORCE_EVAL«
+   39 |                         FORCE_EVAL(ix < 0x00800000 ? x/0x1p120f : x+0x1p120f);
+      |                         ^~~~~~~~~~
+[231/263] Generating 'kernel/kernel.elf.p/strcpy.c.o'.
+[232/263] Generating 'kernel/kernel.elf.p/memcmp.c.o'.
+../kernel/thirdparty/string/memcmp.c: In Funktion »memcmp«:
+../kernel/thirdparty/string/memcmp.c:16:11: Warnung: »nonnull«-Argument »p1« wird mit NULL verglichen [-Wnonnull-compare]
+   16 |         if(p1 == NULL)
+      |           ^
+../kernel/thirdparty/string/memcmp.c:21:11: Warnung: »nonnull«-Argument »p2« wird mit NULL verglichen [-Wnonnull-compare]
+   21 |         if(p2 == NULL)
+      |           ^
+[233/263] Generating 'kernel/kernel.elf.p/__fpclassifyf.c.o'.
+[234/263] Generating 'kernel/kernel.elf.p/strchr.c.o'.
+[235/263] Generating 'kernel/kernel.elf.p/sqrtf.c.o'.
+[236/263] Generating 'kernel/kernel.elf.p/acosl.c.o'.
+[237/263] Generating 'kernel/kernel.elf.p/strlen.c.o'.
+[238/263] Generating 'kernel/kernel.elf.p/memchr.c.o'.
+[239/263] Generating 'kernel/kernel.elf.p/strncat.c.o'.
+[240/263] Generating 'kernel/kernel.elf.p/strnstr.c.o'.
+[241/263] Generating 'kernel/kernel.elf.p/strxfrm.c.o'.
+[242/263] Generating 'kernel/kernel.elf.p/memrchr.c.o'.
+[243/263] Generating 'kernel/kernel.elf.p/strchrnul.c.o'.
+[244/263] Generating 'kernel/kernel.elf.p/strncmp.c.o'.
+../kernel/thirdparty/string/strncmp.c: In Funktion »strncmp«:
+../kernel/thirdparty/string/strncmp.c:23:11: Warnung: »nonnull«-Argument »s1« wird mit NULL verglichen [-Wnonnull-compare]
+   23 |         if(s1 != NULL && s2 != NULL)
+      |           ^
+../kernel/thirdparty/string/strncmp.c:23:23: Warnung: »nonnull«-Argument »s2« wird mit NULL verglichen [-Wnonnull-compare]
+   23 |         if(s1 != NULL && s2 != NULL)
+      |                       ^
+[245/263] Generating 'kernel/kernel.elf.p/memmove.c.o'.
+[246/263] Generating 'kernel/kernel.elf.p/strstr.c.o'.
+[247/263] Generating 'kernel/kernel.elf.p/strncpy.c.o'.
+[248/263] Generating 'kernel/kernel.elf.p/strnlen.c.o'.
+[249/263] Generating 'kernel/kernel.elf.p/strtok.c.o'.
+[250/263] Generating 'kernel/kernel.elf.p/strpbrk.c.o'.
+[251/263] Generating 'kernel/kernel.elf.p/strcat.c.o'.
+[252/263] Generating 'kernel/kernel.elf.p/strspn.c.o'.
+[253/263] Generating 'kernel/kernel.elf.p/strcoll.c.o'.
+[254/263] Generating 'kernel/kernel.elf.p/strcmp.c.o'.
+../kernel/thirdparty/string/strcmp.c: In Funktion »strcmp«:
+../kernel/thirdparty/string/strcmp.c:23:11: Warnung: »nonnull«-Argument »s1« wird mit NULL verglichen [-Wnonnull-compare]
+   23 |         if(s1 != NULL && s2 != NULL)
+      |           ^
+../kernel/thirdparty/string/strcmp.c:23:23: Warnung: »nonnull«-Argument »s2« wird mit NULL verglichen [-Wnonnull-compare]
+   23 |         if(s1 != NULL && s2 != NULL)
+      |                       ^
+[255/263] Generating 'kernel/kernel.elf.p/memcpy.c.o'.
+[256/263] Generating 'kernel/kernel.elf.p/memset.c.o'.
+[257/263] Generating 'kernel/kernel.elf.p/strerror.c.o'.
+../kernel/thirdparty/string/strerror.c:5:20: Warnung: fehlendes abschließendes Zeichen "
+    5 | #include <stdint.h>"
+      |                    ^
+../kernel/thirdparty/string/strerror.c:5:20: Warnung: mehrere Token am Ende der Direktive #include
+[258/263] Generating 'kernel/kernel.elf.p/strcspn.c.o'.
+[259/263] Generating 'kernel/kernel.elf.p/memmem.c.o'.
+[260/263] Generating kernel/kernel with a custom command
+[261/263] Generating limine with a custom command
+Klone nach 'limine'...
+make: Verzeichnis „/home/timon/code/yaku_multitasking_threading/build/limine“ wird betreten
+cc -g -O2 -pipe -Wall -Wextra  -std=c99 limine-install.c -o limine-install
+make: Verzeichnis „/home/timon/code/yaku_multitasking_threading/build/limine“ wird verlassen
+[262/263] Generating iso with a custom command
+xorriso 1.5.4 : RockRidge filesystem manipulator, libburnia project.
+
+Drive current: -outdev 'stdio:yaku.iso'
+Media current: stdio file, overwriteable
+Media status : is blank
+Media summary: 0 sessions, 0 data blocks, 0 data,  148g free
+Added to ISO image: directory '/'='/home/timon/code/yaku_multitasking_threading/build/yaku.iso.p'
+xorriso : UPDATE :       5 files added in 1 seconds
+xorriso : UPDATE :       5 files added in 1 seconds
+ISO image produced: 1131 sectors
+Written to medium : 1131 sectors at LBA 0
+Writing to 'stdio:yaku.iso' completed successfully.
+
+Physical block size of 512 bytes.
+Installing to GPT. Logical block size of 512 bytes.
+Secondary header at LBA 0x11ab.
+Secondary header valid.
+GPT partition NOT specified. Attempting GPT embedding.
+New maximum count of partition entries: 40.
+Stage 2 to be located at 0x1800 and 0x22f000.
+Reminder: Remember to copy the limine.sys file in either
+          the root or /boot directories of one of the partitions
+          on the device, or boot will fail!
+Limine installed successfully!
+[262/263] Running external command qemu-run (wrapped by meson to set env)

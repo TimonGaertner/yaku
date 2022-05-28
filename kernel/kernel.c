@@ -66,9 +66,13 @@ void test_task() {
     scheduler_sleep(1000);
     serial_printf("%s\n", message);
     free(message, 1);
+    for (;;)
+        serial_printf("Bye\n");
 }
 void kernel_function() {
     task_add(&test_task, TASK_PRIORITY_LOW, 0);
+    for(;;)
+        serial_printf("Hello, world!\n");
     for (;;) {
         asm("hlt");
     }
@@ -84,11 +88,12 @@ void start(stivale2_struct_t* stivale2_struct) {
     memory_map = stivale2_get_tag(stivale2_struct, STIVALE2_STRUCT_TAG_MEMMAP_ID);
 
     pmm_init(memory_map);
+    asm("cli");
     ps2_init();
     input_device_create_device("keyboard", "keyboard", keyboard_keymap,
                                &keyboard_handler);
     input_device_create_device("mouse", "mouse", NULL, &mouse_handler);
-
+    asm("sti");
     scheduler_init(&kernel_function);
     for (;;) {
         asm("hlt");
