@@ -3,6 +3,7 @@ kernel_asm_srcs = files([
     'interrupts/idt.asm',
     'drivers/sse.asm',
     'multitasking/context_switch.asm',
+    'drivers/lba/lba.asm',
 ])
 
 kernel_c_srcs = files([

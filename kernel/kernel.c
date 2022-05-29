@@ -15,6 +15,7 @@
 #include <stivale2.h>
 #include <string.h>
 #include <types.h>
+// #include <drivers/lba/lba.h>
 
 extern int enable_sse();
 
@@ -61,6 +62,15 @@ void* stivale2_get_tag(stivale2_struct_t* stivale2_struct, uint64_t id) {
     }
 }
 
+void test_task(){
+    serial_printf("test task\n");
+}
+void test_task2(){
+    scheduler_sleep(1000);
+    serial_printf("hello world\n");
+}
+extern void lba_read(uint64_t sector, uint64_t count, uint8_t* buffer);
+extern void lba_write(uint64_t sector, uint64_t count, uint8_t* buffer);
 void start(stivale2_struct_t* stivale2_struct) {
     enable_sse();
     serial_init();
@@ -79,6 +89,17 @@ void start(stivale2_struct_t* stivale2_struct) {
     input_device_create_device("mouse", "mouse", NULL, &mouse_handler);
     asm("sti");
 
+    // task_add(&test_task, TASK_PRIORITY_MEDIUM, 0);
+    // task_add(&test_task2, TASK_PRIORITY_MEDIUM, 0);
+    // lba_init();
+    // lba_read(2, 1);
+    // lba_write(2, 1);
+    // lba_read(2, 1);
+    uint8_t buffer[512];
+    buffer[0]=10;
+    lba_write(0, 1, &buffer[0]);
+    lba_read(0, 1, &buffer[0]);
+    serial_printf("buffer0: %d\n", buffer[0]);
     for (;;) {
         asm("hlt");
     }
