@@ -9,6 +9,7 @@ static bool primary_controller_second_drive_present = false;
 static bool secondary_controller_present = false;
 static bool secondary_controller_first_drive_present = false;
 static bool secondary_controller_second_drive_present = false;
+static uint64_t master_drive_size = 0;
 void lba_init() {
     io_outb(0x176, 0xA0);
     io_outb(0x172, 0x00);
@@ -17,8 +18,6 @@ void lba_init() {
     io_outb(0x175, 0x00);
     io_outb(0x177, 0xEC);
     timer_sleep_ticks(40);
-    uint8_t status = io_inb(0x177);
-    serial_printf("status: %x\n", status);
     // detect present ide controllers
     io_outb(LOW_LBA_PORT_PRIMARY, 0x88);
     if (io_inb(LOW_LBA_PORT_PRIMARY) == 0x88) {
@@ -52,71 +51,68 @@ void lba_init() {
             secondary_controller_second_drive_present = true;
         }
     }
-    serial_printf("primary controller present: %d\n", primary_controller_present);
-    serial_printf("primary controller first drive present: %d\n",
-                  primary_controller_first_drive_present);
-    serial_printf("primary controller second drive present: %d\n",
-                  primary_controller_second_drive_present);
-    serial_printf("secondary controller present: %d\n", secondary_controller_present);
-    serial_printf("secondary controller first drive present: %d\n",
-                  secondary_controller_first_drive_present);
-    serial_printf("secondary controller second drive present: %d\n",
-                  secondary_controller_second_drive_present);
-}
-void lba_read(uint8_t controller, uint8_t drive) {
-    uint64_t base_port = 0;
-    if (controller == 1) {
-        base_port = LBA_PRIMARY_CONTROLLER_PORT_BASE;
-    } else if (controller == 2) {
-        base_port = LBA_SECONDARY_CONTROLLER_PORT_BASE;
-    }
-    io_outb(base_port + 1, 0x00);
-    io_outb(base_port + 1, 0x00);
-    io_outb(base_port + 2, 0x00);
-    io_outb(base_port + 2, 0x01);
-    io_outb(base_port + 3, (unsigned char)(1 >> 24));
-    io_outb(base_port + 3, (unsigned char)(1));
-    io_outb(base_port + 4, (unsigned char)(1 >> 32));
-    io_outb(base_port + 4, (unsigned char)(1 >> 8));
-    io_outb(base_port + 5, (unsigned char)(1 >> 40));
-    io_outb(base_port + 5, (unsigned char)(1 >> 16));
-    io_outb(base_port + 6, 0x40 | (1 << 4));
-    io_outb(base_port + 7, 0x24);
-    // uint32_t timeOut = 0;
-    // while (!(io_inb(base_port+7) & 0x08) && timeOut++ < 100000) {
-    //     serial_printf("waiting for drive to be ready %d\n", io_inb(base_port+7));
-    // };
-        serial_printf("hallo\n");
-    for (uint16_t idx = 0; idx < 256; idx++) {
-        uint64_t input = io_inb(base_port + 0);
-        serial_printf("%d\n", input);
+    if (primary_controller_first_drive_present) {
+        uint16_t buffer[256];
+        if (lba_identify(LBA_MASTER_DRIVE, &buffer[0])){
+            master_drive_size = (uint64_t)buffer[100] << 48 | (uint64_t)buffer[101] << 32 | (uint64_t)buffer[102] << 16 | (uint64_t)buffer[103];
+        }
     }
 }
-void lba_write(uint8_t controller, uint8_t drive) {
-    uint64_t base_port = 0;
-    if (controller == 1) {
-        base_port = LBA_PRIMARY_CONTROLLER_PORT_BASE;
-    } else if (controller == 2) {
-        base_port = LBA_SECONDARY_CONTROLLER_PORT_BASE;
+
+// send identify command to a target drive
+//  buffer = &(uint16_t buffer[256]);
+/*     uint16_t 0: is useful if the device is not a hard disk.
+
+    uint16_t 83: Bit 10 is set if the drive supports LBA48 mode.
+
+    uint16_t 88: The bits in the low byte tell you the supported UDMA modes, the upper
+   byte tells you which UDMA mode is active. If the active mode is not the highest
+   supported mode, you may want to figure out why. Notes: The returned uint16_t should
+   look like this in binary: 0000001 00000001. Each bit corresponds to a single mode. E.g.
+   if the decimal number is 257, that means that only UDMA mode 1 is supported and running
+   (the binary number above) if the binary number is 515, the binary looks like this,
+   00000010 00000011, that means that UDMA modes 1 and 2 are supported, and 2 is running.
+   This is true for every mode. If it does not look like that, e.g 00000001 00000011, as
+   stated above, you may want to find out why. The formula for finding out the decimal
+   number is 257 * 2 ^ position + 2 ^position - 1.
+
+    uint16_t 93 from a master drive on the bus: Bit 11 is supposed to be set if the drive
+   detects an 80 conductor cable. Notes: if the bit is set then 80 conductor cable is
+   present and UDMA modes > 2 can be used; if bit is clear then there may or may not be an
+   80 conductor cable and UDMA modes > 2 shouldn't be used but might work fine. Because
+   this bit is "master device only", if there is a slave device and no master there is no
+   way information about cable type (and would have to assume UDMA modes > 2 can't be
+   used).
+
+    uint16_t 60 & 61 taken as a uint32_t contain the total number of 28 bit LBA
+   addressable sectors on the drive. (If non-zero, the drive supports LBA28.)
+
+    uint16_t 100 through 103 taken as a uint64_t contain the total number of 48 bit
+   addressable sectors on the drive. (Probably also proof that LBA48 is supported.) */
+bool lba_identify(lba_drives_t drive, uint16_t* buffer) {
+    io_outb(LBA_PRIMARY_DRIVE_SELECT_PORT, drive);
+    io_outb(0x1F2, 0);
+    io_outb(0x1F3, 0);
+    io_outb(0x1F4, 0);
+    io_outb(0x1F5, 0);
+    io_outb(0x1F7, 0xEC);
+    timer_sleep_ticks(40);
+    uint64_t status = io_inb(LBA_PRIMARY_CONTROLLER_PORT_STATUS_PORT);
+    if (status == 0) {
+        return false; // drive does not exist
     }
-    io_outb(base_port + 1, 0x00);
-    io_outb(base_port + 1, 0x00);
-    io_outb(base_port + 2, 0x00);
-    io_outb(base_port + 2, 0x01);
-    io_outb(base_port + 3, (unsigned char)(1 >> 24));
-    io_outb(base_port + 3, (unsigned char)(1));
-    io_outb(base_port + 4, (unsigned char)(1 >> 32));
-    io_outb(base_port + 4, (unsigned char)(1 >> 8));
-    io_outb(base_port + 5, (unsigned char)(1 >> 40));
-    io_outb(base_port + 5, (unsigned char)(1 >> 16));
-    io_outb(base_port + 6, 0x40 | (1 << 4));
-    io_outb(base_port + 7, 0x34);
-    // uint32_t timeOut = 0;
-    // while (!(io_inb(base_port+7) & 0x08) && timeOut++ < 100000) {
-    //     serial_printf("waiting for drive to be ready %d\n", io_inb(base_port+7));
-    // };
-        serial_printf("hallo\n");
-    for (uint16_t idx = 0; idx < 256; idx++) {
-        io_outb(base_port + 0, 1);
+    while (io_inb(LBA_PRIMARY_CONTROLLER_PORT_STATUS_PORT) & 0x80) {}
+    if (io_inb(0x1F4) != 0 || io_inb(0x1F5) != 0) {
+        return false; // drive is not ata
     }
+    while (!(io_inb(LBA_PRIMARY_CONTROLLER_PORT_STATUS_PORT) & 0b1000) &&
+           !(io_inb(LBA_PRIMARY_CONTROLLER_PORT_STATUS_PORT) & 0b1)) {}
+
+    if (io_inb(LBA_PRIMARY_CONTROLLER_PORT_STATUS_PORT) & 0b1) {
+        return false; // error
+    }
+    for (int i = 0; i < 256; i++) {
+        buffer[i] = io_inw(0x1F0);
+    }
+    return true;
 }

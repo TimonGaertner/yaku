@@ -28,6 +28,7 @@ kernel_c_srcs = files([
     'memory/pmm.c',
     'multitasking/task.c',
     'multitasking/scheduler.c',
+    'drivers/lba/lba.c',
 ])
 
 kernel_asmflags = ['-f', 'elf64']

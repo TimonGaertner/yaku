@@ -13,5 +13,8 @@
 #define LBA_SECONDARY_DRIVE_SELECT_PORT 0x176
 #define LBA_SECONDARY_CONTROLLER_STATUS_PORT 0x177
 void lba_init();
-void lba_read(uint8_t controller, uint8_t drive);
-void lba_write(uint8_t controller, uint8_t drive);
+typedef enum {
+    LBA_MASTER_DRIVE = 0xA0,
+    LBA_SLAVE_DRIVE = 0xB0    
+}lba_drives_t;
+bool lba_identify(lba_drives_t drive, uint16_t* buffer);

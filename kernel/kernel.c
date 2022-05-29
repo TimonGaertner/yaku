@@ -1,5 +1,6 @@
 #include <drivers/input/input_device.h>
 #include <drivers/input/ps2.h>
+#include <drivers/lba/lba.h>
 #include <drivers/pit.h>
 #include <drivers/serial.h>
 #include <drivers/vga_text.h>
@@ -62,10 +63,10 @@ void* stivale2_get_tag(stivale2_struct_t* stivale2_struct, uint64_t id) {
     }
 }
 
-void test_task(){
+void test_task() {
     serial_printf("test task\n");
 }
-void test_task2(){
+void test_task2() {
     scheduler_sleep(1000);
     serial_printf("hello world\n");
 }
@@ -95,11 +96,10 @@ void start(stivale2_struct_t* stivale2_struct) {
     // lba_read(2, 1);
     // lba_write(2, 1);
     // lba_read(2, 1);
-    uint8_t buffer[512];
-    buffer[0]=10;
-    lba_write(0, 1, &buffer[0]);
-    lba_read(0, 1, &buffer[0]);
-    serial_printf("buffer0: %d\n", buffer[0]);
+    lba_init();
+    // lba_write(0, 1, &buffer[0]);
+    // lba_read(0, 1, &buffer[0]);
+    // serial_printf("buffer0: %d\n", buffer[0]);
     for (;;) {
         asm("hlt");
     }
