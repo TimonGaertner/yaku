@@ -1,8 +1,8 @@
 ; @param EAX Logical Block Address of sector
 ; @param CL  Number of sectors to read
 ; @param RDI The address of buffer to put data obtained from disk
-global lba_read
-lba_read:
+global lba_read_primary_controller
+lba_read_primary_controller:
     pushfq
     and rax, 0x0FFFFFFF
     push rax
@@ -60,8 +60,8 @@ lba_read:
 ; @param EAX Logical Block Address of sector
 ; @param CL  Number of sectors to write
 ; @param RDI The address of data to write to the disk
-global lba_write
-lba_write:
+global lba_write_primary_controller
+lba_write_primary_controller:
     pushfq
     and rax, 0x0FFFFFFF
     push rax
