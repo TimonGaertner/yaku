@@ -3,13 +3,22 @@
 #include <drivers/timer.h>
 #include <io.h>
 #include <types.h>
-static bool primary_controller_present = false;
-static bool primary_controller_first_drive_present = false;
-static bool primary_controller_second_drive_present = false;
-static bool secondary_controller_present = false;
-static bool secondary_controller_first_drive_present = false;
-static bool secondary_controller_second_drive_present = false;
-static uint64_t master_drive_size = 0;
+static bool controllers_present[2]={false, false};
+static bool primary_controller_drives_present[2]={false,false};
+static bool secondary_controller_drives_present[2]={false,false};
+static uint64_t primary_controller_drive_size[2] = 0;
+static uint64_t secondary_controller_drive_size[2] = 0;
+
+static uint64_t write_pointer = 0; // in blocks
+uint64_t get_master_drive_size(enum ide_controller controller, enum drives drive){
+    rif (controller == primary_controller){
+        return primary_controller_drive_size[drive];
+    }
+    if (controller == secondary_controller){
+        return secondary_controller_drive_size[drive];
+    }
+    return NULL;
+}
 void lba_init() {
     io_outb(0x176, 0xA0);
     io_outb(0x172, 0x00);
@@ -26,13 +35,13 @@ void lba_init() {
         io_outb(LBA_PRIMARY_DRIVE_SELECT_PORT, 0xA0);
         timer_sleep_ticks(100);
         if (io_inb(LBA_PRIMARY_CONTROLLER_PORT_STATUS_PORT) & 0x40) {
-            primary_controller_first_drive_present = true;
+            primary_controller_drives_present[0] = true;
         }
         // test if second drive is present
         io_outb(LBA_PRIMARY_DRIVE_SELECT_PORT, 0xB0);
         timer_sleep_ticks(100);
         if (io_inb(LBA_PRIMARY_CONTROLLER_PORT_STATUS_PORT) & 0x40) {
-            primary_controller_second_drive_present = true;
+            primary_controller_drives_present[1] = true;
         }
     }
     io_outb(LOW_LBA_PORT_SECONDARY, 0x88);
@@ -42,23 +51,32 @@ void lba_init() {
         io_outb(LBA_SECONDARY_DRIVE_SELECT_PORT, 0xA0);
         timer_sleep_ticks(100);
         if (io_inb(LBA_SECONDARY_CONTROLLER_STATUS_PORT) & 0x40) {
-            secondary_controller_first_drive_present = true;
+            secondary_controller_drives_present[0] = true;
         }
         // test if second drive is present
         io_outb(LBA_SECONDARY_DRIVE_SELECT_PORT, 0xB0);
         timer_sleep_ticks(100);
         if (io_inb(LBA_SECONDARY_CONTROLLER_STATUS_PORT) & 0x40) {
-            secondary_controller_second_drive_present = true;
+            secondary_controller_drives_present[1] = true;
         }
     }
-    if (primary_controller_first_drive_present) {
+    if (primary_controller_drives_present[0]) {
         uint16_t buffer[256];
         if (lba_identify(LBA_MASTER_DRIVE, &buffer[0])){
             master_drive_size = (uint64_t)buffer[100] << 48 | (uint64_t)buffer[101] << 32 | (uint64_t)buffer[102] << 16 | (uint64_t)buffer[103];
         }
     }
+    serial_printf("%lu\n", master_drive_size);
 }
-
+bool drive_present(enum ide_controller controller, enum drives drive){
+    if (controller == primary_controller){
+        return primary_controller_drives_present[drive];
+    }
+    if (controller == secondary_controller){
+        return secondary_controller_drives_present[drive];
+    }
+    return NULL;
+}
 // send identify command to a target drive
 //  buffer = &(uint16_t buffer[256]);
 /*     uint16_t 0: is useful if the device is not a hard disk.

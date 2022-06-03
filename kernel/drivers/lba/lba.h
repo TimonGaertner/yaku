@@ -17,4 +17,15 @@ typedef enum {
     LBA_MASTER_DRIVE = 0xA0,
     LBA_SLAVE_DRIVE = 0xB0    
 }lba_drives_t;
+enum drives{
+    first_drive,
+    second_drive
+}
+enum ide_controller{
+    primary_controller,
+    secondary_controller
+}
+
 bool lba_identify(lba_drives_t drive, uint16_t* buffer);
+bool drive_present(enum ide_controller controller, enum drives drive);
+uint64_t get_master_drive_size();

@@ -4,7 +4,7 @@ as = find_program('nasm')
 ld = find_program('ld')
 cc = find_program('gcc')
 
-mkrescue = find_program('grub-mkrescue')
+#mkrescue = find_program('grub-mkrescue')
 
 qemu = find_program('qemu-system-x86_64', required: false)
 
@@ -34,7 +34,7 @@ iso_target = custom_target('iso',
 
 if qemu.found()
     qemu_run_target = run_target('qemu-run',
-        command: [qemu, '-cdrom', iso_target, '-hda', 'sata0.img']
+        command: [qemu, '-cdrom', iso_target, '-serial', 'mon:stdio', '-hda', 'sata.img']
     )
 else
     warning('the \'qemu-run\' target is not available because qemu could not be found')
