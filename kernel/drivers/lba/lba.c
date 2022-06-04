@@ -20,13 +20,6 @@ uint64_t get_drive_size(enum ide_controller controller, enum drives drive) {
     return NULL;
 }
 void lba_init() {
-    io_outb(0x176, 0xA0);
-    io_outb(0x172, 0x00);
-    io_outb(0x173, 0x00);
-    io_outb(0x174, 0x00);
-    io_outb(0x175, 0x00);
-    io_outb(0x177, 0xEC);
-    timer_sleep_ticks(40);
     // detect present ide controllers
     io_outb(LOW_LBA_PORT_PRIMARY, 0x88);
     if (io_inb(LOW_LBA_PORT_PRIMARY) == 0x88) {
@@ -85,6 +78,13 @@ void lba_init() {
         }
     }
     serial_printf("%lu\n", primary_controller_drive_size[0]);
+    serial_printf("controllers present: %d %d\n", controllers_present[0],
+                  controllers_present[1]);
+    serial_printf("primary drives present: %d %d\n",
+    primary_controller_drives_present[0],
+                  primary_controller_drives_present[1]);
+    serial_printf("secondary drives present: %d %d\n",
+    secondary_controller_drives_present[0], secondary_controller_drives_present[1]);
 }
 bool drive_present(enum ide_controller controller, enum drives drive) {
     if (controller == primary_controller) {
@@ -125,6 +125,27 @@ bool drive_present(enum ide_controller controller, enum drives drive) {
 
     uint16_t 100 through 103 taken as a uint64_t contain the total number of 48 bit
    addressable sectors on the drive. (Probably also proof that LBA48 is supported.) */
+// void lba48_write(uint64_t lba, uint16_t count, uint16_t* buffer) {
+//     io_outb(LBA_PRIMARY_CONTROLLER_PORT_BASE + 1, 0x00);
+//     io_outb(LBA_PRIMARY_CONTROLLER_PORT_BASE + 1, 0x00);
+//     io_outb(LBA_PRIMARY_CONTROLLER_PORT_BASE + 2, 0x00);
+//     io_outb(LBA_PRIMARY_CONTROLLER_PORT_BASE + 2, count);
+//     io_outb(LBA_PRIMARY_CONTROLLER_PORT_BASE + 3, (unsigned char)(lba >> 24));
+//     io_outb(LBA_PRIMARY_CONTROLLER_PORT_BASE + 3, (unsigned char)(lba));
+//     io_outb(LBA_PRIMARY_CONTROLLER_PORT_BASE + 4, (unsigned char)(lba >> 32));
+//     io_outb(LBA_PRIMARY_CONTROLLER_PORT_BASE + 4, (unsigned char)(lba >> 8));
+//     io_outb(LBA_PRIMARY_CONTROLLER_PORT_BASE + 5, (unsigned char)(lba >> 40));
+//     io_outb(LBA_PRIMARY_CONTROLLER_PORT_BASE + 5, (unsigned char)(lba >> 16));
+//     io_outb(LBA_PRIMARY_CONTROLLER_PORT_BASE + 6, 0x40 | (unsigned char)(1 << 4));
+//     io_outb(LBA_PRIMARY_CONTROLLER_PORT_BASE + 7, 0x34);
+//     while (!(inb(0x1F7) & 0x08)) {}
+//     for (uint16_t idx = 0; idx < 256; idx++) {
+
+//         uint16_t = buffer[8 + idx * 2] | (buffer[8 + idx * 2 + 1] << 8);
+
+//         outw(0x1F0, tmpword);
+//     }
+// }
 bool lba_identify(enum ide_controller controller, enum drives drive, uint16_t* buffer) {
     if (controller == primary_controller) {
         if (drive == first_drive) {

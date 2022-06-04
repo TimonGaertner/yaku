@@ -4,6 +4,10 @@
 global lba_read_primary_controller
 lba_read_primary_controller:
     pushfq
+    mov rax, rdi
+    mov rcx, rsi
+    mov rdi, rdx
+
     and rax, 0x0FFFFFFF
     push rax
     push rbx
@@ -63,6 +67,9 @@ lba_read_primary_controller:
 global lba_write_primary_controller
 lba_write_primary_controller:
     pushfq
+    mov rax, rdi
+    mov rcx, rsi
+    mov rdi, rdx
     and rax, 0x0FFFFFFF
     push rax
     push rbx
