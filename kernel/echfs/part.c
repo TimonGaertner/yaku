@@ -1,6 +1,7 @@
-#include <stdio.h>
-#include <stdint.h>
+
+#include <types.h>
 #include <string.h>
+#include <lib/write_to_drive.h>
 
 #include "part.h"
 
@@ -13,7 +14,7 @@ struct mbr_entry {
 	uint32_t sect_count;
 } __attribute__((packed));
 
-int mbr_get_part(struct part *ret, FILE *file, int partition) {
+int mbr_get_part(struct part *ret, struct drive_image* file, int partition) {
     fseek(file, 0x1BE, SEEK_SET);
     struct mbr_entry entries[4];
     fread(entries, sizeof(struct mbr_entry), 4, file);
@@ -78,7 +79,7 @@ struct gpt_entry {
 } __attribute__((packed));
 
 
-int gpt_get_part(struct part *ret, FILE *file, int partition) {
+int gpt_get_part(struct part *ret, struct drive_image* file, int partition) {
     struct gpt_table_header header = {0};
 
     // read header, located after the first block

@@ -106,8 +106,10 @@ uint8_t fwrite(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
     uint64_t byte_to_write_to = image->byte_pointer_position;
     uint64_t sector_to_write_to = byte_to_write_to / 512;
     uint64_t byte_in_sector_to_write_to = byte_to_write_to % 512;
+
     if (size_of_element % 512 == 0) {
         if (image->drive == drive_first) {
+
             lba_write_primary_controller_first_drive(sector_to_write_to,
                                          number_of_elements * size_of_element / 512, ptr);
         } else if (image->drive == drive_second) {
@@ -148,6 +150,7 @@ uint8_t fwrite(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
         }
         for (uint64_t i = byte_in_sector_to_write_to;
              i < byte_in_sector_to_write_to + size_of_element * number_of_elements; i++) {
+            serial_printf("a: %lu\n",ptr[0]);
             buffer[i] = ptr[i - byte_in_sector_to_write_to];
         }
         if (image->drive == drive_first) {

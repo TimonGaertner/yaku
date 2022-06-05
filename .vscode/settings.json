@@ -26,6 +26,7 @@
         "ctime": "c",
         "memory": "c",
         "new": "c",
-        "compare": "c"
+        "compare": "c",
+        "echfs.utils.h": "c"
     }
 }

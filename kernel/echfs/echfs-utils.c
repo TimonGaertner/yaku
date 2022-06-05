@@ -6,8 +6,8 @@
 #include <memory/pmm.h>
 #include <string.h>
 #include <types.h>
-#define PRIu64 __PRI64_PREFIX "u"
 #include "part.h"
+#define PRIu64 __PRI64_PREFIX "u"
 #define EXIT_FAILURE 1 /* Failing exit status.  */
 #define EXIT_SUCCESS 0
 #define SEARCH_FAILURE 0xffffffffffffffff
@@ -47,7 +47,7 @@ typedef struct {
     int failure;
     int not_found;
 } path_result_t;
-static int verbose = 0;
+static int verbose = 1;
 static int mbr = 0;
 static int gpt = 0;
 static int part = 0;
@@ -69,7 +69,7 @@ void* calloc(size_t num, size_t size){
     memset(adr, 0, num * size);
     return adr;
 }
-inline static int echfs_fseek(FILE* file, long loc, int mode) {
+inline static int echfs_fseek(struct drive_image* file, long loc, int mode) {
     return fseek(file, loc + part_offset, mode);
 }
 
@@ -144,10 +144,12 @@ static inline void wr_entry(uint64_t entry, entry_t* entry_src) {
     }
 
     echfs_fseek(image, (long)loc, SEEK_SET);
+    uint8_t* buf = (uint8_t*)entry_src;
+    serial_printf("writing to position %lu\n", buf[1]);
     fwrite(entry_src, sizeof(entry_t), 1, image);
 }
 
-static uint64_t import_chain(FILE* source) {
+static uint64_t import_chain(struct drive_image* source) {
     uint8_t* block_buf = malloc(bytesperblock);
     if (!block_buf) {
         serial_printf("malloc failure");
@@ -208,7 +210,7 @@ static uint64_t import_chain(FILE* source) {
     return block;
 }
 
-static void export_chain(FILE* dest, entry_t src) {
+static void export_chain(struct drive_image* dest, entry_t src) {
     uint64_t cur_block;
     uint8_t* block_buf = malloc((bytesperblock-1)/4096+1);
     if (!block_buf) {
@@ -382,8 +384,9 @@ static void mkdir_cmd(int argc, char** argv) {
     }
 
     entry.parent_id = path_result.parent.payload;
+    serial_printf("hallo\n");
     if (verbose)
-        serial_printf("new directory's parent ID: %u" + "\n", entry.parent_id);
+        serial_printf("new directory's parent ID: %u\n", entry.parent_id);
     entry.type = DIRECTORY_TYPE;
     strcpy(entry.name, path_result.name);
     entry.payload = get_free_id();
@@ -391,7 +394,7 @@ static void mkdir_cmd(int argc, char** argv) {
         serial_printf("new directory's ID: %u\n", entry.payload);
     if (verbose)
         serial_printf("writing to entry #%u\n", i);
-    uint64_t tm = (uint64_t)time(NULL);
+    uint64_t tm = 1000000;// @TODO implement utc time instead of static(uint64_t) time(NULL);
     entry.ctime = tm;
     entry.atime = tm;
     entry.mtime = tm;
@@ -405,105 +408,105 @@ static void mkdir_cmd(int argc, char** argv) {
     return;
 }
 
-static void import_cmd(int argc, char** argv) {
-    FILE* source;
-    entry_t entry = {0};
-    uint64_t i;
+// static void import_cmd(int argc, char** argv) {
+//     FILE* source;
+//     entry_t entry = {0};
+//     uint64_t i;
 
-    if (argc < 4) {
-        serial_printf("%s: %s: missing argument: source file.\n", argv[0], argv[2]);
-        return;
-    }
-    if (argc < 5) {
-        serial_printf("%s: %s: missing argument: destination file.\n", argv[0], argv[2]);
-        return;
-    }
+//     if (argc < 4) {
+//         serial_printf("%s: %s: missing argument: source file.\n", argv[0], argv[2]);
+//         return;
+//     }
+//     if (argc < 5) {
+//         serial_printf("%s: %s: missing argument: destination file.\n", argv[0], argv[2]);
+//         return;
+//     }
 
-    struct stat s;
-    stat(argv[3], &s);
-    if (!S_ISREG(s.st_mode)) {
-        serial_printf("%s: warning: source file `%s` is not a regular file, exiting.\n",
-                      argv[0], argv[3]);
-        return;
-    }
+//     struct stat s;
+//     stat(argv[3], &s);
+//     if (!S_ISREG(s.st_mode)) {
+//         serial_printf("%s: warning: source file `%s` is not a regular file, exiting.\n",
+//                       argv[0], argv[3]);
+//         return;
+//     }
 
-    // make directory
-    if (path_resolver(argv[4], FILE_TYPE).failure) {
-        char newdirname[4096];
-        int i = 0;
-    subdir:
-        for (;; i++) {
-            if (argv[4][i] == '/')
-                break;
-            newdirname[i] = argv[4][i];
-        }
-        newdirname[i] = 0;
-        char* oldargv3 = argv[3];
-        argv[3] = newdirname;
-        mkdir_cmd(argc, argv);
-        argv[3] = oldargv3;
-        if (path_resolver(argv[4], FILE_TYPE).failure) {
-            newdirname[i++] = '/';
-            goto subdir;
-        }
-    }
+//     // make directory
+//     if (path_resolver(argv[4], FILE_TYPE).failure) {
+//         char newdirname[4096];
+//         int i = 0;
+//     subdir:
+//         for (;; i++) {
+//             if (argv[4][i] == '/')
+//                 break;
+//             newdirname[i] = argv[4][i];
+//         }
+//         newdirname[i] = 0;
+//         char* oldargv3 = argv[3];
+//         argv[3] = newdirname;
+//         mkdir_cmd(argc, argv);
+//         argv[3] = oldargv3;
+//         if (path_resolver(argv[4], FILE_TYPE).failure) {
+//             newdirname[i++] = '/';
+//             goto subdir;
+//         }
+//     }
 
-    path_result_t path_result = path_resolver(argv[4], FILE_TYPE);
+//     path_result_t path_result = path_resolver(argv[4], FILE_TYPE);
 
-    // check if the file exists
-    if (!path_result.not_found && !force) {
-        serial_printf("%s: %s: error: file `%s` already exists.\n", argv[0], argv[2],
-                      argv[4]);
-        return;
-    }
+//     // check if the file exists
+//     if (!path_result.not_found && !force) {
+//         serial_printf("%s: %s: error: file `%s` already exists.\n", argv[0], argv[2],
+//                       argv[4]);
+//         return;
+//     }
 
-    if ((source = fopen(argv[3], "r")) == NULL) {
-        serial_printf("%s: %s: error: couldn't access `%s`.\n", argv[0], argv[2],
-                      argv[3]);
-        return;
-    }
+//     if ((source = fopen(argv[3], "r")) == NULL) {
+//         serial_printf("%s: %s: error: couldn't access `%s`.\n", argv[0], argv[2],
+//                       argv[3]);
+//         return;
+//     }
 
-    uint64_t payload = import_chain(source);
+//     uint64_t payload = import_chain(source);
 
-    if (!path_result.not_found) {
-        path_result.target.payload = payload;
-        path_result.target.mtime = s.st_mtim.tv_sec;
-        wr_entry(path_result.target_entry, &path_result.target);
-        fclose(source);
-        return;
-    }
+//     if (!path_result.not_found) {
+//         path_result.target.payload = payload;
+//         path_result.target.mtime = s.st_mtim.tv_sec;
+//         wr_entry(path_result.target_entry, &path_result.target);
+//         fclose(source);
+//         return;
+//     }
 
-    entry.parent_id = path_result.parent.payload;
-    entry.type = FILE_TYPE;
-    strcpy(entry.name, path_result.name);
-    entry.payload = payload;
-    fseek(source, 0L, SEEK_END);
-    entry.size = (uint64_t)ftell(source);
-    entry.ctime = s.st_ctim.tv_sec;
-    entry.atime = s.st_atim.tv_sec;
-    entry.mtime = s.st_mtim.tv_sec;
+//     entry.parent_id = path_result.parent.payload;
+//     entry.type = FILE_TYPE;
+//     strcpy(entry.name, path_result.name);
+//     entry.payload = payload;
+//     fseek(source, 0L, SEEK_END);
+//     entry.size = (uint64_t)ftell(source);
+//     entry.ctime = s.st_ctim.tv_sec;
+//     entry.atime = s.st_atim.tv_sec;
+//     entry.mtime = s.st_mtim.tv_sec;
 
-    entry.perms = (uint16_t)(s.st_mode & ((1 << 9) - 1));
+//     entry.perms = (uint16_t)(s.st_mode & ((1 << 9) - 1));
 
-    // find empty entry
-    uint64_t loc = (dirstart * bytesperblock);
-    echfs_fseek(image, (long)loc, SEEK_SET);
-    for (i = 0;; i++) {
-        entry_t entry_i;
-        fread(&entry_i, sizeof(entry_t), 1, image);
-        if ((entry_i.parent_id == 0) || (entry_i.parent_id == DELETED_ENTRY))
-            break;
-    }
-    wr_entry(i, &entry);
+//     // find empty entry
+//     uint64_t loc = (dirstart * bytesperblock);
+//     echfs_fseek(image, (long)loc, SEEK_SET);
+//     for (i = 0;; i++) {
+//         entry_t entry_i;
+//         fread(&entry_i, sizeof(entry_t), 1, image);
+//         if ((entry_i.parent_id == 0) || (entry_i.parent_id == DELETED_ENTRY))
+//             break;
+//     }
+//     wr_entry(i, &entry);
 
-    fclose(source);
-    if (verbose)
-        serial_printf("imported file `%s` as `%s`\n", argv[3], argv[4]);
-    return;
-}
+//     fclose(source);
+//     if (verbose)
+//         serial_printf("imported file `%s` as `%s`\n", argv[3], argv[4]);
+//     return;
+// }
 
 static void export_cmd(int argc, char** argv) {
-    FILE* dest;
+    struct drive_image* dest;;
 
     if (argc < 4) {
         serial_printf("%s: %s: missing argument: source file.\n", argv[0], argv[2]);
@@ -522,7 +525,7 @@ static void export_cmd(int argc, char** argv) {
         return;
     }
 
-    if ((dest = fopen(argv[4], "w")) == NULL) {
+    if ((dest = fopen(drive_first,W)) == NULL) {
         serial_printf("%s: %s: error: couldn't access `%s`.\n", argv[0], argv[2],
                       argv[4]);
         return;
@@ -632,12 +635,12 @@ static void format_pass1(int argc, char** argv, int quick) {
              i += bytesperblock) {
             fwrite(zeroblock, bytesperblock, 1, image);
             if (verbose)
-                fputc('.', stdout);
+                serial_printf('.');
         }
         free(zeroblock,(sizeof(zeroblock)-1)/4096+1);
 
         if (verbose)
-            fputc('\n', stdout);
+            serial_printf('\n');
     }
 
     return;
@@ -658,7 +661,7 @@ static void format_pass2(void) {
     return;
 }
 
-int main(int argc, char** argv) {
+int echfs_utils_main(int argc, char** argv) {
     int opt;
     while ((opt = getopt(argc, argv, "vmgfp:")) != -1) {
         switch (opt) {
@@ -688,8 +691,8 @@ int main(int argc, char** argv) {
         return EXIT_SUCCESS;
     }
 
-    if ((image = fopen(argv[optind], "r+")) == NULL) {
-        serial_printf("%s: error: couldn't access `%s`.\n", argv[0], argv[optind]);
+    if ((image = fopen(drive_first, W)) == NULL) {
+        serial_printf("%s: error: couldn't access %s.\n", argv[0], argv[optind]);
         return EXIT_FAILURE;
     }
 
@@ -795,7 +798,8 @@ int main(int argc, char** argv) {
         else if (!strcmp(argv[2], "quick-format"))
             format_pass2();
         else if (!strcmp(argv[2], "import"))
-            import_cmd(argc, argv);
+            // import_cmd(argc, argv);
+            return;
         else if (!strcmp(argv[2], "export"))
             export_cmd(argc, argv);
 

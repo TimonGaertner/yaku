@@ -17,7 +17,8 @@
 #include <stivale2.h>
 #include <string.h>
 #include <types.h>
-#include <echfs/mkfs.echfs.h>
+#include <echfs/echfs-utils.h>
+// #include <echfs/mkfs.echfs.h>
 // #include <drivers/lba/lba.h>
 
 extern int enable_sse();
@@ -118,12 +119,14 @@ void start(stivale2_struct_t* stivale2_struct) {
     
     // fread(buffer, 1, 1, image);
     char* args[4] = {
-        "mkfs",
-        "drive_first",
-        "512",
-        "1"
+        "-v",
+        "",
+        "ls",
+        "/"
     };
-    main(4, args);
+    serial_printf("%lu size\n", get_drive_size(primary_controller, first_drive));
+    // main(4, args);
+    echfs_utils_main(4, args);
     serial_printf("buffer0: %d\n", buffer[0]);
     for (;;) {
         asm("hlt");

@@ -7,8 +7,8 @@
 static bool controllers_present[2] = {false, false};
 static bool primary_controller_drives_present[2] = {false, false};
 static bool secondary_controller_drives_present[2] = {false, false};
-static uint64_t primary_controller_drive_size[2] = {0, 0};
-static uint64_t secondary_controller_drive_size[2] = {0, 0};
+static uint64_t primary_controller_drive_size[2] = {0, 0}; // in sectors
+static uint64_t secondary_controller_drive_size[2] = {0, 0}; // in sectors
 
 //returns drive size in sectors (512 bytes)
 uint64_t get_drive_size(enum ide_controller controller, enum drives drive) {
@@ -33,8 +33,8 @@ void lba_init() {
             uint16_t buffer[256];
             if (lba_identify(primary_controller, first_drive, &buffer[0])) {
                 primary_controller_drive_size[0] =
-                    (uint64_t)buffer[100] << 48 | (uint64_t)buffer[101] << 32 |
-                    (uint64_t)buffer[102] << 16 | (uint64_t)buffer[103];
+                    (uint64_t)buffer[100] << 32 | (uint64_t)buffer[101] << 16 |
+                    (uint64_t)buffer[102] << 0;// get size in sectors
             }
         }
         // test if second drive is present
@@ -44,9 +44,9 @@ void lba_init() {
             primary_controller_drives_present[1] = true;
             uint16_t buffer[256];
             if (lba_identify(primary_controller, second_drive, &buffer[0])) {
-                primary_controller_drive_size[0] =
-                    (uint64_t)buffer[100] << 48 | (uint64_t)buffer[101] << 32 |
-                    (uint64_t)buffer[102] << 16 | (uint64_t)buffer[103];
+                primary_controller_drive_size[1] =
+                    (uint64_t)buffer[100] << 32 | (uint64_t)buffer[101] << 16 |
+                    (uint64_t)buffer[102] << 0;// get size in sectors
             }
         }
     }
@@ -60,9 +60,9 @@ void lba_init() {
             secondary_controller_drives_present[0] = true;
             uint16_t buffer[256];
             if (lba_identify(secondary_controller, first_drive, &buffer[0])) {
-                primary_controller_drive_size[0] =
-                    (uint64_t)buffer[100] << 48 | (uint64_t)buffer[101] << 32 |
-                    (uint64_t)buffer[102] << 16 | (uint64_t)buffer[103];
+                secondary_controller_drive_size[0] =
+                    (uint64_t)buffer[100] << 32 | (uint64_t)buffer[101] << 16 |
+                    (uint64_t)buffer[102] << 0;// get size in sectors
             }
         }
         // test if fourth drive is present
@@ -72,9 +72,9 @@ void lba_init() {
             secondary_controller_drives_present[1] = true;
             uint16_t buffer[256];
             if (lba_identify(secondary_controller, second_drive, &buffer[0])) {
-                primary_controller_drive_size[0] =
-                    (uint64_t)buffer[100] << 48 | (uint64_t)buffer[101] << 32 |
-                    (uint64_t)buffer[102] << 16 | (uint64_t)buffer[103];
+                secondary_controller_drive_size[1] =
+                    (uint64_t)buffer[100] << 32 | (uint64_t)buffer[101] << 16 |
+                    (uint64_t)buffer[102] << 0;// get size in sectors
             }
         }
     }

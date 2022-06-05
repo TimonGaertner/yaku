@@ -14,8 +14,13 @@ static inline void wr_qword(uint64_t loc, uint64_t x) {
     fwrite(&x, 8, 1, image);
     return;
 }
+static inline void wr_blocks(uint64_t loc, uint8_t blocks, uint8_t* x) {
+    fseek(image, (long)loc, SEEK_SET);
+    fwrite(x, 512, blocks, image);
+    return;
+}
 
-int main(int argc, char** argv) {
+int echfs_mkfs_main(int argc, char** argv) {
     const uint8_t* boot_sector = _binary_boot_bin_start;
     
     if (argc < 4) {
@@ -35,9 +40,9 @@ int main(int argc, char** argv) {
     fclose(image);
     image = fopen(drive_first, W);
 
-    serial_printf("%s: info: formatting %lu bytes...\n", argv[0], imgsize);
 
     uint64_t bytesperblock = atoi(argv[2]);
+    serial_printf("%s: info: bytes per block: %lu\n", argv[0], bytesperblock);
     if ((bytesperblock <= 0) || (bytesperblock % 512)) {
         serial_printf("%s: error: block size MUST be a multiple of 512.\n", argv[0]);
         fclose(image);
@@ -59,10 +64,10 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    uint64_t blocks = imgsize;
+    uint64_t blocks = imgsize/bytesperblock;
 
-    fseek(image, 0, SEEK_SET);
-    fwrite(boot_sector, 512, 1, image);
+    // fseek(image, 0, SEEK_SET);
+    // fwrite(boot_sector, 512, 1, image);
 
     fseek(image, 4, SEEK_SET);
     fputs("_ECH_FS_", image);
@@ -74,10 +79,16 @@ int main(int argc, char** argv) {
 
     uint64_t fatsize = (blocks * sizeof(uint64_t)) / bytesperblock;
     uint64_t dirsize = blocks / (100 / reserved_factor);
-
-    for (uint64_t i = 0; i < (RESERVED_BLOCKS + fatsize + dirsize); i++) {
-        wr_qword(loc, 0xfffffffffffffff0);
-        loc += sizeof(uint64_t);
+    uint64_t buffer[64];
+    for (uint64_t i = 0; i < 64; i++) {
+        buffer[i] = 0xfffffffffffffff0;
+    }
+    serial_printf("%s: info: writing FAT...\n", argv[0]);
+    serial_printf("%lu", (RESERVED_BLOCKS + fatsize + dirsize));
+    for (uint64_t i = 0; i < (RESERVED_BLOCKS + fatsize + dirsize); i+=64) {
+        // wr_qword(loc, 0xfffffffffffffff0);
+        wr_blocks(loc, 1, (uint8_t*)buffer);
+        loc += sizeof(uint64_t)*64;
     }
     fflush(image);
     fclose(image);

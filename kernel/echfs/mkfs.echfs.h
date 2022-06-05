@@ -1,3 +1,3 @@
 #pragma once
 
-int main(int argc, char** argv) ;
+int echfs_mkfs_main(int argc, char** argv) ;
