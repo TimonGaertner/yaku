@@ -25,6 +25,7 @@
         "algorithm": "c",
         "ctime": "c",
         "memory": "c",
-        "new": "c"
+        "new": "c",
+        "compare": "c"
     }
 }

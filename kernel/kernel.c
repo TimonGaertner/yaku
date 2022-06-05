@@ -103,11 +103,10 @@ void start(stivale2_struct_t* stivale2_struct) {
     // }
     // buffer[0]=1;
     // lba_init();
-    // lba_write_primary_controller(0, 1, (uint8_t*)buffer);
+    // lba_write_primary_controller_first_drive(0, 1, (uint8_t*)buffer);
     // buffer[0]=0;
     // lba_write_primary_controller(0, 1, &buffer[0]);
-    io_outb(LBA_PRIMARY_DRIVE_SELECT_PORT, 0xB0);
-    lba_read_primary_controller(0, 1, (uint8_t*)buffer);
+    lba_read_primary_controller_first_drive(0, 1, (uint8_t*)buffer);
     serial_printf("buffer0: %d\n", buffer[0]);
     for (;;) {
         asm("hlt");

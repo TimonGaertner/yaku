@@ -81,7 +81,7 @@ lba_write_primary_controller_first_drive:
  
     mov edx, 0x01F6      ; Port to send drive and bit 24 - 27 of LBA
     shr eax, 24          ; Get bit 24 - 27 in al
-    or al, 11110000b     ; Set bit 6 in al for LBA mode
+    or al, 11100000b     ; Set bit 6 in al for LBA mode
     out dx, al
  
     mov edx, 0x01F2      ; Port to send number of sectors
@@ -210,7 +210,7 @@ lba_write_primary_controller_second_drive:
  
     mov edx, 0x01F6      ; Port to send drive and bit 24 - 27 of LBA
     shr eax, 24          ; Get bit 24 - 27 in al
-    or al, 11100000b     ; Set bit 6 in al for LBA mode
+    or al, 11110000b     ; Set bit 6 in al for LBA mode
     out dx, al
  
     mov edx, 0x01F2      ; Port to send number of sectors
@@ -339,7 +339,7 @@ lba_write_secondary_controller_first_drive:
  
     mov edx, 0x0176      ; Port to send drive and bit 24 - 27 of LBA
     shr eax, 24          ; Get bit 24 - 27 in al
-    or al, 11110000b     ; Set bit 6 in al for LBA mode
+    or al, 11100000b     ; Set bit 6 in al for LBA mode
     out dx, al
  
     mov edx, 0x0172      ; Port to send number of sectors
@@ -468,7 +468,7 @@ lba_write_secondary_controller_second_drive:
  
     mov edx, 0x0176      ; Port to send drive and bit 24 - 27 of LBA
     shr eax, 24          ; Get bit 24 - 27 in al
-    or al, 11100000b     ; Set bit 6 in al for LBA mode
+    or al, 11110000b     ; Set bit 6 in al for LBA mode
     out dx, al
  
     mov edx, 0x0172      ; Port to send number of sectors

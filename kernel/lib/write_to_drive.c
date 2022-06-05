@@ -106,16 +106,16 @@ uint8_t fwrite(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
     uint64_t byte_in_sector_to_write_to = byte_to_write_to % 512;
     if (size_of_element % 512 == 0) {
         if (image->drive == drive_first) {
-            lba_write_primary_controller(sector_to_write_to,
+            lba_write_primary_controller_first_drive(sector_to_write_to,
                                          number_of_elements * size_of_element / 512, ptr);
         } else if (image->drive == drive_second) {
-            lba_write_primary_controller(sector_to_write_to,
+            lba_write_primary_controller_second_drive(sector_to_write_to,
                                          number_of_elements * size_of_element / 512, ptr);
         } else if (image->drive == drive_third) {
-            lba_write_secondary_controller(
+            lba_write_secondary_controller_first_drive(
                 sector_to_write_to, number_of_elements * size_of_element / 512, ptr);
         } else if (image->drive == drive_fourth) {
-            lba_write_secondary_controller(
+            lba_write_secondary_controller_second_drive(
                 sector_to_write_to, number_of_elements * size_of_element / 512, ptr);
         }
         image->byte_pointer_position += number_of_elements * size_of_element;
@@ -149,19 +149,19 @@ uint8_t fwrite(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
             buffer[i] = ptr[i - byte_in_sector_to_write_to];
         }
         if (image->drive == drive_first) {
-            lba_write_primary_controller(sector_to_write_to,
+            lba_write_primary_controller_first_drive(sector_to_write_to,
                                          number_of_elements * size_of_element / 512 + 1,
                                          (uint8_t*)buffer);
         } else if (image->drive == drive_second) {
-            lba_write_primary_controller(sector_to_write_to,
+            lba_write_primary_controller_second_drive(sector_to_write_to,
                                          number_of_elements * size_of_element / 512 + 1,
                                          (uint8_t*)buffer);
         } else if (image->drive == drive_third) {
-            lba_write_secondary_controller(sector_to_write_to,
+            lba_write_secondary_controller_first_drive(sector_to_write_to,
                                            number_of_elements * size_of_element / 512 + 1,
                                            (uint8_t*)buffer);
         } else if (image->drive == drive_fourth) {
-            lba_write_secondary_controller(sector_to_write_to,
+            lba_write_secondary_controller_second_drive(sector_to_write_to,
                                            number_of_elements * size_of_element / 512 + 1,
                                            (uint8_t*)buffer);
         }
@@ -181,16 +181,16 @@ uint8_t fputs(char* str, struct drive_image* image) {
     uint64_t byte_in_sector_to_write_to = byte_to_write_to % 512;
     if (size_of_element % 512 == 0) {
         if (image->drive == drive_first) {
-            lba_write_primary_controller(sector_to_write_to, size_of_element / 512,
+            lba_write_primary_controller_first_drive(sector_to_write_to, size_of_element / 512,
                                          (uint8_t*)string_buffer);
         } else if (image->drive == drive_second) {
-            lba_write_primary_controller(sector_to_write_to, size_of_element / 512,
+            lba_write_primary_controller_second_drive(sector_to_write_to, size_of_element / 512,
                                          (uint8_t*)string_buffer);
         } else if (image->drive == drive_third) {
-            lba_write_secondary_controller(sector_to_write_to, size_of_element / 512,
+            lba_write_secondary_controller_first_drive(sector_to_write_to, size_of_element / 512,
                                            (uint8_t*)string_buffer);
         } else if (image->drive == drive_fourth) {
-            lba_write_secondary_controller(sector_to_write_to, size_of_element / 512,
+            lba_write_secondary_controller_second_drive(sector_to_write_to, size_of_element / 512,
                                            (uint8_t*)string_buffer);
         }
         image->byte_pointer_position += size_of_element;
@@ -221,16 +221,16 @@ uint8_t fputs(char* str, struct drive_image* image) {
             buffer[i] = string_buffer[i - byte_in_sector_to_write_to];
         }
         if (image->drive == drive_first) {
-            lba_write_primary_controller(sector_to_write_to, size_of_element / 512 + 1,
+            lba_write_primary_controller_first_drive(sector_to_write_to, size_of_element / 512 + 1,
                                          (uint8_t*)buffer);
         } else if (image->drive == drive_second) {
-            lba_write_primary_controller(sector_to_write_to, size_of_element / 512 + 1,
+            lba_write_primary_controller_second_drive(sector_to_write_to, size_of_element / 512 + 1,
                                          (uint8_t*)buffer);
         } else if (image->drive == drive_third) {
-            lba_write_secondary_controller(sector_to_write_to, size_of_element / 512 + 1,
+            lba_write_secondary_controller_first_drive(sector_to_write_to, size_of_element / 512 + 1,
                                            (uint8_t*)buffer);
         } else if (image->drive == drive_fourth) {
-            lba_write_secondary_controller(sector_to_write_to, size_of_element / 512 + 1,
+            lba_write_secondary_controller_second_drive(sector_to_write_to, size_of_element / 512 + 1,
                                            (uint8_t*)buffer);
         }
         image->byte_pointer_position += size_of_element;
