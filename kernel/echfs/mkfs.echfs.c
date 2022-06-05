@@ -1,7 +1,7 @@
+#include <lib/write_to_drive.h>
 #include <string.h>
 #include <types.h>
-#include <lib/write_to_drive.h>
-#define RESERVED_BLOCKS         16
+#define RESERVED_BLOCKS 16
 
 // boot sector code in boot.asm
 extern const uint8_t _binary_boot_bin_start[];
@@ -14,16 +14,18 @@ static inline void wr_qword(uint64_t loc, uint64_t x) {
     return;
 }
 
-int main(int argc, char **argv) {
-    const uint8_t *boot_sector = _binary_boot_bin_start;
+int main(int argc, char** argv) {
+    const uint8_t* boot_sector = _binary_boot_bin_start;
 
     if (argc < 4) {
-          serial_printf("%s: usage: %s <image> <bytes per block> <reserved blocks factor>\n", argv[0], argv[0]);
-          return 1;
+        serial_printf(
+            "%s: usage: %s <image> <bytes per block> <reserved blocks factor>\n", argv[0],
+            argv[0]);
+        return 1;
     }
     image = fopen(drive_first, R);
     if (image == NULL) {
-         serial_printf("%s: error: no valid image specified.\n", argv[0]);
+        serial_printf("%s: error: no valid image specified.\n", argv[0]);
     }
 
     fseek(image, 0L, SEEK_END);
@@ -51,7 +53,8 @@ int main(int argc, char **argv) {
     uint64_t reserved_factor = 16;
 
     if ((reserved_factor <= 0) || (reserved_factor >= 100)) {
-        serial_printf("%s: error: reserved blocks factor must be between 1%% and 99%%\n", argv[0]);
+        serial_printf("%s: error: reserved blocks factor must be between 1%% and 99%%\n",
+                      argv[0]);
         fclose(image);
         return 1;
     }
@@ -63,9 +66,9 @@ int main(int argc, char **argv) {
 
     fseek(image, 4, SEEK_SET);
     fputs("_ECH_FS_", image);
-    wr_qword(12, blocks);	// blocks
-    wr_qword(20, blocks / (100 / reserved_factor)); 	//reserved blocks
-    wr_qword(28, bytesperblock);	// block size
+    wr_qword(12, blocks);                           // blocks
+    wr_qword(20, blocks / (100 / reserved_factor)); // reserved blocks
+    wr_qword(28, bytesperblock);                    // block size
     // mark reserved blocks
     uint64_t loc = RESERVED_BLOCKS * bytesperblock;
 

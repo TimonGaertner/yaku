@@ -5,6 +5,26 @@
     "files.associations": {
         "serial.h": "c",
         "string.h": "c",
-        "cstdlib": "c"
+        "cstdlib": "c",
+        "write_to_drive.h": "c",
+        "datetime.h": "c",
+        "pit.h": "c",
+        "rtc.h": "c",
+        "cstdio": "c",
+        "*.tcc": "c",
+        "chrono": "c",
+        "future": "c",
+        "iomanip": "c",
+        "limits": "c",
+        "numeric": "c",
+        "ratio": "c",
+        "streambuf": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "*.inc": "c",
+        "algorithm": "c",
+        "ctime": "c",
+        "memory": "c",
+        "new": "c"
     }
 }

@@ -1,4 +1,9 @@
+#include <lib/atoi.h>
+#include <lib/getopt.h>
+#include <lib/stat.h>
+#include <lib/uuid.h>
 #include <lib/write_to_drive.h>
+#include <memory/pmm.h>
 #include <string.h>
 #include <types.h>
 #define PRIu64 __PRI64_PREFIX "u"
@@ -58,7 +63,12 @@ static uint64_t dirsize;
 static uint64_t dirstart;
 static uint64_t datastart;
 static uint64_t bytesperblock;
-
+void* calloc(size_t num, size_t size){
+    if (num*size == 0) return NULL;
+    void* adr = malloc((num * size-1)/4096+1);
+    memset(adr, 0, num * size);
+    return adr;
+}
 inline static int echfs_fseek(FILE* file, long loc, int mode) {
     return fseek(file, loc + part_offset, mode);
 }
@@ -140,7 +150,7 @@ static inline void wr_entry(uint64_t entry, entry_t* entry_src) {
 static uint64_t import_chain(FILE* source) {
     uint8_t* block_buf = malloc(bytesperblock);
     if (!block_buf) {
-        perror("malloc failure");
+        serial_printf("malloc failure");
         return;
     }
 
@@ -154,13 +164,13 @@ static uint64_t import_chain(FILE* source) {
     uint64_t source_size_blocks = (source_size + bytesperblock - 1) / bytesperblock;
 
     if (verbose) {
-        serial_printf("file size: %" PRIu64 "\n", source_size);
-        serial_printf("file size in blocks: %" PRIu64 "\n", source_size_blocks);
+        serial_printf("file size: %u\n", source_size);
+        serial_printf("file size in blocks: %u\n", source_size_blocks);
     }
 
-    uint64_t* blocklist = malloc(source_size_blocks * sizeof(uint64_t));
+    uint64_t* blocklist = malloc((source_size_blocks * sizeof(uint64_t)-1)/4096+1);
     if (!blocklist) {
-        perror("malloc failure");
+        serial_printf("malloc failure");
         return;
     }
 
@@ -193,16 +203,16 @@ static uint64_t import_chain(FILE* source) {
 
     block = blocklist[0];
 
-    free(blocklist);
-    free(block_buf);
+    free(blocklist, (sizeof(blocklist)-1)/4096+1);
+    free(block_buf,(sizeof(block_buf)-1)/4096+1);
     return block;
 }
 
 static void export_chain(FILE* dest, entry_t src) {
     uint64_t cur_block;
-    uint8_t* block_buf = malloc(bytesperblock);
+    uint8_t* block_buf = malloc((bytesperblock-1)/4096+1);
     if (!block_buf) {
-        perror("malloc failure");
+        serial_printf("malloc failure");
         return;
     }
 
@@ -221,7 +231,7 @@ static void export_chain(FILE* dest, entry_t src) {
         cur_block = rd_qword((fatstart * bytesperblock) + (cur_block * sizeof(uint64_t)));
     }
 
-    free(block_buf);
+    free(block_buf,(sizeof(block_buf)-1)/4096+1);
     return;
 }
 
@@ -373,14 +383,14 @@ static void mkdir_cmd(int argc, char** argv) {
 
     entry.parent_id = path_result.parent.payload;
     if (verbose)
-        serial_printf("new directory's parent ID: %" PRIu64 "\n", entry.parent_id);
+        serial_printf("new directory's parent ID: %u" + "\n", entry.parent_id);
     entry.type = DIRECTORY_TYPE;
     strcpy(entry.name, path_result.name);
     entry.payload = get_free_id();
     if (verbose)
-        serial_printf("new directory's ID: %" PRIu64 "\n", entry.payload);
+        serial_printf("new directory's ID: %u\n", entry.payload);
     if (verbose)
-        serial_printf("writing to entry #%" PRIu64 "\n", i);
+        serial_printf("writing to entry #%u\n", i);
     uint64_t tm = (uint64_t)time(NULL);
     entry.ctime = tm;
     entry.atime = tm;
@@ -457,11 +467,7 @@ static void import_cmd(int argc, char** argv) {
 
     if (!path_result.not_found) {
         path_result.target.payload = payload;
-#ifdef __APPLE__
-        path_result.target.mtime = s.st_mtimespec.tv_sec;
-#else
         path_result.target.mtime = s.st_mtim.tv_sec;
-#endif
         wr_entry(path_result.target_entry, &path_result.target);
         fclose(source);
         return;
@@ -473,16 +479,9 @@ static void import_cmd(int argc, char** argv) {
     entry.payload = payload;
     fseek(source, 0L, SEEK_END);
     entry.size = (uint64_t)ftell(source);
-
-#ifdef __APPLE__
-    entry.ctime = s.st_ctimespec.tv_sec;
-    entry.atime = s.st_ctimespec.tv_sec;
-    entry.mtime = s.st_mtimespec.tv_sec;
-#else
     entry.ctime = s.st_ctim.tv_sec;
     entry.atime = s.st_atim.tv_sec;
     entry.mtime = s.st_mtim.tv_sec;
-#endif
 
     entry.perms = (uint16_t)(s.st_mode & ((1 << 9) - 1));
 
@@ -562,7 +561,7 @@ static void ls_cmd(int argc, char** argv) {
             continue;
         if (entryy.type == DIRECTORY_TYPE)
             fputc('[', stdout);
-        fputs(entryy.name, stdout);
+        serial_printf("%s\n", entryy.name);
         if (entryy.type == DIRECTORY_TYPE)
             fputc(']', stdout);
         fputc('\n', stdout);
@@ -582,7 +581,7 @@ static void format_pass1(int argc, char** argv, int quick) {
     if (verbose)
         serial_printf("formatting...\n");
 
-    bytesperblock = atoi(argv[3]);
+    bytesperblock = 512;
 
     if ((bytesperblock <= 0) || (bytesperblock % 512)) {
         serial_printf("%s: error: block size MUST be a multiple of 512.\n", argv[0]);
@@ -616,7 +615,7 @@ static void format_pass1(int argc, char** argv, int quick) {
 
     char uuid_str[37];
     uuid_unparse_lower(uuid, uuid_str);
-    puts(uuid_str);
+    serial_printf("%s\n", uuid_str);
 
     if (!quick) {
         echfs_fseek(image, (RESERVED_BLOCKS * bytesperblock), SEEK_SET);
@@ -626,7 +625,7 @@ static void format_pass1(int argc, char** argv, int quick) {
         // zero out the rest of the image
         uint8_t* zeroblock = calloc(bytesperblock, 1);
         if (!zeroblock) {
-            perror("calloc failure");
+            serial_printf("calloc failure");
             return;
         }
         for (uint64_t i = (RESERVED_BLOCKS * bytesperblock); i < imgsize;
@@ -635,7 +634,7 @@ static void format_pass1(int argc, char** argv, int quick) {
             if (verbose)
                 fputc('.', stdout);
         }
-        free(zeroblock);
+        free(zeroblock,(sizeof(zeroblock)-1)/4096+1);
 
         if (verbose)
             fputc('\n', stdout);
@@ -731,11 +730,11 @@ int main(int argc, char** argv) {
         serial_printf("echidnaFS signature found\n");
 
     if (verbose)
-        serial_printf("image size: %" PRIu64 " bytes\n", imgsize);
+        serial_printf("image size: %u bytes\n", imgsize);
 
     bytesperblock = rd_qword(28);
     if (verbose)
-        serial_printf("bytes per block: %" PRIu64 "\n", BYTES_PER_BLOCK);
+        serial_printf("bytes per block: %u\n", BYTES_PER_BLOCK);
 
     if (imgsize % bytesperblock) {
         serial_printf("%s: error: image is not block-aligned.\n", argv[0]);
@@ -746,10 +745,10 @@ int main(int argc, char** argv) {
     blocks = imgsize / bytesperblock;
 
     if (verbose)
-        serial_printf("block count: %" PRIu64 "\n", blocks);
+        serial_printf("block count: %u\n", blocks);
 
     if (verbose)
-        serial_printf("declared block count: %" PRIu64 "\n", rd_qword(12));
+        serial_printf("declared block count: %u\n", rd_qword(12));
     if (rd_qword(12) != blocks) {
         serial_printf("%s: warning: declared block count mismatch.\n", argv[0]);
     }
@@ -758,25 +757,25 @@ int main(int argc, char** argv) {
     if ((blocks * sizeof(uint64_t)) % bytesperblock)
         fatsize++;
     if (verbose)
-        serial_printf("expected allocation table size: %" PRIu64 " blocks\n", fatsize);
+        serial_printf("expected allocation table size: %u blocks\n", fatsize);
 
     if (verbose)
-        serial_printf("expected allocation table start: block %" PRIu64 "\n", fatstart);
+        serial_printf("expected allocation table start: block %u\n", fatstart);
 
     dirsize = rd_qword(20);
     if (verbose)
-        serial_printf("declared directory size: %" PRIu64 " blocks\n", dirsize);
+        serial_printf("declared directory size: %u blocks\n", dirsize);
 
     dirstart = fatstart + fatsize;
     if (verbose)
-        serial_printf("expected directory start: block %" PRIu64 "\n", dirstart);
+        serial_printf("expected directory start: block %u\n", dirstart);
 
     datastart = RESERVED_BLOCKS + fatsize + dirsize;
     if (verbose)
-        serial_printf("expected reserved blocks: %" PRIu64 "\n", datastart);
+        serial_printf("expected reserved blocks: %u\n", datastart);
 
     if (verbose)
-        serial_printf("expected usable blocks: %" PRIu64 "\n", blocks - datastart);
+        serial_printf("expected usable blocks: %u\n", blocks - datastart);
 
     if (rd_word(510) == 0xaa55) {
         if (verbose)

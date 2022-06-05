@@ -1,3 +1,7 @@
+#pragma once
+#include <types.h>
+
+
 enum drive { drive_first, drive_second, drive_third, drive_fourth };
 enum access_mode { R, W };
 enum origin { SEEK_SET, SEEK_CUR, SEEK_END };
