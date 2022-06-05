@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
           serial_printf("%s: usage: %s <image> <bytes per block> <reserved blocks factor>\n", argv[0], argv[0]);
           return 1;
     }
-    image = fopen(first_drive, R);
+    image = fopen(drive_first, R);
     if (image == NULL) {
          serial_printf("%s: error: no valid image specified.\n", argv[0]);
     }
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
     uint64_t imgsize = (uint64_t)ftell(image);
     rewind(image);
     fclose(image);
-    image = fopen(first_drive, W);
+    image = fopen(drive_first, W);
 
     serial_printf("%s: info: formatting %lu bytes...\n", argv[0], imgsize);
 

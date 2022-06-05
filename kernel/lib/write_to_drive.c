@@ -1,7 +1,7 @@
 #include "write_to_drive.h"
-#include <memory/pmm.h>
 #include <drivers/lba/lba.h>
-
+#include <memory/pmm.h>
+#include <thirdparty/string/string.h>
 struct drive_image* fopen(enum drive drive, enum access_mode access_mode) {
     if (drive == drive_first) {
         if (!drive_present(primary_controller, first_drive)) {
@@ -24,11 +24,11 @@ struct drive_image* fopen(enum drive drive, enum access_mode access_mode) {
         (struct drive_image*)malloc(sizeof(struct drive_image) / 4069 + 1);
     drive_image->drive = drive;
     drive_image->access_mode = access_mode;
-    drive_image->sector_pointer_position = 0;
+    drive_image->byte_pointer_position = 0;
     return &drive_image;
 }
 uint64_t ftell(struct drive_image* drive_image) {
-    return drive_image->sector_pointer_position;
+    return drive_image->byte_pointer_position;
 }
 void fclose(struct drive_image* drive_image) {
     free(drive_image, sizeof(drive_image) / 4069 + 1);
@@ -36,65 +36,170 @@ void fclose(struct drive_image* drive_image) {
 void rewind(struct drive_image* drive_image) {
     drive_image->drive = 0;
 }
-uint8_t fseek(struct drive_image* drive_image, int64_t offset, enum origin origin) {
+
+uint8_t fseek(struct drive_image* drive_image, int64_t offset /*in bytes*/,
+              enum origin origin) {
     if (origin == SEEK_SET) {
         if (offset < 0) {
             return 1;
         }
-        drive_image->sector_pointer_position = offset;
+        drive_image->byte_pointer_position = offset;
         return 0;
     } else if (origin == SEEK_CUR) {
-        if (drive_image->sector_pointer_position + offset < 0) {
+        if (drive_image->byte_pointer_position + offset < 0) {
             return 1;
         }
-        drive_image->sector_pointer_position += offset;
+        drive_image->byte_pointer_position += offset;
         return 0;
     } else if (origin = SEEK_END) {
         if (drive_image->drive == drive_first) {
             if (!drive_present(primary_controller, first_drive)) {
                 return 1;
             }
-            if (get_drive_size(primary_controller, first_drive) + offset < 0) {
+            if (get_drive_size(primary_controller, first_drive) * 512 + offset < 0) {
                 return 1;
             }
-            drive_image->sector_pointer_position =
-                get_drive_size(primary_controller, first_drive) + offset;
+            drive_image->byte_pointer_position =
+                get_drive_size(primary_controller, first_drive) * 512 + offset;
             return 0;
         } else if (drive_image->drive == drive_second) {
             if (!drive_present(primary_controller, second_drive)) {
                 return 1;
             }
-            if (get_drive_size(primary_controller, second_drive) + offset < 0) {
+            if (get_drive_size(primary_controller, second_drive) * 512 + offset < 0) {
                 return 1;
             }
-            drive_image->sector_pointer_position =
-                get_drive_size(primary_controller, second_drive) + offset;
+            drive_image->byte_pointer_position =
+                get_drive_size(primary_controller, second_drive) * 512 + offset;
             return 0;
         } else if (drive_image->drive == drive_third) {
             if (!drive_present(secondary_controller, first_drive)) {
                 return 1;
             }
-            if (get_drive_size(secondary_controller, first_drive) + offset < 0) {
+            if (get_drive_size(secondary_controller, first_drive) * 512 + offset < 0) {
                 return 1;
             }
-            drive_image->sector_pointer_position =
-                get_drive_size(secondary_controller, first_drive) + offset;
+            drive_image->byte_pointer_position =
+                get_drive_size(secondary_controller, first_drive) * 512 + offset;
             return 0;
         } else if (drive_image->drive == drive_fourth) {
             if (!drive_present(secondary_controller, second_drive)) {
                 return 1;
             }
-            if (get_drive_size(secondary_controller, second_drive) + offset < 0) {
+            if (get_drive_size(secondary_controller, second_drive) * 512 + offset < 0) {
                 return 1;
             }
-            drive_image->sector_pointer_position =
-                get_drive_size(secondary_controller, second_drive) + offset;
+            drive_image->byte_pointer_position =
+                get_drive_size(secondary_controller, second_drive) * 512 + offset;
             return 0;
         }
     }
 }
 
-uint8_t fwrite(uint8_t* ptr, size_t size_of_element, uint64_t number_of_elements, struct drive_image* image){
-    uint64_t sector_to_write_to = image->sector_pointer_position;
-    
+uint8_t fwrite(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
+               struct drive_image* image) {
+    if (image->access_mode != W) {
+        return 1;
+    }
+    uint64_t byte_to_write_to = image->byte_pointer_position;
+    uint64_t sector_to_write_to = byte_to_write_to / 512;
+    uint64_t byte_in_sector_to_write_to = byte_to_write_to % 512;
+    if (size_of_element % 512 == 0) {
+        lba_write_primary_controller(sector_to_write_to,
+                                     number_of_elements * size_of_element / 512, ptr);
+        image->byte_pointer_position += number_of_elements * size_of_element;
+    } else {
+        uint8_t buffer[(size_of_element * number_of_elements) +
+                       (512 - ((size_of_element * number_of_elements) %
+                               512))]; // buffer with size of element*number_of_elements
+                                       // rounded up to 512 (sector size)
+        lba_read_primary_controller(
+            sector_to_write_to, number_of_elements * size_of_element / 512 + 1,
+            (uint8_t*)
+                buffer); // number_of_elements * size_of_element / 512+1-> because
+                         // number_of_elements * size_of_element % 512 != 0, we need to
+                         // read one sector more than number_of_elements * size_of_element
+        for (uint64_t i = byte_in_sector_to_write_to;
+             i < byte_in_sector_to_write_to + size_of_element * number_of_elements; i++) {
+            buffer[i] = ptr[i - byte_in_sector_to_write_to];
+        }
+        lba_write_primary_controller(sector_to_write_to,
+                                     number_of_elements * size_of_element / 512 + 1,
+                                     (uint8_t*)buffer);
+        image->byte_pointer_position += number_of_elements * size_of_element;
+    }
+    return 0;
+}
+uint8_t fputs(char* str, struct drive_image* image) {
+    uint64_t size_of_element = strlen(str);
+    uint8_t string_buffer[size_of_element];
+    strncpy((char*)string_buffer, str, size_of_element);
+    if (image->access_mode != W) {
+        return 1;
+    }
+    uint64_t byte_to_write_to = image->byte_pointer_position;
+    uint64_t sector_to_write_to = byte_to_write_to / 512;
+    uint64_t byte_in_sector_to_write_to = byte_to_write_to % 512;
+    if (size_of_element % 512 == 0) {
+        lba_write_primary_controller(sector_to_write_to, size_of_element / 512,
+                                     (uint8_t*)string_buffer);
+        image->byte_pointer_position += size_of_element;
+    } else {
+        uint8_t buffer[(size_of_element) +
+                       (512 - ((size_of_element) %
+                               512))]; // buffer with size of element*number_of_elements
+                                       // rounded up to 512 (sector size)
+        lba_read_primary_controller(
+            sector_to_write_to, size_of_element / 512 + 1,
+            (uint8_t*)
+                buffer); // number_of_elements * size_of_element / 512+1-> because
+                         // number_of_elements * size_of_element % 512 != 0, we need to
+                         // read one sector more than number_of_elements * size_of_element
+        for (uint64_t i = byte_in_sector_to_write_to;
+             i < byte_in_sector_to_write_to + size_of_element; i++) {
+            buffer[i] = string_buffer[i - byte_in_sector_to_write_to];
+        }
+        lba_write_primary_controller(sector_to_write_to, size_of_element / 512 + 1,
+                                     (uint8_t*)buffer);
+        image->byte_pointer_position += size_of_element;
+    }
+    return 0;
+}
+
+// no functionality right now
+uint8_t fflush(struct drive_image* image) {
+    return 0;
+}
+
+uint8_t fgetc(struct drive_image* image) {
+    uint64_t byte_to_read_from = image->byte_pointer_position;
+    uint64_t sector_to_read_from = byte_to_read_from / 512;
+    uint64_t byte_in_sector_to_read_from = byte_to_read_from % 512;
+    uint8_t buffer[512];
+    lba_read_primary_controller(sector_to_read_from, 1, (uint8_t*)buffer);
+    image->byte_pointer_position++;
+    return buffer[byte_in_sector_to_read_from];
+}
+uint8_t fread(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
+              struct drive_image* image) {
+    uint64_t byte_to_read_from = image->byte_pointer_position;
+    uint64_t sector_to_read_from = byte_to_read_from / 512;
+    uint64_t byte_in_sector_to_read_from = byte_to_read_from % 512;
+    uint8_t buffer[(size_of_element * number_of_elements) +
+                   (512 - ((size_of_element * number_of_elements) %
+                           512))]; // buffer with size of element*number_of_elements
+                                   // rounded up to 512 (sector size)
+    uint8_t sectors_to_read = 0;
+    if (size_of_element % 512 == 0) {
+        sectors_to_read = number_of_elements * size_of_element / 512;
+    } else {
+        sectors_to_read = number_of_elements * size_of_element / 512 + 1;
+    }
+    lba_read_primary_controller(sector_to_read_from, sectors_to_read, (uint8_t*)buffer);
+    for (uint64_t i = byte_in_sector_to_read_from;
+         i < byte_in_sector_to_read_from + size_of_element * number_of_elements; i++) {
+        ptr[i - byte_in_sector_to_read_from] = buffer[i];
+    }
+    image->byte_pointer_position += size_of_element * number_of_elements;
+    return 0;
 }

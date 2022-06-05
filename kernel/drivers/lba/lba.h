@@ -25,3 +25,6 @@ enum ide_controller{
 bool lba_identify(enum ide_controller controller, enum drives drive, uint16_t* buffer) ;
 bool drive_present(enum ide_controller controller, enum drives drive);
 uint64_t get_drive_size(enum ide_controller controller, enum drives drive);
+extern void lba_read_primary_controller(uint64_t sector, uint8_t count, uint8_t* buffer);
+extern void lba_write_primary_controller(uint64_t sector, uint8_t count,
+                                         uint8_t* buffer);

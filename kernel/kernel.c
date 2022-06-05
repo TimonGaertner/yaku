@@ -70,9 +70,7 @@ void test_task2() {
     scheduler_sleep(1000);
     serial_printf("hello world\n");
 }
-extern void lba_read_primary_controller(uint64_t sector, uint64_t count, uint8_t* buffer);
-// extern void lba_write_primary_controller(uint64_t sector, uint64_t count,
-                                        //  uint8_t* buffer);
+
 void start(stivale2_struct_t* stivale2_struct) {
     enable_sse();
     serial_init();
@@ -109,6 +107,7 @@ void start(stivale2_struct_t* stivale2_struct) {
     // lba_write_primary_controller(0, 1, &buffer[0]);
     lba_read_primary_controller(0, 1, (uint8_t*)buffer);
     serial_printf("buffer0: %d\n", buffer[0]);
+    serial_printf("%hhx\n", "h");
     for (;;) {
         asm("hlt");
     }

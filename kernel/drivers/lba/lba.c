@@ -10,6 +10,7 @@ static bool secondary_controller_drives_present[2] = {false, false};
 static uint64_t primary_controller_drive_size[2] = {0, 0};
 static uint64_t secondary_controller_drive_size[2] = {0, 0};
 
+//returns drive size in sectors (512 bytes)
 uint64_t get_drive_size(enum ide_controller controller, enum drives drive) {
     if (controller == primary_controller) {
         return primary_controller_drive_size[drive];
@@ -52,7 +53,7 @@ void lba_init() {
     io_outb(LOW_LBA_PORT_SECONDARY, 0x88);
     if (io_inb(LOW_LBA_PORT_SECONDARY) == 0x88) {
         controllers_present[1] = true;
-        // test if second drive is present
+        // test if third drive is present
         io_outb(LBA_SECONDARY_DRIVE_SELECT_PORT, 0xA0);
         timer_sleep_ticks(100);
         if (io_inb(LBA_SECONDARY_CONTROLLER_STATUS_PORT) & 0x40) {
@@ -64,7 +65,7 @@ void lba_init() {
                     (uint64_t)buffer[102] << 16 | (uint64_t)buffer[103];
             }
         }
-        // test if second drive is present
+        // test if fourth drive is present
         io_outb(LBA_SECONDARY_DRIVE_SELECT_PORT, 0xB0);
         timer_sleep_ticks(100);
         if (io_inb(LBA_SECONDARY_CONTROLLER_STATUS_PORT) & 0x40) {
