@@ -1,6 +1,7 @@
 #include "uuid.h"
 #include <drivers/pit.h>
 #include <drivers/rtc.h>
+#include <printf.h>
 // really crappy implementation of uuid generation
 void uuid_generate_random(uuid_t uuid_buffer) {
     datetime_t datetime; // 9 bytes
@@ -8,7 +9,9 @@ void uuid_generate_random(uuid_t uuid_buffer) {
     uint8_t datetime_bytes[9] = {datetime.second,       datetime.minute, datetime.hour,
                                  datetime.day_of_month, datetime.month,  datetime.year,
                                  datetime.century,      datetime.weekday};
-    uint8_t pit[4] = pit_tick_get();
+    uint32_t tmp = pit_tick_get();
+    uint8_t pit[4] = {(uint8_t)(tmp >> 24), (uint8_t)(tmp >> 16), (uint8_t)(tmp >> 8),
+                      (uint8_t)(tmp)};
     uint16_t* ptr1 = (uint16_t*)datetime_bytes;
     uint8_t* ptr2 = (uint16_t*)pit;
     uuid_buffer[0] = datetime_bytes[0];

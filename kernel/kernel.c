@@ -8,6 +8,7 @@
 #include <interrupts/pic.h>
 #include <lib/input/keyboard_handler.h>
 #include <lib/input/mouse_handler.h>
+#include <lib/write_to_drive.h>
 #include <memory/pmm.h>
 #include <multitasking/scheduler.h>
 #include <multitasking/task.h>
@@ -16,7 +17,7 @@
 #include <stivale2.h>
 #include <string.h>
 #include <types.h>
-#include <io.h>
+#include <echfs/mkfs.echfs.h>
 // #include <drivers/lba/lba.h>
 
 extern int enable_sse();
@@ -96,17 +97,33 @@ void start(stivale2_struct_t* stivale2_struct) {
     // lba_read_primary_controller(2, 1);
     // lba_write_primary_controller(2, 1);
     // lba_read_primary_controller(2, 1);
-    uint16_t buffer[256];
-    buffer[0]=0b1111111111111111;
-    // for (int i = 0; i < 256; i++) {
-    //     buffer[i] = i;
-    // }
+    uint8_t buffer[512];
+    buffer[0] = 0b11111111;
+    for (int i = 0; i < 256; i++) {
+        buffer[i] = 0;
+    }
     // buffer[0]=1;
     // lba_init();
     // lba_write_primary_controller_first_drive(0, 1, (uint8_t*)buffer);
     // buffer[0]=0;
     // lba_write_primary_controller(0, 1, &buffer[0]);
-    lba_read_primary_controller_first_drive(0, 1, (uint8_t*)buffer);
+
+    // static struct drive_image* image;
+
+    // image = fopen(drive_first, W);
+    // serial_printf("%p\n", image);
+    // fseek(image, 0, SEEK_SET);
+    // fwrite(buffer, 1, 10, image);
+    // lba_read_primary_controller_first_drive(0, 1, (uint8_t*)buffer);
+    
+    // fread(buffer, 1, 1, image);
+    char* args[4] = {
+        "mkfs",
+        "drive_first",
+        "512",
+        "1"
+    };
+    main(4, args);
     serial_printf("buffer0: %d\n", buffer[0]);
     for (;;) {
         asm("hlt");

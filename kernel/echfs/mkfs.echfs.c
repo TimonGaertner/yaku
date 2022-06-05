@@ -1,10 +1,11 @@
 #include <lib/write_to_drive.h>
+#include <lib/atoi.h>
 #include <string.h>
 #include <types.h>
 #define RESERVED_BLOCKS 16
 
 // boot sector code in boot.asm
-extern const uint8_t _binary_boot_bin_start[];
+const uint8_t _binary_boot_bin_start[];
 
 static struct drive_image* image;
 
@@ -16,7 +17,7 @@ static inline void wr_qword(uint64_t loc, uint64_t x) {
 
 int main(int argc, char** argv) {
     const uint8_t* boot_sector = _binary_boot_bin_start;
-
+    
     if (argc < 4) {
         serial_printf(
             "%s: usage: %s <image> <bytes per block> <reserved blocks factor>\n", argv[0],
@@ -36,8 +37,7 @@ int main(int argc, char** argv) {
 
     serial_printf("%s: info: formatting %lu bytes...\n", argv[0], imgsize);
 
-    uint64_t bytesperblock = 512;
-
+    uint64_t bytesperblock = atoi(argv[2]);
     if ((bytesperblock <= 0) || (bytesperblock % 512)) {
         serial_printf("%s: error: block size MUST be a multiple of 512.\n", argv[0]);
         fclose(image);
@@ -81,5 +81,6 @@ int main(int argc, char** argv) {
     }
     fflush(image);
     fclose(image);
+    serial_printf("%s: info: formatting complete.\n", argv[0]);
     return 0;
 }

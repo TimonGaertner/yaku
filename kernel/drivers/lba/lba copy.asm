@@ -93,6 +93,9 @@ writesectors:
 	push rcx
 	push rax
 
+    mov rax, rdi
+    mov rcx, rsi
+    mov rdi, rdx
 	push rcx		; Save RCX for use in the write loop
 	cmp rcx, 256
 	jg writesectors_fail	; Over 256? Fail!

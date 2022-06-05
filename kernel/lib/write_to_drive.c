@@ -1,6 +1,7 @@
 #include "write_to_drive.h"
 #include <drivers/lba/lba.h>
 #include <memory/pmm.h>
+#include <drivers/serial.h>
 #include <thirdparty/string/string.h>
 struct drive_image* fopen(enum drive drive, enum access_mode access_mode) {
     if (drive == drive_first) {
@@ -25,7 +26,7 @@ struct drive_image* fopen(enum drive drive, enum access_mode access_mode) {
     drive_image->drive = drive;
     drive_image->access_mode = access_mode;
     drive_image->byte_pointer_position = 0;
-    return &drive_image;
+    return drive_image;
 }
 uint64_t ftell(struct drive_image* drive_image) {
     return drive_image->byte_pointer_position;
@@ -94,6 +95,7 @@ uint8_t fseek(struct drive_image* drive_image, int64_t offset /*in bytes*/,
             return 0;
         }
     }
+    return 1;
 }
 
 uint8_t fwrite(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
@@ -167,6 +169,8 @@ uint8_t fwrite(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
         }
         image->byte_pointer_position += number_of_elements * size_of_element;
     }
+    serial_printf("fwrite: %d bytes written to %lu\n",
+                  number_of_elements * size_of_element, image->byte_pointer_position);
     return 0;
 }
 uint8_t fputs(char* str, struct drive_image* image) {

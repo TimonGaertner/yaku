@@ -3,7 +3,7 @@
 #include <drivers/timer.h>
 #include <io.h>
 #include <types.h>
-#include <write_to_drive.c>
+#include <write_to_drive.h>
 static bool controllers_present[2] = {false, false};
 static bool primary_controller_drives_present[2] = {false, false};
 static bool secondary_controller_drives_present[2] = {false, false};

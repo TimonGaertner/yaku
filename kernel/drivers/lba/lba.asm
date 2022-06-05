@@ -4,6 +4,8 @@
 global lba_read_primary_controller_first_drive
 lba_read_primary_controller_first_drive:
     pushfq
+    push rax
+    push rcx
     mov rax, rdi
     mov rcx, rsi
     mov rdi, rdx
@@ -53,6 +55,8 @@ lba_read_primary_controller_first_drive:
     pop rdx
     pop rcx
     pop rbx
+    pop rax
+    pop rcx
     pop rax
     popfq
     ret
@@ -119,7 +123,13 @@ lba_write_primary_controller_first_drive:
     mov rdx, 0x1F0       ; Data port, in and out
     mov rsi, rdi
     rep outsw            ; out
- 
+    add rdx, 7
+
+    
+    writesectors_wait_again:
+	    in al, dx
+	    bt ax, 7		; Check the BSY flag (Bit 7)
+	    jc writesectors_wait_again
     pop rdi
     pop rdx
     pop rcx
@@ -506,7 +516,6 @@ lba_write_secondary_controller_second_drive:
     mov rdx, 0x170       ; Data port, in and out
     mov rsi, rdi
     rep outsw            ; out
- 
     pop rdi
     pop rdx
     pop rcx
