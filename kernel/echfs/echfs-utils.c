@@ -560,11 +560,11 @@ static void ls_cmd(int argc, char** argv) {
         if (entryy.parent_id != id)
             continue;
         if (entryy.type == DIRECTORY_TYPE)
-            fputc('[', stdout);
+            serial_printf('[');
         serial_printf("%s\n", entryy.name);
         if (entryy.type == DIRECTORY_TYPE)
-            fputc(']', stdout);
-        fputc('\n', stdout);
+            serial_printf(']');
+        serial_printf('\n');
     }
 
     return;
