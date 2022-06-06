@@ -157,9 +157,9 @@ static uint64_t import_chain(FILE* source) {
         return;
     }
 
-    write_to_drive_fseek(source, 0L, SEEK_END);
-    uint64_t source_size = (uint64_t)write_to_drive_ftell(source);
-    write_to_drive_rewind(source);
+    fseek(source, 0L, SEEK_END);
+    uint64_t source_size = (uint64_t)ftell(source);
+    rewind(source);
 
     if (!source_size)
         return END_OF_CHAIN;
@@ -190,7 +190,7 @@ static uint64_t import_chain(FILE* source) {
         echfs_fseek(image, blocklist[i] * bytesperblock, SEEK_SET);
 
         // copy block
-        write_to_drive_fwrite(block_buf, 1, write_to_drive_fread(block_buf, 1, bytesperblock, source), image);
+        write_to_drive_fwrite(block_buf, 1, fread(block_buf, 1, bytesperblock, source), image);
     }
 
     for (uint64_t i = 0;; i++) {
@@ -222,13 +222,13 @@ static void export_chain(FILE* dest, entry_t src) {
     for (cur_block = src.payload; cur_block != END_OF_CHAIN;) {
         echfs_fseek(image, (long)(cur_block * bytesperblock), SEEK_SET);
         // copy block
-        if (((uint64_t)write_to_drive_ftell(dest) + bytesperblock) >= src.size) {
+        if (((uint64_t)ftell(dest) + bytesperblock) >= src.size) {
             write_to_drive_fread(block_buf, src.size % bytesperblock, 1, image);
-            write_to_drive_fwrite(block_buf, src.size % bytesperblock, 1, dest);
+            fwrite(block_buf, src.size % bytesperblock, 1, dest);
             break;
         } else {
             write_to_drive_fread(block_buf, bytesperblock, 1, image);
-            write_to_drive_fwrite(block_buf, bytesperblock, 1, dest);
+            fwrite(block_buf, bytesperblock, 1, dest);
         }
 
         cur_block = rd_qword((fatstart * bytesperblock) + (cur_block * sizeof(uint64_t)));
@@ -409,102 +409,102 @@ static void mkdir_cmd(int argc, char** argv) {
     return;
 }
 
-// static void import_cmd(int argc, char** argv) {
-//     FILE* source;
-//     entry_t entry = {0};
-//     uint64_t i;
+static void import_cmd(int argc, char** argv) {
+    FILE* source;
+    entry_t entry = {0};
+    uint64_t i;
 
-//     if (argc < 4) {
-//         serial_printf("%s: %s: missing argument: source file.\n", argv[0], argv[2]);
-//         return;
-//     }
-//     if (argc < 5) {
-//         serial_printf("%s: %s: missing argument: destination file.\n", argv[0], argv[2]);
-//         return;
-//     }
+    if (argc < 4) {
+        serial_printf("%s: %s: missing argument: source file.\n", argv[0], argv[2]);
+        return;
+    }
+    if (argc < 5) {
+        serial_printf("%s: %s: missing argument: destination file.\n", argv[0], argv[2]);
+        return;
+    }
 
-//     struct stat s;
-//     stat(argv[3], &s);
-//     if (!S_ISREG(s.st_mode)) {
-//         serial_printf("%s: warning: source file `%s` is not a regular file, exiting.\n",
-//                       argv[0], argv[3]);
-//         return;
-//     }
+    struct stat s;
+    stat(argv[3], &s);
+    // if (!S_ISREG(s.st_mode)) { TODO: implement this
+    //     serial_printf("%s: warning: source file `%s` is not a regular file, exiting.\n",
+    //                   argv[0], argv[3]);
+    //     return;
+    // }
 
-//     // make directory
-//     if (path_resolver(argv[4], FILE_TYPE).failure) {
-//         char newdirname[4096];
-//         int i = 0;
-//     subdir:
-//         for (;; i++) {
-//             if (argv[4][i] == '/')
-//                 break;
-//             newdirname[i] = argv[4][i];
-//         }
-//         newdirname[i] = 0;
-//         char* oldargv3 = argv[3];
-//         argv[3] = newdirname;
-//         mkdir_cmd(argc, argv);
-//         argv[3] = oldargv3;
-//         if (path_resolver(argv[4], FILE_TYPE).failure) {
-//             newdirname[i++] = '/';
-//             goto subdir;
-//         }
-//     }
+    // make directory
+    if (path_resolver(argv[4], FILE_TYPE).failure) {
+        char newdirname[4096];
+        int i = 0;
+    subdir:
+        for (;; i++) {
+            if (argv[4][i] == '/')
+                break;
+            newdirname[i] = argv[4][i];
+        }
+        newdirname[i] = 0;
+        char* oldargv3 = argv[3];
+        argv[3] = newdirname;
+        mkdir_cmd(argc, argv);
+        argv[3] = oldargv3;
+        if (path_resolver(argv[4], FILE_TYPE).failure) {
+            newdirname[i++] = '/';
+            goto subdir;
+        }
+    }
 
-//     path_result_t path_result = path_resolver(argv[4], FILE_TYPE);
+    path_result_t path_result = path_resolver(argv[4], FILE_TYPE);
 
-//     // check if the file exists
-//     if (!path_result.not_found && !force) {
-//         serial_printf("%s: %s: error: file `%s` already exists.\n", argv[0], argv[2],
-//                       argv[4]);
-//         return;
-//     }
+    // check if the file exists
+    if (!path_result.not_found && !force) {
+        serial_printf("%s: %s: error: file `%s` already exists.\n", argv[0], argv[2],
+                      argv[4]);
+        return;
+    }
 
-//     if ((source = write_to_drive_fopen(argv[3], "r")) == NULL) {
-//         serial_printf("%s: %s: error: couldn't access `%s`.\n", argv[0], argv[2],
-//                       argv[3]);
-//         return;
-//     }
+    if ((source = write_to_drive_fopen(argv[3], "r")) == NULL) {
+        serial_printf("%s: %s: error: couldn't access `%s`.\n", argv[0], argv[2],
+                      argv[3]);
+        return;
+    }
 
-//     uint64_t payload = import_chain(source);
+    uint64_t payload = import_chain(source);
 
-//     if (!path_result.not_found) {
-//         path_result.target.payload = payload;
-//         path_result.target.mtime = s.st_mtim.tv_sec;
-//         wr_entry(path_result.target_entry, &path_result.target);
-//         fclose(source);
-//         return;
-//     }
+    if (!path_result.not_found) {
+        path_result.target.payload = payload;
+        path_result.target.mtime = s.st_mtime.tv_sec;
+        wr_entry(path_result.target_entry, &path_result.target);
+        fclose(source);
+        return;
+    }
 
-//     entry.parent_id = path_result.parent.payload;
-//     entry.type = FILE_TYPE;
-//     strcpy(entry.name, path_result.name);
-//     entry.payload = payload;
-//     fseek(source, 0L, SEEK_END);
-//     entry.size = (uint64_t)write_to_drive_ftell(source);
-//     entry.ctime = s.st_ctim.tv_sec;
-//     entry.atime = s.st_atim.tv_sec;
-//     entry.mtime = s.st_mtim.tv_sec;
+    entry.parent_id = path_result.parent.payload;
+    entry.type = FILE_TYPE;
+    strcpy(entry.name, path_result.name);
+    entry.payload = payload;
+    fseek(source, 0L, SEEK_END);
+    entry.size = (uint64_t)ftell(source);
+    entry.ctime = s.st_ctime.tv_sec;
+    entry.atime = s.st_atime.tv_sec;
+    entry.mtime = s.st_mtime.tv_sec;
 
-//     entry.perms = (uint16_t)(s.st_mode & ((1 << 9) - 1));
+    entry.perms = (uint16_t)(s.st_mode & ((1 << 9) - 1));
 
-//     // find empty entry
-//     uint64_t loc = (dirstart * bytesperblock);
-//     echfs_fseek(image, (long)loc, SEEK_SET);
-//     for (i = 0;; i++) {
-//         entry_t entry_i;
-//         fread(&entry_i, sizeof(entry_t), 1, image);
-//         if ((entry_i.parent_id == 0) || (entry_i.parent_id == DELETED_ENTRY))
-//             break;
-//     }
-//     wr_entry(i, &entry);
+    // find empty entry
+    uint64_t loc = (dirstart * bytesperblock);
+    echfs_fseek(image, (long)loc, SEEK_SET);
+    for (i = 0;; i++) {
+        entry_t entry_i;
+        write_to_drive_fread(&entry_i, sizeof(entry_t), 1, image);
+        if ((entry_i.parent_id == 0) || (entry_i.parent_id == DELETED_ENTRY))
+            break;
+    }
+    wr_entry(i, &entry);
 
-//     fclose(source);
-//     if (verbose)
-//         serial_printf("imported file `%s` as `%s`\n", argv[3], argv[4]);
-//     return;
-// }
+    fclose(source);
+    if (verbose)
+        serial_printf("imported file `%s` as `%s`\n", argv[3], argv[4]);
+    return;
+}
 
 static void export_cmd(int argc, char** argv) {
     FILE* dest;
@@ -526,7 +526,7 @@ static void export_cmd(int argc, char** argv) {
         return;
     }
 
-    if ((dest = write_to_drive_fopen(drive_first,W)) == NULL) {
+    if ((dest = fopen("","w")) == NULL) {
         serial_printf("%s: %s: error: couldn't access `%s`.\n", argv[0], argv[2],
                       argv[4]);
         return;
@@ -534,7 +534,7 @@ static void export_cmd(int argc, char** argv) {
 
     export_chain(dest, path_result.target);
 
-    write_to_drive_fclose(dest);
+    fclose(dest);
     if (verbose)
         serial_printf("exported file `%s` as `%s`\n", argv[3], argv[4]);
     return;
