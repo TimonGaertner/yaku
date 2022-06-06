@@ -127,12 +127,14 @@ void start(stivale2_struct_t* stivale2_struct) {
     // lba_read_primary_controller_first_drive(0, 1, (uint8_t*)buffer);
 
     // fread(buffer, 1, 1, image);
-    fopen("/b.txt", "w");
-    fwrite(buffer, 11, 1, fopen("/b.txt", "w"));
-    fclose(fopen("/b.txt", "w"));
-    // char* args[4] = {"-v", "", "import", "/b.txt","r.a"};
-    // // echfs_mkfs_main(4, args);
+    // fopen("/b.txt", "w");
+    // fwrite(buffer, 11, 1, fopen("/b.txt", "w"));
+    // char* args[5] = {"-v", "", "import", "/b.txt","r.a"};
     // echfs_utils_main(5, args);
+    // char* args[5] = {"-v", "", "import", "/b.txt","r.a"};
+    // echfs_utils_main(5, args);
+    char* args[4] = {"-v", "", "ls", "/"};
+    echfs_utils_main(5, args);
     for (;;) {
         asm("hlt");
     }

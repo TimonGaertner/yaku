@@ -19,6 +19,7 @@ struct FILE* fopen(char* filename, char* access_mode) {
         }
     }
     FILE* file = (FILE*)malloc((sizeof(FILE) - 1) / 4069 + 1);
+    memset(file, 0, sizeof(FILE));
     strcpy(file->access_mode, access_mode);
     strcpy(file->name, filename);
     file->byte_ptr = 0;
@@ -74,6 +75,9 @@ void rewind(FILE* file) {
     file->byte_ptr = 0;
 }
 void fclose(FILE* file) {
+    if (file == NULL) {
+        return;
+    }
     for (int i = 0; i < max_blocks; i++) {
         if (file->data[i] != NULL) {
             free(file->data[i], 1);

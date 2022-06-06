@@ -453,7 +453,6 @@ static void import_cmd(int argc, char** argv) {
     }
 
     path_result_t path_result = path_resolver(argv[4], FILE_TYPE);
-
     // check if the file exists
     if (!path_result.not_found && !force) {
         serial_printf("%s: %s: error: file `%s` already exists.\n", argv[0], argv[2],
