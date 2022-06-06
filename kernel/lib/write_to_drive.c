@@ -150,7 +150,6 @@ uint8_t write_to_drive_fwrite(uint8_t* ptr, size_t size_of_element, uint8_t numb
         }
         for (uint64_t i = byte_in_sector_to_write_to;
              i < byte_in_sector_to_write_to + size_of_element * number_of_elements; i++) {
-            serial_printf("a: %lu\n",ptr[0]);
             buffer[i] = ptr[i - byte_in_sector_to_write_to];
         }
         if (image->drive == drive_first) {
@@ -172,8 +171,6 @@ uint8_t write_to_drive_fwrite(uint8_t* ptr, size_t size_of_element, uint8_t numb
         }
         image->byte_pointer_position += number_of_elements * size_of_element;
     }
-    serial_printf("fwrite: %d bytes written to %lu\n",
-                  number_of_elements * size_of_element, image->byte_pointer_position);
     return 0;
 }
 uint8_t write_to_drive_fputs(char* str, struct drive_image* image) {

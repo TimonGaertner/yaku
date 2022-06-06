@@ -1,6 +1,9 @@
 #pragma once
 #include <lib/datetime.h>
+#include <lib/origin.h>
 #define max_blocks 2000 //block size=4096 bytes * 2000 = 8MB
+#define MAX_OPEN_FILES 200
+#define MAX_FILENAME_LENGTH 201
 struct time{
     uint64_t tv_sec;
 };
@@ -12,10 +15,11 @@ struct stat{
     uint64_t st_size;
 };
 
-enum origin { SEEK_SET, SEEK_CUR, SEEK_END };
+
+// virtual file struct used to write from to disk or read to from disk
 typedef struct file {
     struct stat st;
-    char* name;
+    char name[MAX_FILENAME_LENGTH];
     uint64_t byte_ptr;
     uint8_t* data[max_blocks]; // ptrs to blocks
     char access_mode[3];

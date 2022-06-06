@@ -55,7 +55,7 @@ int echfs_mkfs_main(int argc, char** argv) {
         return 1;
     }
 
-    uint64_t reserved_factor = 16;
+    uint64_t reserved_factor = atoi(argv[3]);
 
     if ((reserved_factor <= 0) || (reserved_factor >= 100)) {
         serial_printf("%s: error: reserved blocks factor must be between 1%% and 99%%\n",

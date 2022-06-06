@@ -461,14 +461,14 @@ static void import_cmd(int argc, char** argv) {
         return;
     }
 
-    if ((source = write_to_drive_fopen(argv[3], "r")) == NULL) {
+    if ((source = fopen(argv[3], "r")) == NULL) {
         serial_printf("%s: %s: error: couldn't access `%s`.\n", argv[0], argv[2],
                       argv[3]);
         return;
     }
 
     uint64_t payload = import_chain(source);
-
+    serial_printf("1\n");
     if (!path_result.not_found) {
         path_result.target.payload = payload;
         path_result.target.mtime = s.st_mtime.tv_sec;
@@ -476,7 +476,7 @@ static void import_cmd(int argc, char** argv) {
         fclose(source);
         return;
     }
-
+    serial_printf("2\n");
     entry.parent_id = path_result.parent.payload;
     entry.type = FILE_TYPE;
     strcpy(entry.name, path_result.name);
@@ -488,7 +488,7 @@ static void import_cmd(int argc, char** argv) {
     entry.mtime = s.st_mtime.tv_sec;
 
     entry.perms = (uint16_t)(s.st_mode & ((1 << 9) - 1));
-
+    serial_printf("3\n");
     // find empty entry
     uint64_t loc = (dirstart * bytesperblock);
     echfs_fseek(image, (long)loc, SEEK_SET);
@@ -498,8 +498,9 @@ static void import_cmd(int argc, char** argv) {
         if ((entry_i.parent_id == 0) || (entry_i.parent_id == DELETED_ENTRY))
             break;
     }
+    serial_printf("4\n");
     wr_entry(i, &entry);
-
+    serial_printf("5\n");
     fclose(source);
     if (verbose)
         serial_printf("imported file `%s` as `%s`\n", argv[3], argv[4]);
@@ -564,11 +565,11 @@ static void ls_cmd(int argc, char** argv) {
         if (entryy.parent_id != id)
             continue;
         if (entryy.type == DIRECTORY_TYPE)
-            serial_printf('[');
-        serial_printf("%s\n", entryy.name);
+            serial_printf("[");
+        serial_printf("%s", entryy.name);
         if (entryy.type == DIRECTORY_TYPE)
-            serial_printf(']');
-        serial_printf('\n');
+            serial_printf("]");
+        serial_printf("\n");
     }
 
     return;
@@ -636,12 +637,12 @@ static void format_pass1(int argc, char** argv, int quick) {
              i += bytesperblock) {
             write_to_drive_fwrite(zeroblock, bytesperblock, 1, image);
             if (verbose)
-                serial_printf('.');
+                serial_printf(".");
         }
         free(zeroblock,(sizeof(zeroblock)-1)/4096+1);
 
         if (verbose)
-            serial_printf('\n');
+            serial_printf("\n");
     }
 
     return;
@@ -799,8 +800,7 @@ int echfs_utils_main(int argc, char** argv) {
         else if (!strcmp(argv[2], "quick-format"))
             format_pass2();
         else if (!strcmp(argv[2], "import"))
-            // import_cmd(argc, argv);
-            return;
+            import_cmd(argc, argv);
         else if (!strcmp(argv[2], "export"))
             export_cmd(argc, argv);
 

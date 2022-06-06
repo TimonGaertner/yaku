@@ -1,9 +1,8 @@
 #pragma once
 #include <types.h>
-
+#include <lib/origin.h>
 enum drive { drive_first, drive_second, drive_third, drive_fourth };
 enum access_mode { R, W };
-enum origin { SEEK_SET, SEEK_CUR, SEEK_END };
 struct drive_image {
     enum access_mode access_mode;
     enum drive drive;

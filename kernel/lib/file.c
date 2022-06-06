@@ -1,22 +1,56 @@
 #include "file.h"
 #include <drivers/rtc.h>
+#include <drivers/serial.h>
 #include <lib/datetime.h>
 #include <memory/pmm.h>
 #include <string.h>
+
+static FILE* open_files[MAX_OPEN_FILES];
 struct FILE* fopen(char* filename, char* access_mode) {
-    FILE* file = (struct drive_image*)malloc((sizeof(FILE) - 1) / 4069 + 1);
-    file->access_mode = access_mode;
-    file->name = filename;
+    if (filename == NULL || access_mode == NULL ||
+        strlen(filename) > (MAX_FILENAME_LENGTH - 1) || strlen(access_mode) > 2) {
+        return NULL;
+    }
+    for (uint64_t i = 0; i < MAX_OPEN_FILES; i++) {
+        if (open_files[i] != NULL) {
+            if (strcmp(open_files[i]->name, filename) == 0) {
+                return open_files[i];
+            }
+        }
+    }
+    FILE* file = (FILE*)malloc((sizeof(FILE) - 1) / 4069 + 1);
+    strcpy(file->access_mode, access_mode);
+    strcpy(file->name, filename);
     file->byte_ptr = 0;
-    datetime_t rtc_time;
-    rtc_read_time(&rtc_time);
-    uint64_t tv_sec = (uint64_t)datetime_to_timestamp(&rtc_time, false);
+    uint64_t tv_sec = (uint64_t)datetime_get_timestamp();
     file->st.st_mtime.tv_sec = tv_sec;
     file->st.st_ctime.tv_sec = tv_sec;
     file->st.st_atime.tv_sec = tv_sec;
     file->st.st_size = 0;
     file->st.st_mode = 0;
+    for (uint64_t i = 0; i < MAX_OPEN_FILES; i++) {
+        if (open_files[i] == NULL) {
+            open_files[i] = file;
+            return file;
+        }
+    }
     return file;
+}
+uint8_t stat(char* filename, struct stat* st) {
+    if (filename == NULL || st == NULL) {
+        return 1;
+    }
+    for (uint64_t i = 0; i < MAX_OPEN_FILES; i++) {
+        if (strcmp(open_files[i]->name, filename) == 0) {
+            st->st_mode = open_files[i]->st.st_mode;
+            st->st_mtime.tv_sec = open_files[i]->st.st_mtime.tv_sec;
+            st->st_ctime.tv_sec = open_files[i]->st.st_ctime.tv_sec;
+            st->st_atime.tv_sec = open_files[i]->st.st_atime.tv_sec;
+            st->st_size = open_files[i]->st.st_size;
+            return 0;
+        }
+    }
+    return 1;
 }
 uint8_t fseek(FILE* drive_image, int64_t offset, enum origin origin) {
     if (origin == SEEK_SET) {
@@ -36,92 +70,113 @@ uint8_t fseek(FILE* drive_image, int64_t offset, enum origin origin) {
     }
     return 0;
 }
-void rewind(FILE* drive_image) {
-    drive_image->byte_ptr = 0;
+void rewind(FILE* file) {
+    file->byte_ptr = 0;
 }
-void fclose(FILE* drive_image) {
+void fclose(FILE* file) {
     for (int i = 0; i < max_blocks; i++) {
-        if (drive_image->data[i] != NULL) {
-            free(drive_image->data[i], 1);
+        if (file->data[i] != NULL) {
+            free(file->data[i], 1);
         }
     }
-    free(drive_image, (sizeof(FILE) - 1) / 4069 + 1);
+    for (int i = 0; i < MAX_OPEN_FILES; i++) {
+        if (open_files[i] == file) {
+            open_files[i] = NULL;
+        }
+    }
+    free(file, (sizeof(FILE) - 1) / 4069 + 1);
 }
 uint64_t ftell(FILE* drive_image) {
     return drive_image->byte_ptr;
 }
 uint8_t fwrite(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
-               FILE* image) {
-    if (image->access_mode[0] != 'w') {
+               FILE* file) {
+    if (file->access_mode[0] != 'w') {
         return 1;
     }
     uint64_t size = size_of_element * number_of_elements;
-    uint64_t block_num = image->byte_ptr / 4096;
-    uint64_t block_offset = image->byte_ptr % 4096;
-    for (uint64_t i = block_offset; i < size; i += 1) {
-        if (image->data[block_num] == NULL) {
-            image->data[block_num] = (uint8_t*)malloc(4096);
+    uint64_t block_num = file->byte_ptr / 4096;
+    uint64_t block_offset = file->byte_ptr % 4096;
+    for (uint64_t i = block_offset; i < size + block_offset; i += 1) {
+        if (file->data[block_num] == NULL) {
+            file->data[block_num] = (uint8_t*)malloc(4096);
         }
-        image->data[block_num][i] = ptr[i - block_offset];
-        image->byte_ptr += 1;
-        if (image->byte_ptr > image->st.st_size) {
-            image->st.st_size = image->byte_ptr;
+        file->data[block_num][i % 4096] = ptr[i - block_offset];
+        file->byte_ptr += 1;
+        if (file->byte_ptr > file->st.st_size) {
+            file->st.st_size = file->byte_ptr;
         }
-        if (image->byte_ptr % 4096 == 0) {
+        if (file->byte_ptr % 4096 == 0) {
             block_num += 1;
         }
     }
+    uint64_t tv_sec = (uint64_t)datetime_get_timestamp();
+    file->st.st_mtime.tv_sec = tv_sec;
+    file->st.st_ctime.tv_sec = tv_sec;
+    file->st.st_atime.tv_sec = tv_sec;
     return 0;
 }
-uint8_t fputs(char* str, FILE* image){
-    if (image->access_mode[0] != 'w') {
+uint8_t fputs(char* str, FILE* file) {
+    if (file->access_mode[0] != 'w') {
         return 1;
     }
     uint64_t size = strlen(str);
-    uint64_t block_num = image->byte_ptr / 4096;
-    uint64_t block_offset = image->byte_ptr % 4096;
-    for (uint64_t i = block_offset; i < size; i += 1) {
-        if (image->data[block_num] == NULL) {
-            image->data[block_num] = (uint8_t*)malloc(4096);
+    uint64_t block_num = file->byte_ptr / 4096;
+    uint64_t block_offset = file->byte_ptr % 4096;
+    for (uint64_t i = block_offset; i < size + block_offset; i += 1) {
+        if (file->data[block_num] == NULL) {
+            file->data[block_num] = (uint8_t*)malloc(4096);
         }
-        image->data[block_num][i] = str[i - block_offset];
-        image->byte_ptr += 1;
-        if (image->byte_ptr > image->st.st_size) {
-            image->st.st_size = image->byte_ptr;
+        file->data[block_num][i % 4096] = str[i - block_offset];
+        file->byte_ptr += 1;
+        if (file->byte_ptr > file->st.st_size) {
+            file->st.st_size = file->byte_ptr;
         }
-        if (image->byte_ptr % 4096 == 0) {
+        if (file->byte_ptr % 4096 == 0) {
             block_num += 1;
         }
     }
+    uint64_t tv_sec = (uint64_t)datetime_get_timestamp();
+    file->st.st_mtime.tv_sec = tv_sec;
+    file->st.st_ctime.tv_sec = tv_sec;
+    file->st.st_atime.tv_sec = tv_sec;
     return 0;
 }
 uint8_t fread(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
-              FILE* image) {
+              FILE* file) {
 
     uint64_t size = size_of_element * number_of_elements;
-    uint64_t block_num = image->byte_ptr / 4096;
-    uint64_t block_offset = image->byte_ptr % 4096;
-    for (uint64_t i = block_offset; i < size; i += 1) {
-        if (image->data[block_num] == NULL) {
+    uint64_t block_num = file->byte_ptr / 4096;
+    uint64_t block_offset = file->byte_ptr % 4096;
+    for (uint64_t i = block_offset; i < size + block_offset; i += 1) {
+        if (file->data[block_num] == NULL) {
             ptr[i - block_offset] = 0;
+            file->byte_ptr += 1;
+            continue;
         }
-        ptr[i - block_offset] = image->data[block_num][i];
-        image->byte_ptr += 1;
-        if (image->byte_ptr % 4096 == 0) {
+        ptr[i - block_offset] = file->data[block_num][i % 4096];
+        file->byte_ptr += 1;
+        if (file->byte_ptr % 4096 == 0) {
             block_num += 1;
         }
     }
+    uint64_t tv_sec = (uint64_t)datetime_get_timestamp();
+    file->st.st_ctime.tv_sec = tv_sec;
+    file->st.st_atime.tv_sec = tv_sec;
     return 0;
 }
-uint8_t fflush(FILE* image) {
+uint8_t fflush(FILE* file) {
     return 0;
 }
-uint8_t fgetc(FILE* image){
-    uint64_t block_num = image->byte_ptr / 4096;
-    uint64_t block_offset = image->byte_ptr % 4096;
-    if (image->data[block_num] == NULL) {
+uint8_t fgetc(FILE* file) {
+    uint64_t block_num = file->byte_ptr / 4096;
+    uint64_t block_offset = file->byte_ptr % 4096;
+    if (file->data[block_num] == NULL) {
         return 0;
     }
-    image->byte_ptr += 1;
-    return image->data[block_num][block_offset];
+    file->byte_ptr += 1;
+    uint64_t tv_sec = (uint64_t)datetime_get_timestamp();
+    file->st.st_ctime.tv_sec = tv_sec;
+    file->st.st_atime.tv_sec = tv_sec;
+    return file->data[block_num][block_offset];
 }

@@ -4,8 +4,12 @@
 #include <drivers/pit.h>
 #include <drivers/serial.h>
 #include <drivers/vga_text.h>
+#include <echfs/echfs-utils.h>
+#include <echfs/mkfs.echfs.h>
 #include <interrupts/idt.h>
 #include <interrupts/pic.h>
+#include <lib/datetime.h>
+#include <lib/file.h>
 #include <lib/input/keyboard_handler.h>
 #include <lib/input/mouse_handler.h>
 #include <lib/write_to_drive.h>
@@ -17,8 +21,6 @@
 #include <stivale2.h>
 #include <string.h>
 #include <types.h>
-#include <echfs/echfs-utils.h>
-// #include <echfs/mkfs.echfs.h>
 // #include <drivers/lba/lba.h>
 
 extern int enable_sse();
@@ -100,9 +102,16 @@ void start(stivale2_struct_t* stivale2_struct) {
     // lba_read_primary_controller(2, 1);
     uint8_t buffer[512];
     buffer[0] = 0b11111111;
-    for (int i = 0; i < 256; i++) {
-        buffer[i] = 0;
-    }
+    // for (int i = 0; i < 256; i++) {
+    //     buffer[i] = 0;
+    // }
+    // serial_printf("timestamp: %lu\n", datetime_get_timestamp());
+    // FILE* file=fopen("/test.txt", "w");
+    // fopen("/test.txt", "w");
+    // fwrite(buffer, 512, 1, file);
+    // uint8_t buffer2[512];
+    // fseek(file, 0, SEEK_SET);
+    // fread(buffer2, 512, 1, file);
     // buffer[0]=1;
     // lba_init();
     // lba_write_primary_controller_first_drive(0, 1, (uint8_t*)buffer);
@@ -116,18 +125,14 @@ void start(stivale2_struct_t* stivale2_struct) {
     // fseek(image, 0, SEEK_SET);
     // fwrite(buffer, 1, 10, image);
     // lba_read_primary_controller_first_drive(0, 1, (uint8_t*)buffer);
-    
+
     // fread(buffer, 1, 1, image);
-    char* args[4] = {
-        "-v",
-        "",
-        "ls",
-        "/"
-    };
-    serial_printf("%lu size\n", get_drive_size(primary_controller, first_drive));
-    // main(4, args);
-    echfs_utils_main(4, args);
-    serial_printf("buffer0: %d\n", buffer[0]);
+    fopen("/b.txt", "w");
+    fwrite(buffer, 11, 1, fopen("/b.txt", "w"));
+    fclose(fopen("/b.txt", "w"));
+    // char* args[4] = {"-v", "", "import", "/b.txt","r.a"};
+    // // echfs_mkfs_main(4, args);
+    // echfs_utils_main(5, args);
     for (;;) {
         asm("hlt");
     }
