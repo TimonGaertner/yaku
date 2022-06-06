@@ -6,6 +6,7 @@
 #include <memory/pmm.h>
 #include <string.h>
 #include <types.h>
+#include <lib/file.h>
 #include "part.h"
 #define PRIu64 __PRI64_PREFIX "u"
 #define EXIT_FAILURE 1 /* Failing exit status.  */
@@ -70,12 +71,12 @@ void* calloc(size_t num, size_t size){
     return adr;
 }
 inline static int echfs_fseek(struct drive_image* file, long loc, int mode) {
-    return fseek(file, loc + part_offset, mode);
+    return write_to_drive_fseek(file, loc + part_offset, mode);
 }
 
 static inline uint8_t rd_byte(uint64_t loc) {
     echfs_fseek(image, (long)loc, SEEK_SET);
-    return (uint8_t)fgetc(image);
+    return (uint8_t)write_to_drive_fgetc(image);
 }
 
 static inline void wr_byte(uint64_t loc, uint8_t x) {
@@ -87,39 +88,39 @@ static inline void wr_byte(uint64_t loc, uint8_t x) {
 static inline uint16_t rd_word(uint64_t loc) {
     uint16_t x = 0;
     echfs_fseek(image, (long)loc, SEEK_SET);
-    fread(&x, 2, 1, image);
+    write_to_drive_fread(&x, 2, 1, image);
     return x;
 }
 
 static inline void wr_word(uint64_t loc, uint16_t x) {
     echfs_fseek(image, (long)loc, SEEK_SET);
-    fwrite(&x, 2, 1, image);
+    write_to_drive_fwrite(&x, 2, 1, image);
     return;
 }
 
 static inline uint32_t rd_dword(uint64_t loc) {
     uint32_t x = 0;
     echfs_fseek(image, (long)loc, SEEK_SET);
-    fread(&x, 4, 1, image);
+    write_to_drive_fread(&x, 4, 1, image);
     return x;
 }
 
 static inline void wr_dword(uint64_t loc, uint32_t x) {
     echfs_fseek(image, (long)loc, SEEK_SET);
-    fwrite(&x, 4, 1, image);
+    write_to_drive_fwrite(&x, 4, 1, image);
     return;
 }
 
 static inline uint64_t rd_qword(uint64_t loc) {
     uint64_t x = 0;
     echfs_fseek(image, (long)loc, SEEK_SET);
-    fread(&x, 8, 1, image);
+    write_to_drive_fread(&x, 8, 1, image);
     return x;
 }
 
 static inline void wr_qword(uint64_t loc, uint64_t x) {
     echfs_fseek(image, (long)loc, SEEK_SET);
-    fwrite(&x, 8, 1, image);
+    write_to_drive_fwrite(&x, 8, 1, image);
     return;
 }
 
@@ -132,7 +133,7 @@ static inline void rd_entry(entry_t* res, uint64_t entry) {
     }
 
     echfs_fseek(image, (long)loc, SEEK_SET);
-    fread(res, sizeof(entry_t), 1, image);
+    write_to_drive_fread(res, sizeof(entry_t), 1, image);
 }
 
 static inline void wr_entry(uint64_t entry, entry_t* entry_src) {
@@ -146,19 +147,19 @@ static inline void wr_entry(uint64_t entry, entry_t* entry_src) {
     echfs_fseek(image, (long)loc, SEEK_SET);
     uint8_t* buf = (uint8_t*)entry_src;
     serial_printf("writing to position %lu\n", buf[1]);
-    fwrite(entry_src, sizeof(entry_t), 1, image);
+    write_to_drive_fwrite(entry_src, sizeof(entry_t), 1, image);
 }
 
-static uint64_t import_chain(struct drive_image* source) {
+static uint64_t import_chain(FILE* source) {
     uint8_t* block_buf = malloc(bytesperblock);
     if (!block_buf) {
         serial_printf("malloc failure");
         return;
     }
 
-    fseek(source, 0L, SEEK_END);
-    uint64_t source_size = (uint64_t)ftell(source);
-    rewind(source);
+    write_to_drive_fseek(source, 0L, SEEK_END);
+    uint64_t source_size = (uint64_t)write_to_drive_ftell(source);
+    write_to_drive_rewind(source);
 
     if (!source_size)
         return END_OF_CHAIN;
@@ -180,7 +181,7 @@ static uint64_t import_chain(struct drive_image* source) {
     uint64_t block = 0;
     for (uint64_t i = 0; i < source_size_blocks; i++) {
         uint64_t vvv;
-        for (; fread(&vvv, sizeof(uint64_t), 1, image), vvv; block++)
+        for (; write_to_drive_fread(&vvv, sizeof(uint64_t), 1, image), vvv; block++)
             ;
         blocklist[i] = block++;
     }
@@ -189,7 +190,7 @@ static uint64_t import_chain(struct drive_image* source) {
         echfs_fseek(image, blocklist[i] * bytesperblock, SEEK_SET);
 
         // copy block
-        fwrite(block_buf, 1, fread(block_buf, 1, bytesperblock, source), image);
+        write_to_drive_fwrite(block_buf, 1, write_to_drive_fread(block_buf, 1, bytesperblock, source), image);
     }
 
     for (uint64_t i = 0;; i++) {
@@ -197,10 +198,10 @@ static uint64_t import_chain(struct drive_image* source) {
                     SEEK_SET);
         if (i == source_size_blocks - 1) {
             uint64_t vvv = END_OF_CHAIN;
-            fwrite(&vvv, sizeof(uint64_t), 1, image);
+            write_to_drive_fwrite(&vvv, sizeof(uint64_t), 1, image);
             break;
         }
-        fwrite(&blocklist[i + 1], sizeof(uint64_t), 1, image);
+        write_to_drive_fwrite(&blocklist[i + 1], sizeof(uint64_t), 1, image);
     }
 
     block = blocklist[0];
@@ -210,7 +211,7 @@ static uint64_t import_chain(struct drive_image* source) {
     return block;
 }
 
-static void export_chain(struct drive_image* dest, entry_t src) {
+static void export_chain(FILE* dest, entry_t src) {
     uint64_t cur_block;
     uint8_t* block_buf = malloc((bytesperblock-1)/4096+1);
     if (!block_buf) {
@@ -221,13 +222,13 @@ static void export_chain(struct drive_image* dest, entry_t src) {
     for (cur_block = src.payload; cur_block != END_OF_CHAIN;) {
         echfs_fseek(image, (long)(cur_block * bytesperblock), SEEK_SET);
         // copy block
-        if (((uint64_t)ftell(dest) + bytesperblock) >= src.size) {
-            fread(block_buf, src.size % bytesperblock, 1, image);
-            fwrite(block_buf, src.size % bytesperblock, 1, dest);
+        if (((uint64_t)write_to_drive_ftell(dest) + bytesperblock) >= src.size) {
+            write_to_drive_fread(block_buf, src.size % bytesperblock, 1, image);
+            write_to_drive_fwrite(block_buf, src.size % bytesperblock, 1, dest);
             break;
         } else {
-            fread(block_buf, bytesperblock, 1, image);
-            fwrite(block_buf, bytesperblock, 1, dest);
+            write_to_drive_fread(block_buf, bytesperblock, 1, image);
+            write_to_drive_fwrite(block_buf, bytesperblock, 1, dest);
         }
 
         cur_block = rd_qword((fatstart * bytesperblock) + (cur_block * sizeof(uint64_t)));
@@ -257,7 +258,7 @@ static uint64_t search(const char* name, uint64_t parent, uint8_t type) {
     echfs_fseek(image, (long)loc, SEEK_SET);
     for (uint64_t i = 0;; i++) {
         entry_t entry;
-        fread(&entry, sizeof(entry_t), 1, image);
+        write_to_drive_fread(&entry, sizeof(entry_t), 1, image);
         if (!entry.parent_id)
             return SEARCH_FAILURE; // check if past last entry
         if (i >= (dirsize * ENTRIES_PER_BLOCK))
@@ -345,7 +346,7 @@ static inline uint64_t get_free_id(void) {
 
     for (i = 0;; i++) {
         entry_t entry;
-        fread(&entry, sizeof(entry_t), 1, image);
+        write_to_drive_fread(&entry, sizeof(entry_t), 1, image);
         if (!entry.parent_id)
             break;
         if ((entry.type == 1) && (entry.payload == id))
@@ -378,7 +379,7 @@ static void mkdir_cmd(int argc, char** argv) {
     echfs_fseek(image, (long)loc, SEEK_SET);
     for (i = 0;; i++) {
         entry_t entry_i;
-        fread(&entry_i, sizeof(entry_t), 1, image);
+        write_to_drive_fread(&entry_i, sizeof(entry_t), 1, image);
         if ((entry_i.parent_id == 0) || (entry_i.parent_id == DELETED_ENTRY))
             break;
     }
@@ -460,7 +461,7 @@ static void mkdir_cmd(int argc, char** argv) {
 //         return;
 //     }
 
-//     if ((source = fopen(argv[3], "r")) == NULL) {
+//     if ((source = write_to_drive_fopen(argv[3], "r")) == NULL) {
 //         serial_printf("%s: %s: error: couldn't access `%s`.\n", argv[0], argv[2],
 //                       argv[3]);
 //         return;
@@ -481,7 +482,7 @@ static void mkdir_cmd(int argc, char** argv) {
 //     strcpy(entry.name, path_result.name);
 //     entry.payload = payload;
 //     fseek(source, 0L, SEEK_END);
-//     entry.size = (uint64_t)ftell(source);
+//     entry.size = (uint64_t)write_to_drive_ftell(source);
 //     entry.ctime = s.st_ctim.tv_sec;
 //     entry.atime = s.st_atim.tv_sec;
 //     entry.mtime = s.st_mtim.tv_sec;
@@ -506,7 +507,7 @@ static void mkdir_cmd(int argc, char** argv) {
 // }
 
 static void export_cmd(int argc, char** argv) {
-    struct drive_image* dest;;
+    FILE* dest;
 
     if (argc < 4) {
         serial_printf("%s: %s: missing argument: source file.\n", argv[0], argv[2]);
@@ -525,7 +526,7 @@ static void export_cmd(int argc, char** argv) {
         return;
     }
 
-    if ((dest = fopen(drive_first,W)) == NULL) {
+    if ((dest = write_to_drive_fopen(drive_first,W)) == NULL) {
         serial_printf("%s: %s: error: couldn't access `%s`.\n", argv[0], argv[2],
                       argv[4]);
         return;
@@ -533,7 +534,7 @@ static void export_cmd(int argc, char** argv) {
 
     export_chain(dest, path_result.target);
 
-    fclose(dest);
+    write_to_drive_fclose(dest);
     if (verbose)
         serial_printf("exported file `%s` as `%s`\n", argv[3], argv[4]);
     return;
@@ -577,7 +578,7 @@ static void format_pass1(int argc, char** argv, int quick) {
 
     if (argc <= 3) {
         serial_printf("%s: error: unspecified block size.\n", argv[0]);
-        fclose(image);
+        write_to_drive_fclose(image);
         return;
     }
 
@@ -588,13 +589,13 @@ static void format_pass1(int argc, char** argv, int quick) {
 
     if ((bytesperblock <= 0) || (bytesperblock % 512)) {
         serial_printf("%s: error: block size MUST be a multiple of 512.\n", argv[0]);
-        fclose(image);
+        write_to_drive_fclose(image);
         return;
     }
 
     if (imgsize % bytesperblock) {
         serial_printf("%s: error: image is not block-aligned.\n", argv[0]);
-        fclose(image);
+        write_to_drive_fclose(image);
         return;
     }
 
@@ -602,7 +603,7 @@ static void format_pass1(int argc, char** argv, int quick) {
 
     // write signature
     echfs_fseek(image, 4, SEEK_SET);
-    fputs("_ECH_FS_", image);
+    write_to_drive_fputs("_ECH_FS_", image);
     // total blocks
     wr_qword(12, blocks);
     // directory size
@@ -633,7 +634,7 @@ static void format_pass1(int argc, char** argv, int quick) {
         }
         for (uint64_t i = (RESERVED_BLOCKS * bytesperblock); i < imgsize;
              i += bytesperblock) {
-            fwrite(zeroblock, bytesperblock, 1, image);
+            write_to_drive_fwrite(zeroblock, bytesperblock, 1, image);
             if (verbose)
                 serial_printf('.');
         }
@@ -691,7 +692,7 @@ int echfs_utils_main(int argc, char** argv) {
         return EXIT_SUCCESS;
     }
 
-    if ((image = fopen(drive_first, W)) == NULL) {
+    if ((image = write_to_drive_fopen(drive_first, W)) == NULL) {
         serial_printf("%s: error: couldn't access %s.\n", argv[0], argv[optind]);
         return EXIT_FAILURE;
     }
@@ -708,9 +709,9 @@ int echfs_utils_main(int argc, char** argv) {
         imgsize = p.sect_count * 512;
     } else {
         part_offset = 0;
-        fseek(image, 0L, SEEK_END);
-        imgsize = (uint64_t)ftell(image);
-        rewind(image);
+        write_to_drive_fseek(image, 0L, SEEK_END);
+        imgsize = (uint64_t)write_to_drive_ftell(image);
+        write_to_drive_rewind(image);
     }
 
     argv[optind - 1] = argv[0];
@@ -723,10 +724,10 @@ int echfs_utils_main(int argc, char** argv) {
 
     char signature[8] = {0};
     echfs_fseek(image, 4, SEEK_SET);
-    fread(signature, 8, 1, image);
+    write_to_drive_fread(signature, 8, 1, image);
     if (strncmp(signature, "_ECH_FS_", 8)) {
         serial_printf("%s: error: echidnaFS signature missing.\n", argv[0]);
-        fclose(image);
+        write_to_drive_fclose(image);
         return EXIT_FAILURE;
     }
     if (verbose)
@@ -741,7 +742,7 @@ int echfs_utils_main(int argc, char** argv) {
 
     if (imgsize % bytesperblock) {
         serial_printf("%s: error: image is not block-aligned.\n", argv[0]);
-        fclose(image);
+        write_to_drive_fclose(image);
         return EXIT_FAILURE;
     }
 
@@ -808,7 +809,7 @@ int echfs_utils_main(int argc, char** argv) {
     } else
         serial_printf("%s: no action specified, exiting.\n", argv[0]);
 
-    fclose(image);
+    write_to_drive_fclose(image);
 
     return EXIT_SUCCESS;
 }

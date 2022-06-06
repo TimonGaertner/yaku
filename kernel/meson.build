@@ -36,6 +36,7 @@ kernel_c_srcs = files([
     'echfs/mkfs.echfs.c',
     'echfs/echfs-utils.c',
     'echfs/part.c',
+    'lib/file.c',
 ])
 
 kernel_asmflags = ['-f', 'elf64']

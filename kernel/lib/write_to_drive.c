@@ -3,7 +3,7 @@
 #include <memory/pmm.h>
 #include <drivers/serial.h>
 #include <thirdparty/string/string.h>
-struct drive_image* fopen(enum drive drive, enum access_mode access_mode) {
+struct drive_image* write_to_drive_fopen(enum drive drive, enum access_mode access_mode) {
     if (drive == drive_first) {
         if (!drive_present(primary_controller, first_drive)) {
             return NULL;
@@ -22,23 +22,23 @@ struct drive_image* fopen(enum drive drive, enum access_mode access_mode) {
         }
     }
     struct drive_image* drive_image =
-        (struct drive_image*)malloc(sizeof(struct drive_image) / 4069 + 1);
+        (struct drive_image*)malloc((sizeof(struct drive_image)-1) / 4069 + 1);
     drive_image->drive = drive;
     drive_image->access_mode = access_mode;
     drive_image->byte_pointer_position = 0;
     return drive_image;
 }
-uint64_t ftell(struct drive_image* drive_image) {
+uint64_t write_to_drive_ftell(struct drive_image* drive_image) {
     return drive_image->byte_pointer_position;
 }
-void fclose(struct drive_image* drive_image) {
+void write_to_drive_fclose(struct drive_image* drive_image) {
     free(drive_image, sizeof(drive_image) / 4069 + 1);
 }
-void rewind(struct drive_image* drive_image) {
+void write_to_drive_rewind(struct drive_image* drive_image) {
     drive_image->drive = 0;
 }
 
-uint8_t fseek(struct drive_image* drive_image, int64_t offset /*in bytes*/,
+uint8_t write_to_drive_fseek(struct drive_image* drive_image, int64_t offset /*in bytes*/,
               enum origin origin) {
     if (origin == SEEK_SET) {
         if (offset < 0) {
@@ -98,7 +98,7 @@ uint8_t fseek(struct drive_image* drive_image, int64_t offset /*in bytes*/,
     return 1;
 }
 
-uint8_t fwrite(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
+uint8_t write_to_drive_fwrite(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
                struct drive_image* image) {
     if (image->access_mode != W) {
         return 1;
@@ -176,7 +176,7 @@ uint8_t fwrite(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
                   number_of_elements * size_of_element, image->byte_pointer_position);
     return 0;
 }
-uint8_t fputs(char* str, struct drive_image* image) {
+uint8_t write_to_drive_fputs(char* str, struct drive_image* image) {
     uint64_t size_of_element = strlen(str);
     uint8_t string_buffer[size_of_element];
     strncpy((char*)string_buffer, str, size_of_element);
@@ -246,11 +246,11 @@ uint8_t fputs(char* str, struct drive_image* image) {
 }
 
 // no functionality right now
-uint8_t fflush(struct drive_image* image) {
+uint8_t write_to_drive_fflush(struct drive_image* image) {
     return 0;
 }
 
-uint8_t fgetc(struct drive_image* image) {
+uint8_t write_to_drive_fgetc(struct drive_image* image) {
     uint64_t byte_to_read_from = image->byte_pointer_position;
     uint64_t sector_to_read_from = byte_to_read_from / 512;
     uint64_t byte_in_sector_to_read_from = byte_to_read_from % 512;
@@ -270,7 +270,7 @@ uint8_t fgetc(struct drive_image* image) {
     image->byte_pointer_position++;
     return buffer[byte_in_sector_to_read_from];
 }
-uint8_t fread(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
+uint8_t write_to_drive_fread(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
               struct drive_image* image) {
     uint64_t byte_to_read_from = image->byte_pointer_position;
     uint64_t sector_to_read_from = byte_to_read_from / 512;

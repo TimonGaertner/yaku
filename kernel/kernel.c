@@ -111,7 +111,7 @@ void start(stivale2_struct_t* stivale2_struct) {
 
     // static struct drive_image* image;
 
-    // image = fopen(drive_first, W);
+    // image = write_to_drive_fopen(drive_first, W);
     // serial_printf("%p\n", image);
     // fseek(image, 0, SEEK_SET);
     // fwrite(buffer, 1, 10, image);

@@ -27,6 +27,8 @@
         "memory": "c",
         "new": "c",
         "compare": "c",
-        "echfs.utils.h": "c"
+        "echfs.utils.h": "c",
+        "fstream": "c",
+        "file.h": "c"
     }
 }

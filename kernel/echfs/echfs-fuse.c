@@ -121,13 +121,13 @@ static void cleanup_fuse() {
 }
 
 static inline int echfs_fseek(FILE *file, long loc, int mode) {
-    return fseek(file, echfs.part_offset + loc, mode);
+    return write_to_drive_fseek(file, echfs.part_offset + loc, mode);
 }
 
 static inline uint16_t rd_word(long loc) {
     uint16_t x = 0;
     echfs_fseek(echfs.image, loc, SEEK_SET);
-    int ret = fread(&x, 2, 1, echfs.image);
+    int ret = write_to_drive_fread(&x, 2, 1, echfs.image);
     if (ret != 1)
         fprintf(stderr, "error reading word!\n");
     return x;
@@ -136,7 +136,7 @@ static inline uint16_t rd_word(long loc) {
 static inline uint64_t rd_qword(long loc) {
     uint64_t x = 0;
     echfs_fseek(echfs.image, loc, SEEK_SET);
-    int ret = fread(&x, 8, 1, echfs.image);
+    int ret = write_to_drive_fread(&x, 8, 1, echfs.image);
     if (ret != 1)
         fprintf(stderr, "error reading qword!\n");
     return x;
@@ -317,7 +317,7 @@ static void *echfs_init(struct fuse_conn_info *conn) {
     (void) conn;
 
     memset(&handles, 0, sizeof(handles));
-    echfs.image = fopen(echfs.image_path, "r+");
+    echfs.image = write_to_drive_fopen(echfs.image_path, "r+");
     if (!echfs.image) {
         fprintf(stderr, "Error opening echfs image %s!\n", echfs.image_path);
         cleanup_fuse();
@@ -336,26 +336,26 @@ static void *echfs_init(struct fuse_conn_info *conn) {
         echfs.image_size  = p.sect_count * 512;
     } else {
         echfs.part_offset = 0;
-        fseek(echfs.image, 0L, last_block);
-        echfs.image_size = (uint64_t)ftell(echfs.image);
+        write_to_drive_fseek(echfs.image, 0L, last_block);
+        echfs.image_size = (uint64_t)write_to_drive_ftell(echfs.image);
         echfs_fseek(echfs.image, 0L, SEEK_SET);
     }
     echfs_debug("echfs image size: %lu\n", echfs.image_size);
 
     char signature[8] = {0};
     echfs_fseek(echfs.image, 4, SEEK_SET);
-    int ret = fread(signature, 8, 1, echfs.image);
+    int ret = write_to_drive_fread(signature, 8, 1, echfs.image);
     if (ret != 1) {
         fprintf(stderr, "error reading signature!\n");
         cleanup_fuse();
-        fclose(echfs.image);
+        write_to_drive_fclose(echfs.image);
         exit(1);
     }
 
     if (strncmp(signature, "_ECH_FS_", 8)) {
         fprintf(stderr, "echdinaFS signature missing!\n");
         cleanup_fuse();
-        fclose(echfs.image);
+        write_to_drive_fclose(echfs.image);
         exit(1);
     }
 
@@ -365,7 +365,7 @@ static void *echfs_init(struct fuse_conn_info *conn) {
     if (echfs.image_size % echfs.bytes_per_block) {
         fprintf(stderr, "image is not block aligned!\n");
         cleanup_fuse();
-        fclose(echfs.image);
+        write_to_drive_fclose(echfs.image);
         exit(1);
     }
 
@@ -405,16 +405,16 @@ static void *echfs_init(struct fuse_conn_info *conn) {
     if (!echfs.dir_table) {
         fprintf(stderr, "error allocating dir_table!\n");
         cleanup_fuse();
-        fclose(echfs.image);
+        write_to_drive_fclose(echfs.image);
         exit(1);
     }
     echfs_fseek(echfs.image, echfs.dir_start * echfs.bytes_per_block, SEEK_SET);
-    ret = fread(echfs.dir_table, sizeof(char), echfs.dir_size *
+    ret = write_to_drive_fread(echfs.dir_table, sizeof(char), echfs.dir_size *
             echfs.bytes_per_block, echfs.image);
     if (ret != (echfs.dir_size * echfs.bytes_per_block)) {
         fprintf(stderr, "error reading dir_table!\n");
         cleanup_fuse();
-        fclose(echfs.image);
+        write_to_drive_fclose(echfs.image);
         free(echfs.dir_table);
         exit(1);
     }
@@ -423,17 +423,17 @@ static void *echfs_init(struct fuse_conn_info *conn) {
     if (!echfs.fat) {
         fprintf(stderr, "error allocating allocation table!\n");
         cleanup_fuse();
-        fclose(echfs.image);
+        write_to_drive_fclose(echfs.image);
         free(echfs.dir_table);
         exit(1);
     }
     echfs_fseek(echfs.image, echfs.fat_start * echfs.bytes_per_block, SEEK_SET);
-    ret = fread(echfs.fat, sizeof(char), echfs.fat_size * echfs.bytes_per_block,
+    ret = write_to_drive_fread(echfs.fat, sizeof(char), echfs.fat_size * echfs.bytes_per_block,
             echfs.image);
     if (ret != (echfs.fat_size * echfs.bytes_per_block)) {
         fprintf(stderr, "error reading allocation table!\n");
         cleanup_fuse();
-        fclose(echfs.image);
+        write_to_drive_fclose(echfs.image);
         free(echfs.dir_table);
         free(echfs.fat);
         exit(1);
@@ -446,15 +446,15 @@ static void echfs_destroy(void *data) {
     (void) data;
     fprintf(stderr, "cleaning up!\n");
     echfs_fseek(echfs.image, echfs.dir_start * echfs.bytes_per_block, SEEK_SET);
-    fwrite(echfs.dir_table, sizeof(char), echfs.dir_size * echfs.bytes_per_block,
+    write_to_drive_fwrite(echfs.dir_table, sizeof(char), echfs.dir_size * echfs.bytes_per_block,
             echfs.image);
     free(echfs.dir_table);
 
     echfs_fseek(echfs.image, echfs.fat_start * echfs.bytes_per_block, SEEK_SET);
-    fwrite(echfs.fat, sizeof(char), echfs.dir_size * echfs.bytes_per_block,
+    write_to_drive_fwrite(echfs.fat, sizeof(char), echfs.dir_size * echfs.bytes_per_block,
             echfs.image);
     free(echfs.fat);
-    fclose(echfs.image);
+    write_to_drive_fclose(echfs.image);
 }
 
 static int is_dir_empty(uint64_t id) {
@@ -741,7 +741,7 @@ static int echfs_read(const char *path, char *buf, size_t to_read,
             chunk = echfs.bytes_per_block - disk_offset;
 
         echfs_fseek(echfs.image, loc + disk_offset, SEEK_SET);
-        int ret = fread(buf + progress, 1, chunk, echfs.image);
+        int ret = write_to_drive_fread(buf + progress, 1, chunk, echfs.image);
         if (ret != chunk)
             return -EIO;
         progress += chunk;
@@ -816,7 +816,7 @@ static int echfs_write(const char *path, const char *buf, size_t to_write,
             chunk = echfs.bytes_per_block - buf_offset;
 
         echfs_fseek(echfs.image, loc + buf_offset, SEEK_SET);
-        ret = fwrite(buf + progress, 1, chunk, echfs.image);
+        ret = write_to_drive_fwrite(buf + progress, 1, chunk, echfs.image);
         if (ret != chunk)
             return -EIO;
         progress += chunk;

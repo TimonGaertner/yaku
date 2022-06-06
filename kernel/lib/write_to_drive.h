@@ -9,15 +9,15 @@ struct drive_image {
     enum drive drive;
     uint64_t byte_pointer_position;
 };
-struct drive_image* fopen(enum drive drive, enum access_mode access_mode);
-uint8_t fseek(struct drive_image* drive_image, int64_t offset, enum origin origin);
-void rewind(struct drive_image* drive_image);
-void fclose(struct drive_image* drive_image);
-uint64_t ftell(struct drive_image* drive_image);
-uint8_t fwrite(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
+struct drive_image* write_to_drive_fopen(enum drive drive, enum access_mode access_mode);
+uint8_t write_to_drive_fseek(struct drive_image* drive_image, int64_t offset, enum origin origin);
+void write_to_drive_rewind(struct drive_image* drive_image);
+void write_to_drive_fclose(struct drive_image* drive_image);
+uint64_t write_to_drive_ftell(struct drive_image* drive_image);
+uint8_t write_to_drive_fwrite(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
                struct drive_image* image);
-uint8_t fread(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
+uint8_t write_to_drive_fread(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
               struct drive_image* image);
-uint8_t fputs(char* str, struct drive_image* image);
-uint8_t fflush(struct drive_image* image);
-uint8_t fgetc(struct drive_image* image);
+uint8_t write_to_drive_fputs(char* str, struct drive_image* image);
+uint8_t write_to_drive_fflush(struct drive_image* image);
+uint8_t write_to_drive_fgetc(struct drive_image* image);
