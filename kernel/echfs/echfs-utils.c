@@ -6,7 +6,7 @@
 #include <memory/pmm.h>
 #include <string.h>
 #include <types.h>
-#include <lib/file.h>
+#include <lib/virtual_file.h>
 #include "part.h"
 #define PRIu64 __PRI64_PREFIX "u"
 #define EXIT_FAILURE 1 /* Failing exit status.  */

@@ -30,6 +30,8 @@
         "echfs.utils.h": "c",
         "fstream": "c",
         "file.h": "c",
-        "origin.h": "c"
+        "origin.h": "c",
+        "stat.h": "c",
+        "stdarg.h": "c"
     }
 }

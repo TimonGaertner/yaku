@@ -1,7 +1,5 @@
 #define FUSE_USE_VERSION 29
 
-
-
 #include <lib/atoi.h>
 #include <lib/getopt.h>
 #include <lib/uuid.h>
@@ -9,10 +7,7 @@
 #include <memory/pmm.h>
 #include <string.h>
 #include <types.h>
-#include <lib/datetime.h>
-#include <lib/stat.h>
 
-#include "echfs-fuse.h"
 #include "part.h"
 
 #define RESERVED_BLOCKS 16
@@ -44,7 +39,7 @@ struct entry_t {
     uint64_t payload;
     uint64_t size;
 }__attribute__((packed));
-
+static uint64_t last_block = get_master_drive_size();
 struct path_result_t {
     uint64_t target_entry;
     struct entry_t target;
@@ -80,7 +75,7 @@ static struct echfs {
     int mbr, gpt, partition;
     uint64_t part_offset;
 
-    struct drive_image *image;
+    FILE *image;
     uint64_t image_size;
     uint64_t blocks;
     uint64_t fat_size;
@@ -98,12 +93,7 @@ static struct echfs {
 }  echfs;
 
 static struct echfs_handle_t handles[MAX_HANDLES];
-void* calloc(size_t num, size_t size){
-    if (num*size == 0) return NULL;
-    void* adr = malloc((num * size-1)/4096+1);
-    memset(adr, 0, num * size);
-    return adr;
-}
+
 static char *internal_strchrnul(const char *s, char c) {
     while (*s) {
         if ((*s++) == c)
@@ -128,7 +118,7 @@ static void cleanup_fuse() {
     fuse_remove_signal_handlers(echfs.session);
 }
 
-static inline int echfs_fseek(struct drive_image *file, long loc, int mode) {
+static inline int echfs_fseek(FILE *file, long loc, int mode) {
     return write_to_drive_fseek(file, echfs.part_offset + loc, mode);
 }
 
@@ -137,7 +127,7 @@ static inline uint16_t rd_word(long loc) {
     echfs_fseek(echfs.image, loc, SEEK_SET);
     int ret = write_to_drive_fread(&x, 2, 1, echfs.image);
     if (ret != 1)
-        serial_printf("echfs-fuse: error reading word!\n");
+        fprintf(stderr, "error reading word!\n");
     return x;
 }
 
@@ -146,7 +136,7 @@ static inline uint64_t rd_qword(long loc) {
     echfs_fseek(echfs.image, loc, SEEK_SET);
     int ret = write_to_drive_fread(&x, 8, 1, echfs.image);
     if (ret != 1)
-        serial_printf("echfs-fuse: error reading qword!\n");
+        fprintf(stderr, "error reading qword!\n");
     return x;
 }
 
@@ -159,8 +149,9 @@ static void wr_entry(struct entry_t *entry, uint64_t pos) {
 }
 
 static inline uint64_t get_time() {
-    uint64_t tv_sec = (uint64_t)datetime_get_timestamp();
-    return tv_sec;
+    struct timeval time = {0};
+    gettimeofday(&time, NULL);
+    return time.tv_sec;
 }
 
 static int update_ctime(struct path_result_t *path_res) {
@@ -324,11 +315,11 @@ static void *echfs_init(struct fuse_conn_info *conn) {
     (void) conn;
 
     memset(&handles, 0, sizeof(handles));
-    echfs.image = fopen(echfs.image_path, "r+");
+    echfs.image = write_to_drive_fopen(echfs.image_path, "r+");
     if (!echfs.image) {
-        serial_printf("echfs-fuse: Error opening echfs image %s!\n", echfs.image_path);
+        fprintf(stderr, "Error opening echfs image %s!\n", echfs.image_path);
         cleanup_fuse();
-        return NULL;
+        exit(1);
     }
 
     if (echfs.mbr) {
@@ -343,8 +334,8 @@ static void *echfs_init(struct fuse_conn_info *conn) {
         echfs.image_size  = p.sect_count * 512;
     } else {
         echfs.part_offset = 0;
-        write_to_drive_fseek(echfs.image, 0L, SEEK_END);
-        echfs.image_size = (uint64_t)ftell(echfs.image);
+        write_to_drive_fseek(echfs.image, 0L, last_block);
+        echfs.image_size = (uint64_t)write_to_drive_ftell(echfs.image);
         echfs_fseek(echfs.image, 0L, SEEK_SET);
     }
     echfs_debug("echfs image size: %lu\n", echfs.image_size);
@@ -353,34 +344,34 @@ static void *echfs_init(struct fuse_conn_info *conn) {
     echfs_fseek(echfs.image, 4, SEEK_SET);
     int ret = write_to_drive_fread(signature, 8, 1, echfs.image);
     if (ret != 1) {
-        serial_printf("echfs-fuse: error reading signature!\n");
+        fprintf(stderr, "error reading signature!\n");
         cleanup_fuse();
         write_to_drive_fclose(echfs.image);
-        return NULL;
+        exit(1);
     }
 
     if (strncmp(signature, "_ECH_FS_", 8)) {
-        serial_printf("echfs-fuse: echdinaFS signature missing!\n");
+        fprintf(stderr, "echdinaFS signature missing!\n");
         cleanup_fuse();
         write_to_drive_fclose(echfs.image);
-        return NULL;
+        exit(1);
     }
 
     echfs.fat_start = RESERVED_BLOCKS;
     echfs.bytes_per_block = rd_qword(28);
     echfs_debug("echfs block size: %lu\n", echfs.bytes_per_block);
     if (echfs.image_size % echfs.bytes_per_block) {
-        serial_printf("echfs-fuse: image is not block aligned!\n");
+        fprintf(stderr, "image is not block aligned!\n");
         cleanup_fuse();
         write_to_drive_fclose(echfs.image);
-        return NULL;
+        exit(1);
     }
 
     echfs.blocks = echfs.image_size / echfs.bytes_per_block;
     echfs_debug("echfs block count: %lu\n", echfs.blocks);
     uint64_t declared_blocks = rd_qword(12);
     if (declared_blocks != echfs.blocks) {
-        serial_printf("echfs-fuse: warning: declared block count mismatch, declared: "
+        fprintf(stderr, "warning: declared block count mismatch, declared: "
                 "%lu, real: %lu\n", declared_blocks, echfs.blocks);
     }
 
@@ -408,42 +399,42 @@ static void *echfs_init(struct fuse_conn_info *conn) {
             "NOT bootable");
 
     echfs.path_cache = init_table(1024);
-    echfs.dir_table = malloc((echfs.dir_size * echfs.bytes_per_block-1)/4096 + 1);
+    echfs.dir_table = malloc(echfs.dir_size * echfs.bytes_per_block);
     if (!echfs.dir_table) {
-        serial_printf("echfs-fuse: error allocating dir_table!\n");
+        fprintf(stderr, "error allocating dir_table!\n");
         cleanup_fuse();
         write_to_drive_fclose(echfs.image);
-        return NULL;
+        exit(1);
     }
     echfs_fseek(echfs.image, echfs.dir_start * echfs.bytes_per_block, SEEK_SET);
     ret = write_to_drive_fread(echfs.dir_table, sizeof(char), echfs.dir_size *
             echfs.bytes_per_block, echfs.image);
     if (ret != (echfs.dir_size * echfs.bytes_per_block)) {
-        serial_printf("echfs-fuse: error reading dir_table!\n");
+        fprintf(stderr, "error reading dir_table!\n");
         cleanup_fuse();
         write_to_drive_fclose(echfs.image);
-        free(echfs.dir_table, (echfs.dir_size * echfs.bytes_per_block-1)/4096+1);
-        return NULL;
+        free(echfs.dir_table);
+        exit(1);
     }
 
-    echfs.fat = malloc((echfs.fat_size * echfs.bytes_per_block-1)/4096 + 1);
+    echfs.fat = malloc(echfs.fat_size * echfs.bytes_per_block);
     if (!echfs.fat) {
-        serial_printf("echfs-fuse: error allocating allocation table!\n");
+        fprintf(stderr, "error allocating allocation table!\n");
         cleanup_fuse();
         write_to_drive_fclose(echfs.image);
-        free(echfs.dir_table, (echfs.dir_size * echfs.bytes_per_block-1)/4096+1);
-        return NULL;
+        free(echfs.dir_table);
+        exit(1);
     }
     echfs_fseek(echfs.image, echfs.fat_start * echfs.bytes_per_block, SEEK_SET);
     ret = write_to_drive_fread(echfs.fat, sizeof(char), echfs.fat_size * echfs.bytes_per_block,
             echfs.image);
     if (ret != (echfs.fat_size * echfs.bytes_per_block)) {
-        serial_printf("echfs-fuse: error reading allocation table!\n");
+        fprintf(stderr, "error reading allocation table!\n");
         cleanup_fuse();
         write_to_drive_fclose(echfs.image);
-        free(echfs.dir_table, (echfs.dir_size * echfs.bytes_per_block-1)/4096+1);
-        free(echfs.fat, (echfs.fat_size * echfs.bytes_per_block-1)/4096+1);
-        return NULL;
+        free(echfs.dir_table);
+        free(echfs.fat);
+        exit(1);
     }
 
     return NULL;
@@ -451,16 +442,16 @@ static void *echfs_init(struct fuse_conn_info *conn) {
 
 static void echfs_destroy(void *data) {
     (void) data;
-    serial_printf("echfs-fuse: cleaning up!\n");
+    fprintf(stderr, "cleaning up!\n");
     echfs_fseek(echfs.image, echfs.dir_start * echfs.bytes_per_block, SEEK_SET);
-    fwrite(echfs.dir_table, sizeof(char), echfs.dir_size * echfs.bytes_per_block,
+    write_to_drive_fwrite(echfs.dir_table, sizeof(char), echfs.dir_size * echfs.bytes_per_block,
             echfs.image);
-    free(echfs.dir_table, (echfs.dir_size * echfs.bytes_per_block-1)/4096+1);
+    free(echfs.dir_table);
 
     echfs_fseek(echfs.image, echfs.fat_start * echfs.bytes_per_block, SEEK_SET);
-    fwrite(echfs.fat, sizeof(char), echfs.dir_size * echfs.bytes_per_block,
+    write_to_drive_fwrite(echfs.fat, sizeof(char), echfs.dir_size * echfs.bytes_per_block,
             echfs.image);
-    free(echfs.fat, (echfs.fat_size * echfs.bytes_per_block-1)/4096+1);
+    free(echfs.fat);
     write_to_drive_fclose(echfs.image);
 }
 
@@ -493,7 +484,7 @@ static struct path_result_t *resolve_path(const char *path) {
         return path_result;
     }
 
-    path_result = malloc((sizeof(struct path_result_t)-1)/4096+1);
+    path_result = malloc(sizeof(struct path_result_t));
     path_result->next = NULL;
     strcpy(path_result->path, path);
     path_result->type = DIRECTORY_TYPE;
@@ -521,7 +512,7 @@ static struct path_result_t *resolve_path(const char *path) {
         size_t seg_length = path - seg;
         if (seg[seg_length - 1] == '/')
             seg_length--;
-        char *seg_buf = malloc(seg_length/4096 + 1);
+        char *seg_buf = malloc(seg_length + 1);
         strncpy(seg_buf, seg, seg_length);
         seg_buf[seg_length] = '\0';
         echfs_debug("resolve_path(): looking for %s\n", seg_buf);
@@ -532,7 +523,7 @@ static struct path_result_t *resolve_path(const char *path) {
             strcpy(path_result->name, seg_buf);
             path_result->parent = path_result->target;
             path_result->failure = 1;
-            free(seg_buf, seg_length/4096 + 1);
+            free(seg_buf);
             return path_result;
         }
 
@@ -541,7 +532,7 @@ static struct path_result_t *resolve_path(const char *path) {
         path_result->target = entry;
         path_result->target_entry = search_res;
         echfs_debug("resolve_path(): found %s\n", seg_buf);
-        free(seg_buf, seg_length/4096 + 1);
+        free(seg_buf);
     } while (*path);
 
     strcpy(path_result->name, entry.name);
@@ -572,7 +563,7 @@ static int echfs_open(const char *file_path, struct fuse_file_info *file_info) {
     handle->path_res = path_result;
     handle->occupied = 1;
 
-    handle->alloc_map = malloc((sizeof(uint64_t)-1)/4096+1);
+    handle->alloc_map = malloc(sizeof(uint64_t));
     handle->alloc_map[0] = path_result->target.payload;
     uint64_t i = 1;
     for (i = 1; handle->alloc_map[i - 1] != END_OF_CHAIN; i++) {
@@ -682,7 +673,7 @@ static int echfs_getattr(const char *path, struct stat *stat) {
 }
 
 static int echfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
-        uint64_t offset, struct fuse_file_info *file_info) {
+        off_t offset, struct fuse_file_info *file_info) {
     echfs_debug("readdir() on %s and offset %lu\n", path, offset);
 
     struct echfs_handle_t *handle = &handles[file_info->fh];
@@ -691,7 +682,7 @@ static int echfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
         return -ENOTDIR;
 
     uint64_t dir_id = handle->path_res->target.payload;
-    uint64_t i = offset;
+    off_t i = offset;
     for (;; i++) {
         if (i >= (echfs.dir_size * echfs.entries_per_block)) return 0;
         struct entry_t *entry = &echfs.dir_table[i];
@@ -727,7 +718,7 @@ static int echfs_releasedir(const char *path,
 }
 
 static int echfs_read(const char *path, char *buf, size_t to_read,
-        uint64_t offset, struct fuse_file_info *file_info) {
+        off_t offset, struct fuse_file_info *file_info) {
     echfs_debug("echfs_read() on %s, %lu\n", path, to_read);
     if (file_info->fh >= MAX_HANDLES) return -EBADF;
     if (!handles[file_info->fh].occupied) return -EBADF;
@@ -796,7 +787,7 @@ static uint64_t get_block_pos(struct echfs_handle_t *handle, uint64_t block) {
 }
 
 static int echfs_write(const char *path, const char *buf, size_t to_write,
-        uint64_t offset, struct fuse_file_info *file_info) {
+        off_t offset, struct fuse_file_info *file_info) {
     echfs_debug("echfs_write() on %s\n", path);
     if (file_info->fh >= MAX_HANDLES) return -EBADF;
     if (!handles[file_info->fh].occupied) return -EBADF;
@@ -823,7 +814,7 @@ static int echfs_write(const char *path, const char *buf, size_t to_write,
             chunk = echfs.bytes_per_block - buf_offset;
 
         echfs_fseek(echfs.image, loc + buf_offset, SEEK_SET);
-        ret = fwrite(buf + progress, 1, chunk, echfs.image);
+        ret = write_to_drive_fwrite(buf + progress, 1, chunk, echfs.image);
         if (ret != chunk)
             return -EIO;
         progress += chunk;
@@ -974,7 +965,7 @@ static int echfs_rmdir(const char *path) {
     return 0;
 }
 
-static int echfs_utimens(const char *path, const struct time tv[2]) {
+static int echfs_utimens(const char *path, const struct timespec tv[2]) {
     echfs_debug("echfs_utimens() on %s\n", path);
     struct path_result_t *path_res = resolve_path(path);
 
@@ -986,7 +977,7 @@ static int echfs_utimens(const char *path, const struct time tv[2]) {
 }
 
 //TODO: free the blocks too
-static int echfs_truncate(const char *path, uint64_t size) {
+static int echfs_truncate(const char *path, off_t size) {
     echfs_debug("echfs_truncate() on %s, size %lu\n", path, size);
     struct path_result_t *path_res = resolve_path(path);
     update_ctime(path_res);
@@ -995,7 +986,7 @@ static int echfs_truncate(const char *path, uint64_t size) {
     return 0;
 }
 
-static int echfs_ftruncate(const char *path, uint64_t size,
+static int echfs_ftruncate(const char *path, off_t size,
         struct fuse_file_info *file_info) {
     echfs_debug("echfs_ftruncate() on %s, size %lu\n", path, size);
     if (file_info->fh >= MAX_HANDLES) return -EBADF;
@@ -1101,7 +1092,7 @@ int main(int argc, char **argv) {
     struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
 
     if (fuse_opt_parse(&args, &options, option_spec, option_cb)) {
-        serial_printf("echfs-fuse: Error reading command line options\n");
+        fprintf(stderr, "Error reading command line options\n");
         return 1;
     }
 
@@ -1112,7 +1103,7 @@ int main(int argc, char **argv) {
     }
 
     if (!echfs.image_path || !echfs.mountpoint) {
-        serial_printf("echfs-fuse: Please specify echfs image and mountpoint!\n");
+        fprintf(stderr, "Please specify echfs image and mountpoint!\n");
         fuse_opt_free_args(&args);
         return 1;
     }
@@ -1136,7 +1127,7 @@ int main(int argc, char **argv) {
     struct fuse *fuse = fuse_new(chan, &args, &operations,
             sizeof(struct fuse_operations), NULL);
     if (!fuse) {
-        serial_printf("echfs-fuse: Error initializing fuse!\n");
+        fprintf(stderr, "Error initializing fuse!\n");
         fuse_opt_free_args(&args);
         return 1;
     }
