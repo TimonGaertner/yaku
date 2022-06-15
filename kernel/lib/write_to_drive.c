@@ -5,6 +5,7 @@
 #include <thirdparty/string/string.h>
 
 struct drive_image* write_to_drive_fopen(enum drive drive, enum access_mode access_mode) {
+    // check if drive is recognized
     if (drive == drive_first) {
         if (!drive_present(primary_controller, first_drive)) {
             return NULL;
@@ -58,9 +59,11 @@ uint8_t write_to_drive_fseek(struct drive_image* drive_image, int64_t offset /*i
         return 1;
     } else if (origin = SEEK_END) {
         if (drive_image->drive == drive_first) {
+            // check if drive is present
             if (!drive_present(primary_controller, first_drive)) {
                 return 0;
             }
+            // check if new pointer would be < 0
             if (get_drive_size(primary_controller, first_drive) * 512 + offset < 0) {
                 return 0;
             }
@@ -304,6 +307,8 @@ uint8_t write_to_drive_fread(uint8_t* ptr, size_t size_of_element,
         lba_read_secondary_controller_second_drive(sector_to_read_from, sectors_to_read,
                                                    (uint8_t*)buffer);
     }
+
+    // copy the data from where to read from to the buffer
     for (uint64_t i = byte_in_sector_to_read_from;
          i < byte_in_sector_to_read_from + size_of_element * number_of_elements; i++) {
         ptr[i - byte_in_sector_to_read_from] = buffer[i];
