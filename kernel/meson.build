@@ -34,10 +34,9 @@ kernel_c_srcs = files([
     'lib/uuid.c',
     'lib/write_to_drive.c',
     'echfs/mkfs.echfs.c',
-    'echfs/echfs-utils.c',
+    'echfs/echfs-fuse.c',
     'echfs/part.c',
     'lib/file.c',
-    'lib/virtual_file.c',
 ])
 
 kernel_asmflags = ['-f', 'elf64']

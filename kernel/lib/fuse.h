@@ -19,7 +19,18 @@ __STD_TYPE __SSIZE_T_TYPE __ssize_t; /* Type of a byte count, or error.  */
 typedef __ssize_t ssize_t;
 
 
-
+enum fuse_fill_dir_flags {
+	/**
+	 * "Plus" mode: all file attributes are valid
+	 *
+	 * The attributes are used by the kernel to prefill the inode cache
+	 * during a readdir.
+	 *
+	 * It is okay to set FUSE_FILL_DIR_PLUS if FUSE_READDIR_PLUS is not set
+	 * and vice versa.
+	 */
+	FUSE_FILL_DIR_PLUS = (1 << 1)
+};
 typedef int (*fuse_fill_dir_t) (void *buf, const char *name,
 				const struct stat *stbuf, off_t off,
 				enum fuse_fill_dir_flags flags);
@@ -69,19 +80,37 @@ struct fuse_file_info {
 	/** Lock owner id.  Available in locking operations and flush */
 	uint64_t lock_owner;
 };
+struct fuse_opt {
+	/** Matching template and optional parameter formatting */
+	const char *templ;
+
+	/**
+	 * Offset of variable within 'data' parameter of fuse_opt_parse()
+	 * or -1
+	 */
+	unsigned long offset;
+
+	/**
+	 * Value to set the variable to, or to be passed as 'key' to the
+	 * processing function.	 Ignored if template has a format
+	 */
+	int value;
+};
+// typedef struct fuse_dirhandle *fuse_dirh_t;
+// typedef int (*fuse_dirfil_t) (fuse_dirh_t h, const char *name, int type,
+// 			      ino_t ino);
+struct timespec {
+	uint64_t		tv_sec;		/* seconds */
+	uint64_t		tv_nsec;	/* nanoseconds */
+};
 struct fuse_operations {
 	/** Get file attributes.
 	 *
 	 * Similar to stat().  The 'st_dev' and 'st_blksize' fields are
-	 * ignored. The 'st_ino' field is ignored except if the 'use_ino'
-	 * mount option is given. In that case it is passed to userspace,
-	 * but libfuse and the kernel will still assign a different
-	 * inode for internal use (called the "nodeid").
-	 *
-	 * `fi` will always be NULL if the file is not currently open, but
-	 * may also be NULL if the file is open.
+	 * ignored.	 The 'st_ino' field is ignored except if the 'use_ino'
+	 * mount option is given.
 	 */
-	int (*getattr) (const char *, struct stat *, struct fuse_file_info *fi);
+	int (*getattr) (const char *, struct stat *);
 
 	/** Read the target of a symbolic link
 	 *
@@ -93,6 +122,9 @@ struct fuse_operations {
 	 */
 	int (*readlink) (const char *, char *, size_t);
 
+	/* Deprecated, use readdir() instead */
+	// int (*getdir) (const char *, fuse_dirh_t, fuse_dirfil_t);
+
 	/** Create a file node
 	 *
 	 * This is called for creation of all non-directory, non-symlink
@@ -101,7 +133,7 @@ struct fuse_operations {
 	 */
 	int (*mknod) (const char *, mode_t, dev_t);
 
-	/** Create a directory
+	/** Create a directory 
 	 *
 	 * Note that the mode argument may not have the type specification
 	 * bits set, i.e. S_ISDIR(mode) can be false.  To obtain the
@@ -118,93 +150,43 @@ struct fuse_operations {
 	/** Create a symbolic link */
 	int (*symlink) (const char *, const char *);
 
-	/** Rename a file
-	 *
-	 * *flags* may be `RENAME_EXCHANGE` or `RENAME_NOREPLACE`. If
-	 * RENAME_NOREPLACE is specified, the filesystem must not
-	 * overwrite *newname* if it exists and return an error
-	 * instead. If `RENAME_EXCHANGE` is specified, the filesystem
-	 * must atomically exchange the two files, i.e. both must
-	 * exist and neither may be deleted.
-	 */
-	int (*rename) (const char *, const char *, unsigned int flags);
+	/** Rename a file */
+	int (*rename) (const char *, const char *);
 
 	/** Create a hard link to a file */
 	int (*link) (const char *, const char *);
 
-	/** Change the permission bits of a file
-	 *
-	 * `fi` will always be NULL if the file is not currently open, but
-	 * may also be NULL if the file is open.
-	 */
-	int (*chmod) (const char *, mode_t, struct fuse_file_info *fi);
+	/** Change the permission bits of a file */
+	int (*chmod) (const char *, mode_t);
 
-	/** Change the owner and group of a file
-	 *
-	 * `fi` will always be NULL if the file is not currently open, but
-	 * may also be NULL if the file is open.
-	 *
-	 * Unless FUSE_CAP_HANDLE_KILLPRIV is disabled, this method is
-	 * expected to reset the setuid and setgid bits.
-	 */
-	int (*chown) (const char *, uid_t, gid_t, struct fuse_file_info *fi);
+	/** Change the owner and group of a file */
+	int (*chown) (const char *, uid_t, gid_t);
 
-	/** Change the size of a file
-	 *
-	 * `fi` will always be NULL if the file is not currently open, but
-	 * may also be NULL if the file is open.
-	 *
-	 * Unless FUSE_CAP_HANDLE_KILLPRIV is disabled, this method is
-	 * expected to reset the setuid and setgid bits.
-	 */
-	int (*truncate) (const char *, off_t, struct fuse_file_info *fi);
+	/** Change the size of a file */
+	int (*truncate) (const char *, off_t);
 
-	/** Open a file
+	/** Change the access and/or modification times of a file
 	 *
-	 * Open flags are available in fi->flags. The following rules
-	 * apply.
+	 * Deprecated, use utimens() instead.
+	 */
+	int (*utime) (const char *, struct utimbuf *);
+
+	/** File open operation
 	 *
-	 *  - Creation (O_CREAT, O_EXCL, O_NOCTTY) flags will be
-	 *    filtered out / handled by the kernel.
+	 * No creation (O_CREAT, O_EXCL) and by default also no
+	 * truncation (O_TRUNC) flags will be passed to open(). If an
+	 * application specifies O_TRUNC, fuse first calls truncate()
+	 * and then open(). Only if 'atomic_o_trunc' has been
+	 * specified and kernel version is 2.6.24 or later, O_TRUNC is
+	 * passed on to open.
 	 *
-	 *  - Access modes (O_RDONLY, O_WRONLY, O_RDWR, O_EXEC, O_SEARCH)
-	 *    should be used by the filesystem to check if the operation is
-	 *    permitted.  If the ``-o default_permissions`` mount option is
-	 *    given, this check is already done by the kernel before calling
-	 *    open() and may thus be omitted by the filesystem.
+	 * Unless the 'default_permissions' mount option is given,
+	 * open should check if the operation is permitted for the
+	 * given flags. Optionally open may also return an arbitrary
+	 * filehandle in the fuse_file_info structure, which will be
+	 * passed to all file operations.
 	 *
-	 *  - When writeback caching is enabled, the kernel may send
-	 *    read requests even for files opened with O_WRONLY. The
-	 *    filesystem should be prepared to handle this.
-	 *
-	 *  - When writeback caching is disabled, the filesystem is
-	 *    expected to properly handle the O_APPEND flag and ensure
-	 *    that each write is appending to the end of the file.
-	 *
-	 *  - When writeback caching is enabled, the kernel will
-	 *    handle O_APPEND. However, unless all changes to the file
-	 *    come through the kernel this will not work reliably. The
-	 *    filesystem should thus either ignore the O_APPEND flag
-	 *    (and let the kernel handle it), or return an error
-	 *    (indicating that reliably O_APPEND is not available).
-	 *
-	 * Filesystem may store an arbitrary file handle (pointer,
-	 * index, etc) in fi->fh, and use this in other all other file
-	 * operations (read, write, flush, release, fsync).
-	 *
-	 * Filesystem may also implement stateless file I/O and not store
-	 * anything in fi->fh.
-	 *
-	 * There are also some flags (direct_io, keep_cache) which the
-	 * filesystem may set in fi, to change the way the file is opened.
-	 * See fuse_file_info structure in <fuse_common.h> for more details.
-	 *
-	 * If this request is answered with an error code of ENOSYS
-	 * and FUSE_CAP_NO_OPEN_SUPPORT is set in
-	 * `fuse_conn_info.capable`, this is treated as success and
-	 * future calls to open will also succeed without being send
-	 * to the filesystem process.
-	 *
+	 * Changed in version 2.2
 	 */
 	int (*open) (const char *, struct fuse_file_info *);
 
@@ -216,6 +198,8 @@ struct fuse_operations {
 	 * 'direct_io' mount option is specified, in which case the return
 	 * value of the read system call will reflect the return value of
 	 * this operation.
+	 *
+	 * Changed in version 2.2
 	 */
 	int (*read) (const char *, char *, size_t, off_t,
 		     struct fuse_file_info *);
@@ -226,15 +210,17 @@ struct fuse_operations {
 	 * except on error.	 An exception to this is when the 'direct_io'
 	 * mount option is specified (see read operation).
 	 *
-	 * Unless FUSE_CAP_HANDLE_KILLPRIV is disabled, this method is
-	 * expected to reset the setuid and setgid bits.
+	 * Changed in version 2.2
 	 */
 	int (*write) (const char *, const char *, size_t, off_t,
 		      struct fuse_file_info *);
 
 	/** Get file system statistics
 	 *
-	 * The 'f_favail', 'f_fsid' and 'f_flag' fields are ignored
+	 * The 'f_frsize', 'f_favail', 'f_fsid' and 'f_flag' fields are ignored
+	 *
+	 * Replaced 'struct statfs' parameter with 'struct statvfs' in
+	 * version 2.5
 	 */
 	int (*statfs) (const char *, struct statvfs *);
 
@@ -243,28 +229,23 @@ struct fuse_operations {
 	 * BIG NOTE: This is not equivalent to fsync().  It's not a
 	 * request to sync dirty data.
 	 *
-	 * Flush is called on each close() of a file descriptor, as opposed to
-	 * release which is called on the close of the last file descriptor for
-	 * a file.  Under Linux, errors returned by flush() will be passed to 
-	 * userspace as errors from close(), so flush() is a good place to write
-	 * back any cached dirty data. However, many applications ignore errors 
-	 * on close(), and on non-Linux systems, close() may succeed even if flush()
-	 * returns an error. For these reasons, filesystems should not assume
-	 * that errors returned by flush will ever be noticed or even
-	 * delivered.
+	 * Flush is called on each close() of a file descriptor.  So if a
+	 * filesystem wants to return write errors in close() and the file
+	 * has cached dirty data, this is a good place to write back data
+	 * and return any errors.  Since many applications ignore close()
+	 * errors this is not always useful.
 	 *
 	 * NOTE: The flush() method may be called more than once for each
-	 * open().  This happens if more than one file descriptor refers to an
-	 * open file handle, e.g. due to dup(), dup2() or fork() calls.  It is
-	 * not possible to determine if a flush is final, so each flush should
-	 * be treated equally.  Multiple write-flush sequences are relatively
-	 * rare, so this shouldn't be a problem.
+	 * open().	This happens if more than one file descriptor refers
+	 * to an opened file due to dup(), dup2() or fork() calls.	It is
+	 * not possible to determine if a flush is final, so each flush
+	 * should be treated equally.  Multiple write-flush sequences are
+	 * relatively rare, so this shouldn't be a problem.
 	 *
-	 * Filesystems shouldn't assume that flush will be called at any
-	 * particular point.  It may be called more times than expected, or not
-	 * at all.
+	 * Filesystems shouldn't assume that flush will always be called
+	 * after some writes, or that if will be called at all.
 	 *
-	 * [close]: http://pubs.opengroup.org/onlinepubs/9699919799/functions/close.html
+	 * Changed in version 2.2
 	 */
 	int (*flush) (const char *, struct fuse_file_info *);
 
@@ -275,10 +256,12 @@ struct fuse_operations {
 	 * are unmapped.
 	 *
 	 * For every open() call there will be exactly one release() call
-	 * with the same flags and file handle.  It is possible to
+	 * with the same flags and file descriptor.	 It is possible to
 	 * have a file opened more than once, in which case only the last
 	 * release will mean, that no more reads/writes will happen on the
 	 * file.  The return value of release is ignored.
+	 *
+	 * Changed in version 2.2
 	 */
 	int (*release) (const char *, struct fuse_file_info *);
 
@@ -286,6 +269,8 @@ struct fuse_operations {
 	 *
 	 * If the datasync parameter is non-zero, then only the user data
 	 * should be flushed, not the meta data.
+	 *
+	 * Changed in version 2.2
 	 */
 	int (*fsync) (const char *, int, struct fuse_file_info *);
 
@@ -308,17 +293,23 @@ struct fuse_operations {
 	 * directory. Optionally opendir may also return an arbitrary
 	 * filehandle in the fuse_file_info structure, which will be
 	 * passed to readdir, releasedir and fsyncdir.
+	 *
+	 * Introduced in version 2.3
 	 */
 	int (*opendir) (const char *, struct fuse_file_info *);
 
 	/** Read directory
+	 *
+	 * This supersedes the old getdir() interface.  New applications
+	 * should use this.
 	 *
 	 * The filesystem may choose between two modes of operation:
 	 *
 	 * 1) The readdir implementation ignores the offset parameter, and
 	 * passes zero to the filler function's offset.  The filler
 	 * function will not return '1' (unless an error happens), so the
-	 * whole directory is read in a single readdir operation.
+	 * whole directory is read in a single readdir operation.  This
+	 * works just like the old getdir() method.
 	 *
 	 * 2) The readdir implementation keeps track of the offsets of the
 	 * directory entries.  It uses the offset parameter and always
@@ -326,50 +317,46 @@ struct fuse_operations {
 	 * is full (or an error happens) the filler function will return
 	 * '1'.
 	 *
-	 * When FUSE_READDIR_PLUS is not set, only some parameters of the
-	 * fill function (the fuse_fill_dir_t parameter) are actually used:
-	 * The file type (which is part of stat::st_mode) is used. And if
-	 * fuse_config::use_ino is set, the inode (stat::st_ino) is also
-	 * used. The other fields are ignored when FUSE_READDIR_PLUS is not
-	 * set.
+	 * Introduced in version 2.3
 	 */
 	int (*readdir) (const char *, void *, fuse_fill_dir_t, off_t,
-			struct fuse_file_info *, enum fuse_readdir_flags);
+			struct fuse_file_info *);
 
 	/** Release directory
 	 *
-	 * If the directory has been removed after the call to opendir, the
-	 * path parameter will be NULL.
+	 * Introduced in version 2.3
 	 */
 	int (*releasedir) (const char *, struct fuse_file_info *);
 
 	/** Synchronize directory contents
 	 *
-	 * If the directory has been removed after the call to opendir, the
-	 * path parameter will be NULL.
-	 *
 	 * If the datasync parameter is non-zero, then only the user data
 	 * should be flushed, not the meta data
+	 *
+	 * Introduced in version 2.3
 	 */
 	int (*fsyncdir) (const char *, int, struct fuse_file_info *);
 
 	/**
 	 * Initialize filesystem
 	 *
-	 * The return value will passed in the `private_data` field of
-	 * `struct fuse_context` to all file operations, and as a
-	 * parameter to the destroy() method. It overrides the initial
-	 * value provided to fuse_main() / fuse_new().
+	 * The return value will passed in the private_data field of
+	 * fuse_context to all file operations and as a parameter to the
+	 * destroy() method.
+	 *
+	 * Introduced in version 2.3
+	 * Changed in version 2.6
 	 */
-	void *(*init) (struct fuse_conn_info *conn,
-		       struct fuse_config *cfg);
+	void *(*init) (struct fuse_conn_info *conn);
 
 	/**
 	 * Clean up filesystem
 	 *
 	 * Called on filesystem exit.
+	 *
+	 * Introduced in version 2.3
 	 */
-	void (*destroy) (void *private_data);
+	void (*destroy) (void *);
 
 	/**
 	 * Check file access permissions
@@ -379,6 +366,8 @@ struct fuse_operations {
 	 * called.
 	 *
 	 * This method is not called under Linux kernel versions 2.4.x
+	 *
+	 * Introduced in version 2.5
 	 */
 	int (*access) (const char *, int);
 
@@ -391,8 +380,38 @@ struct fuse_operations {
 	 * If this method is not implemented or under Linux kernel
 	 * versions earlier than 2.6.15, the mknod() and open() methods
 	 * will be called instead.
+	 *
+	 * Introduced in version 2.5
 	 */
 	int (*create) (const char *, mode_t, struct fuse_file_info *);
+
+	/**
+	 * Change the size of an open file
+	 *
+	 * This method is called instead of the truncate() method if the
+	 * truncation was invoked from an ftruncate() system call.
+	 *
+	 * If this method is not implemented or under Linux kernel
+	 * versions earlier than 2.6.15, the truncate() method will be
+	 * called instead.
+	 *
+	 * Introduced in version 2.5
+	 */
+	int (*ftruncate) (const char *, off_t, struct fuse_file_info *);
+
+	/**
+	 * Get attributes from an open file
+	 *
+	 * This method is called instead of the getattr() method if the
+	 * file information is available.
+	 *
+	 * Currently this is only called after the create() method if that
+	 * is implemented (see above).  Later it may be called for
+	 * invocations of fstat() too.
+	 *
+	 * Introduced in version 2.5
+	 */
+	int (*fgetattr) (const char *, struct stat *, struct fuse_file_info *);
 
 	/**
 	 * Perform POSIX file locking operation
@@ -423,6 +442,8 @@ struct fuse_operations {
 	 * Note: if this method is not implemented, the kernel will still
 	 * allow file locking to work locally.  Hence it is only
 	 * interesting for network filesystems and similar.
+	 *
+	 * Introduced in version 2.6
 	 */
 	int (*lock) (const char *, struct fuse_file_info *, int cmd,
 		     struct flock *);
@@ -434,26 +455,59 @@ struct fuse_operations {
 	 * This supersedes the old utime() interface.  New applications
 	 * should use this.
 	 *
-	 * `fi` will always be NULL if the file is not currently open, but
-	 * may also be NULL if the file is open.
-	 *
 	 * See the utimensat(2) man page for details.
+	 *
+	 * Introduced in version 2.6
 	 */
-	 int (*utimens) (const char *, const struct timespec tv[2],
-			 struct fuse_file_info *fi);
+	int (*utimens) (const char *, const struct timespec tv[2]);
 
 	/**
 	 * Map block index within file to block index within device
 	 *
 	 * Note: This makes sense only for block device backed filesystems
 	 * mounted with the 'blkdev' option
+	 *
+	 * Introduced in version 2.6
 	 */
 	int (*bmap) (const char *, size_t blocksize, uint64_t *idx);
 
-#if FUSE_USE_VERSION < 35
-	int (*ioctl) (const char *, int cmd, void *arg,
-		      struct fuse_file_info *, unsigned int flags, void *data);
-#else
+	/**
+	 * Flag indicating that the filesystem can accept a NULL path
+	 * as the first argument for the following operations:
+	 *
+	 * read, write, flush, release, fsync, readdir, releasedir,
+	 * fsyncdir, ftruncate, fgetattr, lock, ioctl and poll
+	 *
+	 * If this flag is set these operations continue to work on
+	 * unlinked files even if "-ohard_remove" option was specified.
+	 */
+	unsigned int flag_nullpath_ok:1;
+
+	/**
+	 * Flag indicating that the path need not be calculated for
+	 * the following operations:
+	 *
+	 * read, write, flush, release, fsync, readdir, releasedir,
+	 * fsyncdir, ftruncate, fgetattr, lock, ioctl and poll
+	 *
+	 * Closely related to flag_nullpath_ok, but if this flag is
+	 * set then the path will not be calculaged even if the file
+	 * wasn't unlinked.  However the path can still be non-NULL if
+	 * it needs to be calculated for some other reason.
+	 */
+	unsigned int flag_nopath:1;
+
+	/**
+	 * Flag indicating that the filesystem accepts special
+	 * UTIME_NOW and UTIME_OMIT values in its utimens operation.
+	 */
+	unsigned int flag_utime_omit_ok:1;
+
+	/**
+	 * Reserved flags, don't set
+	 */
+	unsigned int flag_reserved:29;
+
 	/**
 	 * Ioctl
 	 *
@@ -467,12 +521,10 @@ struct fuse_operations {
 	 * If flags has FUSE_IOCTL_DIR then the fuse_file_info refers to a
 	 * directory file handle.
 	 *
-	 * Note : the unsigned long request submitted by the application
-	 * is truncated to 32 bits.
+	 * Introduced in version 2.8
 	 */
-	int (*ioctl) (const char *, unsigned int cmd, void *arg,
+	int (*ioctl) (const char *, int cmd, void *arg,
 		      struct fuse_file_info *, unsigned int flags, void *data);
-#endif
 
 	/**
 	 * Poll for IO readiness events
@@ -488,6 +540,8 @@ struct fuse_operations {
 	 *
 	 * The callee is responsible for destroying ph with
 	 * fuse_pollhandle_destroy() when no longer in use.
+	 *
+	 * Introduced in version 2.8
 	 */
 	int (*poll) (const char *, struct fuse_file_info *,
 		     struct fuse_pollhandle *ph, unsigned *reventsp);
@@ -498,8 +552,7 @@ struct fuse_operations {
 	 * generic buffer.  Use fuse_buf_copy() to transfer data to
 	 * the destination.
 	 *
-	 * Unless FUSE_CAP_HANDLE_KILLPRIV is disabled, this method is
-	 * expected to reset the setuid and setgid bits.
+	 * Introduced in version 2.9
 	 */
 	int (*write_buf) (const char *, struct fuse_bufvec *buf, off_t off,
 			  struct fuse_file_info *);
@@ -517,6 +570,8 @@ struct fuse_operations {
 	 * location pointed to by bufp.  If the buffer contains memory
 	 * regions, they too must be allocated using malloc().  The
 	 * allocated memory will be freed by the caller.
+	 *
+	 * Introduced in version 2.9
 	 */
 	int (*read_buf) (const char *, struct fuse_bufvec **bufp,
 			 size_t size, off_t off, struct fuse_file_info *);
@@ -537,6 +592,8 @@ struct fuse_operations {
 	 * Note: if this method is not implemented, the kernel will still
 	 * allow file locking to work locally.  Hence it is only
 	 * interesting for network filesystems and similar.
+	 *
+	 * Introduced in version 2.9
 	 */
 	int (*flock) (const char *, struct fuse_file_info *, int op);
 
@@ -547,30 +604,134 @@ struct fuse_operations {
 	 * file.  If this function returns success then any subsequent write
 	 * request to specified range is guaranteed not to fail because of lack
 	 * of space on the file system media.
+	 *
+	 * Introduced in version 2.9.1
 	 */
 	int (*fallocate) (const char *, int, off_t, off_t,
 			  struct fuse_file_info *);
+};
+
+#define FUSE_ARGS_INIT(argc, argv) { argc, argv, 0 }
+struct fuse_args {
+	/** Argument count */
+	int argc;
+
+	/** Argument vector.  NULL terminated */
+	char **argv;
+
+	/** Is 'argv' allocated? */
+	int allocated;
+};
+
+
+
+struct fuse_conn_info {
+	/**
+	 * Major version of the protocol (read-only)
+	 */
+	unsigned proto_major;
 
 	/**
-	 * Copy a range of data from one file to another
-	 *
-	 * Performs an optimized copy between two file descriptors without the
-	 * additional cost of transferring data through the FUSE kernel module
-	 * to user space (glibc) and then back into the FUSE filesystem again.
-	 *
-	 * In case this method is not implemented, applications are expected to
-	 * fall back to a regular file copy.   (Some glibc versions did this
-	 * emulation automatically, but the emulation has been removed from all
-	 * glibc release branches.)
+	 * Minor version of the protocol (read-only)
 	 */
-	ssize_t (*copy_file_range) (const char *path_in,
-				    struct fuse_file_info *fi_in,
-				    off_t offset_in, const char *path_out,
-				    struct fuse_file_info *fi_out,
-				    off_t offset_out, size_t size, int flags);
+	unsigned proto_minor;
 
 	/**
-	 * Find next data or hole after the specified offset
+	 * Maximum size of the write buffer
 	 */
-	off_t (*lseek) (const char *, off_t off, int whence, struct fuse_file_info *);
+	unsigned max_write;
+
+	/**
+	 * Maximum size of read requests. A value of zero indicates no
+	 * limit. However, even if the filesystem does not specify a
+	 * limit, the maximum size of read requests will still be
+	 * limited by the kernel.
+	 *
+	 * NOTE: For the time being, the maximum size of read requests
+	 * must be set both here *and* passed to fuse_session_new()
+	 * using the ``-o max_read=<n>`` mount option. At some point
+	 * in the future, specifying the mount option will no longer
+	 * be necessary.
+	 */
+	unsigned max_read;
+
+	/**
+	 * Maximum readahead
+	 */
+	unsigned max_readahead;
+
+	/**
+	 * Capability flags that the kernel supports (read-only)
+	 */
+	unsigned capable;
+
+	/**
+	 * Capability flags that the filesystem wants to enable.
+	 *
+	 * libfuse attempts to initialize this field with
+	 * reasonable default values before calling the init() handler.
+	 */
+	unsigned want;
+
+	/**
+	 * Maximum number of pending "background" requests. A
+	 * background request is any type of request for which the
+	 * total number is not limited by other means. As of kernel
+	 * 4.8, only two types of requests fall into this category:
+	 *
+	 *   1. Read-ahead requests
+	 *   2. Asynchronous direct I/O requests
+	 *
+	 * Read-ahead requests are generated (if max_readahead is
+	 * non-zero) by the kernel to preemptively fill its caches
+	 * when it anticipates that userspace will soon read more
+	 * data.
+	 *
+	 * Asynchronous direct I/O requests are generated if
+	 * FUSE_CAP_ASYNC_DIO is enabled and userspace submits a large
+	 * direct I/O request. In this case the kernel will internally
+	 * split it up into multiple smaller requests and submit them
+	 * to the filesystem concurrently.
+	 *
+	 * Note that the following requests are *not* background
+	 * requests: writeback requests (limited by the kernel's
+	 * flusher algorithm), regular (i.e., synchronous and
+	 * buffered) userspace read/write requests (limited to one per
+	 * thread), asynchronous read requests (Linux's io_submit(2)
+	 * call actually blocks, so these are also limited to one per
+	 * thread).
+	 */
+	unsigned max_background;
+
+	/**
+	 * Kernel congestion threshold parameter. If the number of pending
+	 * background requests exceeds this number, the FUSE kernel module will
+	 * mark the filesystem as "congested". This instructs the kernel to
+	 * expect that queued requests will take some time to complete, and to
+	 * adjust its algorithms accordingly (e.g. by putting a waiting thread
+	 * to sleep instead of using a busy-loop).
+	 */
+	unsigned congestion_threshold;
+
+	/**
+	 * When FUSE_CAP_WRITEBACK_CACHE is enabled, the kernel is responsible
+	 * for updating mtime and ctime when write requests are received. The
+	 * updated values are passed to the filesystem with setattr() requests.
+	 * However, if the filesystem does not support the full resolution of
+	 * the kernel timestamps (nanoseconds), the mtime and ctime values used
+	 * by kernel and filesystem will differ (and result in an apparent
+	 * change of times after a cache flush).
+	 *
+	 * To prevent this problem, this variable can be used to inform the
+	 * kernel about the timestamp granularity supported by the file-system.
+	 * The value should be power of 10.  The default is 1, i.e. full
+	 * nano-second resolution. Filesystems supporting only second resolution
+	 * should set this to 1000000000.
+	 */
+	unsigned time_gran;
+
+	/**
+	 * For future use.
+	 */
+	unsigned reserved[22];
 };

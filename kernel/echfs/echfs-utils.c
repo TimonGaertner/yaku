@@ -206,8 +206,8 @@ static uint64_t import_chain(FILE* source) {
 
     block = blocklist[0];
 
-    free(blocklist, (sizeof(blocklist)-1)/4096+1);
-    free(block_buf,(sizeof(block_buf)-1)/4096+1);
+    free(blocklist);
+    free(block_buf);
     return block;
 }
 
@@ -234,7 +234,7 @@ static void export_chain(FILE* dest, entry_t src) {
         cur_block = rd_qword((fatstart * bytesperblock) + (cur_block * sizeof(uint64_t)));
     }
 
-    free(block_buf,(sizeof(block_buf)-1)/4096+1);
+    free(block_buf);
     return;
 }
 
@@ -470,7 +470,7 @@ static void import_cmd(int argc, char** argv) {
     serial_printf("1\n");
     if (!path_result.not_found) {
         path_result.target.payload = payload;
-        path_result.target.mtime = s.st_mtime.tv_sec;
+        path_result.target.mtime = s.st_mtim.tv_sec;
         wr_entry(path_result.target_entry, &path_result.target);
         fclose(source);
         return;
@@ -482,9 +482,9 @@ static void import_cmd(int argc, char** argv) {
     entry.payload = payload;
     fseek(source, 0L, SEEK_END);
     entry.size = (uint64_t)ftell(source);
-    entry.ctime = s.st_ctime.tv_sec;
-    entry.atime = s.st_atime.tv_sec;
-    entry.mtime = s.st_mtime.tv_sec;
+    entry.ctime = s.st_ctim.tv_sec;
+    entry.atime = s.st_atim.tv_sec;
+    entry.mtime = s.st_mtim.tv_sec;
 
     entry.perms = (uint16_t)(s.st_mode & ((1 << 9) - 1));
     serial_printf("3\n");
@@ -638,7 +638,7 @@ static void format_pass1(int argc, char** argv, int quick) {
             if (verbose)
                 serial_printf(".");
         }
-        free(zeroblock,(sizeof(zeroblock)-1)/4096+1);
+        free(zeroblock);
 
         if (verbose)
             serial_printf("\n");

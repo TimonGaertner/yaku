@@ -57,7 +57,7 @@ void task_terminate(task_t* task, task_t* task_pointing_to) {
         return;
     }
 
-    free(task, sizeof(task_t) / 4096); // sizeof(task_t) is 8192 bytes
+    free(task); // sizeof(task_t) is 8192 bytes
 
     number_of_tasks--;
 

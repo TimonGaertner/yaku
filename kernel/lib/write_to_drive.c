@@ -36,7 +36,7 @@ uint64_t write_to_drive_ftell(struct drive_image* drive_image) {
 }
 
 void write_to_drive_fclose(struct drive_image* drive_image) {
-    free(drive_image, sizeof(drive_image) / 4069 + 1);
+    free(drive_image);
 }
 
 void write_to_drive_rewind(struct drive_image* drive_image) {

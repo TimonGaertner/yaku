@@ -32,6 +32,7 @@
         "file.h": "c",
         "origin.h": "c",
         "stat.h": "c",
-        "stdarg.h": "c"
+        "stdarg.h": "c",
+        "types.h": "c"
     }
 }

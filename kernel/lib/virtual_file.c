@@ -24,9 +24,9 @@ struct FILE* fopen(char* filename, char* access_mode) {
     strcpy(file->name, filename);
     file->byte_ptr = 0;
     uint64_t tv_sec = (uint64_t)datetime_get_timestamp();
-    file->st.st_mtime.tv_sec = tv_sec;
-    file->st.st_ctime.tv_sec = tv_sec;
-    file->st.st_atime.tv_sec = tv_sec;
+    file->st.st_mtim.tv_sec = tv_sec;
+    file->st.st_ctim.tv_sec = tv_sec;
+    file->st.st_atim.tv_sec = tv_sec;
     file->st.st_size = 0;
     file->st.st_mode = 0;
     for (uint64_t i = 0; i < MAX_OPEN_FILES; i++) {
@@ -44,9 +44,9 @@ uint8_t stat(char* filename, struct stat* st) {
     for (uint64_t i = 0; i < MAX_OPEN_FILES; i++) {
         if (strcmp(open_files[i]->name, filename) == 0) {
             st->st_mode = open_files[i]->st.st_mode;
-            st->st_mtime.tv_sec = open_files[i]->st.st_mtime.tv_sec;
-            st->st_ctime.tv_sec = open_files[i]->st.st_ctime.tv_sec;
-            st->st_atime.tv_sec = open_files[i]->st.st_atime.tv_sec;
+            st->st_mtim.tv_sec = open_files[i]->st.st_mtim.tv_sec;
+            st->st_ctim.tv_sec = open_files[i]->st.st_ctim.tv_sec;
+            st->st_atim.tv_sec = open_files[i]->st.st_atim.tv_sec;
             st->st_size = open_files[i]->st.st_size;
             return 0;
         }
@@ -80,7 +80,7 @@ void fclose(FILE* file) {
     }
     for (int i = 0; i < max_blocks; i++) {
         if (file->data[i] != NULL) {
-            free(file->data[i], 1);
+            free(file->data[i]);
         }
     }
     for (int i = 0; i < MAX_OPEN_FILES; i++) {
@@ -88,7 +88,7 @@ void fclose(FILE* file) {
             open_files[i] = NULL;
         }
     }
-    free(file, (sizeof(FILE) - 1) / 4069 + 1);
+    free(file);
 }
 uint64_t ftell(FILE* drive_image) {
     return drive_image->byte_ptr;
@@ -115,9 +115,9 @@ uint8_t fwrite(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
         }
     }
     uint64_t tv_sec = (uint64_t)datetime_get_timestamp();
-    file->st.st_mtime.tv_sec = tv_sec;
-    file->st.st_ctime.tv_sec = tv_sec;
-    file->st.st_atime.tv_sec = tv_sec;
+    file->st.st_mtim.tv_sec = tv_sec;
+    file->st.st_ctim.tv_sec = tv_sec;
+    file->st.st_atim.tv_sec = tv_sec;
     return 0;
 }
 uint8_t fputs(char* str, FILE* file) {
@@ -141,9 +141,9 @@ uint8_t fputs(char* str, FILE* file) {
         }
     }
     uint64_t tv_sec = (uint64_t)datetime_get_timestamp();
-    file->st.st_mtime.tv_sec = tv_sec;
-    file->st.st_ctime.tv_sec = tv_sec;
-    file->st.st_atime.tv_sec = tv_sec;
+    file->st.st_mtim.tv_sec = tv_sec;
+    file->st.st_ctim.tv_sec = tv_sec;
+    file->st.st_atim.tv_sec = tv_sec;
     return 0;
 }
 uint8_t fread(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
@@ -165,8 +165,8 @@ uint8_t fread(uint8_t* ptr, size_t size_of_element, uint8_t number_of_elements,
         }
     }
     uint64_t tv_sec = (uint64_t)datetime_get_timestamp();
-    file->st.st_ctime.tv_sec = tv_sec;
-    file->st.st_atime.tv_sec = tv_sec;
+    file->st.st_ctim.tv_sec = tv_sec;
+    file->st.st_atim.tv_sec = tv_sec;
     return 0;
 }
 uint8_t fflush(FILE* file) {
@@ -180,7 +180,7 @@ uint8_t fgetc(FILE* file) {
     }
     file->byte_ptr += 1;
     uint64_t tv_sec = (uint64_t)datetime_get_timestamp();
-    file->st.st_ctime.tv_sec = tv_sec;
-    file->st.st_atime.tv_sec = tv_sec;
+    file->st.st_ctim.tv_sec = tv_sec;
+    file->st.st_atim.tv_sec = tv_sec;
     return file->data[block_num][block_offset];
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include <types.h>
 struct time{
     uint64_t tv_sec;
     uint64_t tv_nsec;
@@ -16,5 +17,4 @@ struct stat{
     uint64_t st_rdev;
     uint64_t st_blksize;
     uint64_t st_blocks;
-    uint64_t st_size;
 };

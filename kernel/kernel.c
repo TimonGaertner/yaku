@@ -4,8 +4,10 @@
 #include <drivers/pit.h>
 #include <drivers/serial.h>
 #include <drivers/vga_text.h>
-#include <echfs/echfs-utils.h>
-#include <echfs/mkfs.echfs.h>
+// #include <echfs/echfs-utils.h>
+// #include <echfs/mkfs.echfs.h>
+#include <echfs/echfs-fuse.h>
+#include <lib/file.h>
 #include <interrupts/idt.h>
 #include <interrupts/pic.h>
 #include <lib/datetime.h>
@@ -102,6 +104,9 @@ void start(stivale2_struct_t* stivale2_struct) {
     // lba_read_primary_controller(2, 1);
     uint8_t buffer[512];
     buffer[0] = 0b11111111;
+    void* adr = malloc(5000);
+    ((uint8_t*)adr)[0] = 0b11111111;
+    free(adr);
     // for (int i = 0; i < 256; i++) {
     //     buffer[i] = 0;
     // }
@@ -127,14 +132,19 @@ void start(stivale2_struct_t* stivale2_struct) {
     // lba_read_primary_controller_first_drive(0, 1, (uint8_t*)buffer);
 
     // fread(buffer, 1, 1, image);
-    fopen("/b.txt", "w");
-    fwrite(buffer, 11, 1, fopen("/b.txt", "w"));
+    // fopen("/b.txt", "w");
+    // fwrite(buffer, 11, 1, fopen("/b.txt", "w"));
     // char* args[5] = {"-v", "", "import", "/b.txt","r.a"};
     // echfs_utils_main(5, args);
     // char* args[5] = {"-v", "", "import", "/b.txt","r.a"};
     // echfs_utils_main(5, args);
-    char* args[4] = {"-v", "", "ls", "/"};
-    echfs_utils_main(4, args);
+    // char* args[4] = {"-v", "", "ls", "/"};
+    // echfs_utils_main(4, args);
+    struct fuse_operations fuse_ops;
+    echfs_get_fuse_operations(&fuse_ops);
+    fuse_ops.init(NULL);
+    echfs_fuse_main(NULL, NULL);
+    FILE* file=fopen("/test.txt", "w");
     for (;;) {
         asm("hlt");
     }
