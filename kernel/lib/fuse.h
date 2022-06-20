@@ -18,7 +18,18 @@ typedef __off64_t off_t;
 __STD_TYPE __SSIZE_T_TYPE __ssize_t; /* Type of a byte count, or error.  */
 typedef __ssize_t ssize_t;
 
+// struct fuse_chan {
+// 	struct fuse_chan_ops op;
 
+// 	struct fuse_session *se;
+
+// 	int fd;
+// 	size_t bufsize;
+
+// 	void *data;
+
+// 	int compat;
+// };
 enum fuse_fill_dir_flags {
 	/**
 	 * "Plus" mode: all file attributes are valid
@@ -735,3 +746,73 @@ struct fuse_conn_info {
 	 */
 	unsigned reserved[22];
 };
+
+
+typedef int (*fuse_opt_proc_t)(void *data, const char *arg, int key,
+			       struct fuse_args *outargs);
+
+
+/**
+ * Option parsing function
+ *
+ * If 'args' was returned from a previous call to fuse_opt_parse() or
+ * it was constructed from
+ *
+ * A NULL 'args' is equivalent to an empty argument vector
+ *
+ * A NULL 'opts' is equivalent to an 'opts' array containing a single
+ * end marker
+ *
+ * A NULL 'proc' is equivalent to a processing function always
+ * returning '1'
+ *
+ * @param args is the input and output argument list
+ * @param data is the user data
+ * @param opts is the option description array
+ * @param proc is the processing function
+ * @return -1 on error, 0 on success
+ */
+int fuse_opt_parse(struct fuse_args *args, void *data,
+		   const struct fuse_opt opts[], fuse_opt_proc_t proc);
+
+
+
+
+struct fuse_opt_context {
+	void *data;
+	const struct fuse_opt *opt;
+	fuse_opt_proc_t proc;
+	int argctr;
+	int argc;
+	char **argv;
+	struct fuse_args outargs;
+	char *opts;
+	int nonopt;
+};
+
+
+#define FUSE_OPT_KEY_OPT     -1
+
+/**
+ * Key value passed to the processing function for all non-options
+ *
+ * Non-options are the arguments beginning with a character other than
+ * '-' or all arguments after the special '--' option
+ */
+#define FUSE_OPT_KEY_NONOPT  -2
+
+/**
+ * Special key value for options to keep
+ *
+ * Argument is not passed to processing function, but behave as if the
+ * processing function returned 1
+ */
+#define FUSE_OPT_KEY_KEEP -3
+
+/**
+ * Special key value for options to discard
+ *
+ * Argument is not passed to processing function, but behave as if the
+ * processing function returned zero
+ */
+#define FUSE_OPT_KEY_DISCARD -4

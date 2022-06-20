@@ -42,8 +42,8 @@ uint8_t write_to_drive_fputs(char* str, struct drive_image* image);
 
 // read size_of_element * number_of_elements bytes from the drive_image at the current
 // position pointer increase the current position pointer
-uint8_t write_to_drive_fread(uint8_t* ptr, size_t size_of_element,
-                             uint8_t number_of_elements, struct drive_image* image);
+size_t write_to_drive_fread(uint8_t* ptr, size_t size_of_element,
+                             size_t number_of_elements, struct drive_image* image);
 
 // get a char from the drive_image at the current position pointer
 // increase the current position pointer

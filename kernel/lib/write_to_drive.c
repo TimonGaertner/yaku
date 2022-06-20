@@ -279,16 +279,19 @@ uint8_t write_to_drive_fgetc(struct drive_image* image) {
     return buffer[byte_in_sector_to_read_from];
 }
 
-uint8_t write_to_drive_fread(uint8_t* ptr, size_t size_of_element,
-                             uint8_t number_of_elements, struct drive_image* image) {
+size_t write_to_drive_fread(uint8_t* ptr, size_t size_of_element,
+                             size_t number_of_elements, struct drive_image* image) {
+
     uint64_t byte_to_read_from = image->byte_pointer_position;
     uint64_t sector_to_read_from = byte_to_read_from / 512;
     uint64_t byte_in_sector_to_read_from = byte_to_read_from % 512;
-    uint8_t buffer[(size_of_element * number_of_elements) +
+    uint8_t* buffer/*[(size_of_element * number_of_elements) +
                    (512 - ((size_of_element * number_of_elements) %
-                           512))]; // buffer with size of element*number_of_elements
+                           512))]*/ = (uint8_t*) malloc((size_of_element * number_of_elements) +
+                   (512 - ((size_of_element * number_of_elements) %
+                           512))); // buffer with size of element*number_of_elements
                                    // rounded up to 512 (sector size)
-    uint8_t sectors_to_read = 0;
+    uint64_t sectors_to_read = 0;
     if (size_of_element % 512 == 0) {
         sectors_to_read = number_of_elements * size_of_element / 512;
     } else {
@@ -314,5 +317,6 @@ uint8_t write_to_drive_fread(uint8_t* ptr, size_t size_of_element,
         ptr[i - byte_in_sector_to_read_from] = buffer[i];
     }
     image->byte_pointer_position += size_of_element * number_of_elements;
-    return 1;
+    free(buffer);
+    return number_of_elements;
 }

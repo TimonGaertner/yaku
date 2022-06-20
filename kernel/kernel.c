@@ -5,7 +5,8 @@
 #include <drivers/serial.h>
 #include <drivers/vga_text.h>
 // #include <echfs/echfs-utils.h>
-// #include <echfs/mkfs.echfs.h>
+#include <lib/fuse.h>
+#include <echfs/mkfs.echfs.h>
 #include <echfs/echfs-fuse.h>
 #include <lib/file.h>
 #include <interrupts/idt.h>
@@ -77,7 +78,10 @@ void test_task2() {
     scheduler_sleep(1000);
     serial_printf("hello world\n");
 }
-
+int fill_dir(void *dh_, const char *name, const struct stat *statp,
+		    off_t off, enum fuse_fill_dir_flags flags){
+                serial_printf("dir: %s\n", name);
+            }
 void start(stivale2_struct_t* stivale2_struct) {
     enable_sse();
     serial_init();
@@ -140,11 +144,21 @@ void start(stivale2_struct_t* stivale2_struct) {
     // echfs_utils_main(5, args);
     // char* args[4] = {"-v", "", "ls", "/"};
     // echfs_utils_main(4, args);
+    char* argv[4] = {"echfs", "", "512", "1"};
+    echfs_mkfs_main(4, argv);
+    malloc(1000*1000);
     struct fuse_operations fuse_ops;
     echfs_get_fuse_operations(&fuse_ops);
     fuse_ops.init(NULL);
-    echfs_fuse_main(NULL, NULL);
-    FILE* file=fopen("/test.txt", "w");
+    fuse_ops.mkdir("/test", 0 | S_IFDIR);
+    fuse_fill_dir_t ffill_dir = {0};
+    struct fuse_file_info file_info = {0};
+    fuse_ops.opendir("/", &file_info);
+
+    fuse_ops.readdir("/", 0, fill_dir,0,&file_info);
+    // fuse_ops.init(NULL);
+    // echfs_fuse_main(NULL, NULL);
+    // FILE* file=fopen("/test.txt", "w");
     for (;;) {
         asm("hlt");
     }

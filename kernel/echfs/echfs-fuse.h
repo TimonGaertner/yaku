@@ -88,6 +88,13 @@ typedef unsigned short mode_t;
 #define FUSE_OPT_END                                                                     \
     { NULL, 0, 0 }
 
+#ifdef NDEBUG
+
+#  define assert(condition) ((void)0)
+#else
+#  define assert(condition) /*implementation defined*/
+#endif
+
 static void* echfs_init(struct fuse_conn_info* conn);
 static void echfs_destroy(
     void* data);

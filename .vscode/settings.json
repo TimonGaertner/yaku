@@ -33,6 +33,7 @@
         "origin.h": "c",
         "stat.h": "c",
         "stdarg.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "stivale2.h": "c"
     }
 }
