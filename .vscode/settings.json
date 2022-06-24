@@ -4,6 +4,7 @@
     "files.trimFinalNewlines": true,
     "files.associations": {
         "vector": "c",
-        "*.inc": "c"
+        "*.inc": "c",
+        "mouse_handler.h": "c"
     }
 }

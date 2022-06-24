@@ -1,3 +1,6 @@
+#pragma once
+#include <multitasking/task.h>
+#include <types.h>
 enum syscalls {
     SYS_create_task,
     SYS_sleep,
@@ -9,3 +12,6 @@ enum syscalls {
     SYS_get_ticks,
     SYS_get_window_buffer
 };
+
+extern void syscall();
+void clone(void* function, task_parameters_t* parameters);

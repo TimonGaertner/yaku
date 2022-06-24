@@ -15,6 +15,7 @@
 #include <stivale2.h>
 #include <string.h>
 #include <types.h>
+#include <lib/syscall_wrapper/syscalls.h>
 
 extern int enable_sse();
 
@@ -60,8 +61,12 @@ void* stivale2_get_tag(stivale2_struct_t* stivale2_struct, uint64_t id) {
         current_tag = (void*)current_tag->next;
     }
 }
+void test_task2(){
+    serial_printf("test_task2\n");
+}
 void test_task(uint64_t test_parameter1, uint64_t test_parameter2, uint64_t test_parameter3, uint64_t test_parameter4, uint64_t test_parameter5, uint64_t test_parameter6){
     serial_printf("test_task: %d %d %d %d %d %d\n", test_parameter1, test_parameter2, test_parameter3, test_parameter4, test_parameter5, test_parameter6);
+    clone(&test_task2, NULL);
 }
 void start(stivale2_struct_t* stivale2_struct) {
     enable_sse();

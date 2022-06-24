@@ -1,5 +1,6 @@
 #include "syscalls.h"
-#include "syscall.c"
-void clone(void* function, task_parameters_t parameters) {
-    syscall(SYS_create_task, function, parameters);
+#include <drivers/serial.h>
+void clone(void* function, task_parameters_t* parameters) {
+    serial_printf("clone\n");
+    syscall(SYS_get_pid, function, parameters);
 }

@@ -3,6 +3,7 @@ kernel_asm_srcs = files([
     'interrupts/idt.asm',
     'drivers/sse.asm',
     'multitasking/context_switch.asm',
+    'lib/syscall_wrapper/syscall.asm'
 ])
 
 kernel_c_srcs = files([
@@ -28,6 +29,7 @@ kernel_c_srcs = files([
     'multitasking/task.c',
     'multitasking/scheduler.c',
     'syscall.c',
+    'lib/syscall_wrapper/clone.c'
 ])
 
 kernel_asmflags = ['-f', 'elf64']
