@@ -1,5 +1,9 @@
 {
     "mesonbuild.buildFolder": "build",
     "files.insertFinalNewline": true,
-    "files.trimFinalNewlines": true
+    "files.trimFinalNewlines": true,
+    "files.associations": {
+        "vector": "c",
+        "*.inc": "c"
+    }
 }

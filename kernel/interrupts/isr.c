@@ -47,6 +47,8 @@ static const char* exception_message(uint64_t vector_number) {
 
 void isr_exception_handler(isr_context_t* ctx) {
     asm("cli");
+    serial_printf("hallo from isr_exception_handler\n");
+    serial_printf("vektor %llu\n", ctx->base_frame.vector);
     const char* exception_msg = exception_message(ctx->base_frame.vector);
     serial_printf("EXCEPTION: %s (%llu, %llu) in Task %d\n", exception_msg,
                   ctx->base_frame.vector, ctx->base_frame.error_code,

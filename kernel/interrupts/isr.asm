@@ -115,7 +115,6 @@ isr_stub_%+%1:
     pop rax
     pop rbp
 %endmacro
-extern print_reg
 %macro isr_irq_stub 2
 isr_stub_%+%1:
     cli
@@ -127,6 +126,12 @@ isr_stub_%+%1:
     sti
     iretq
 %endmacro
+extern isr_syscall
+isr_stub_128: ; syscall software interrupt
+    pusha
+    call isr_syscall
+    popa
+    iretq
 
 
 isr_no_err_stub 0
@@ -161,6 +166,8 @@ isr_no_err_stub 28
 isr_no_err_stub 29
 isr_err_stub    30
 isr_no_err_stub 31
+
+
 %assign vec 33
 %assign irq 1
 %rep 14
@@ -196,3 +203,4 @@ isr_stub_table:
         dq isr_stub_%+i
         %assign i i+1
     %endrep
+dq isr_stub_128

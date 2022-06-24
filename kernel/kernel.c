@@ -60,7 +60,9 @@ void* stivale2_get_tag(stivale2_struct_t* stivale2_struct, uint64_t id) {
         current_tag = (void*)current_tag->next;
     }
 }
-
+void test_task(uint64_t test_parameter1, uint64_t test_parameter2, uint64_t test_parameter3, uint64_t test_parameter4, uint64_t test_parameter5, uint64_t test_parameter6){
+    serial_printf("test_task: %d %d %d %d %d %d\n", test_parameter1, test_parameter2, test_parameter3, test_parameter4, test_parameter5, test_parameter6);
+}
 void start(stivale2_struct_t* stivale2_struct) {
     enable_sse();
     serial_init();
@@ -78,7 +80,8 @@ void start(stivale2_struct_t* stivale2_struct) {
                                &keyboard_handler);
     input_device_create_device("mouse", "mouse", NULL, &mouse_handler);
     asm("sti");
-
+    task_parameters_t parameters = {.first = 1, .second = 2, .third = 3, .fourth = 4, .fifth = 5, .sixth = 6};
+    task_add(test_task, &parameters, TASK_PRIORITY_HIGH, 0);
     for (;;) {
         asm("hlt");
     }

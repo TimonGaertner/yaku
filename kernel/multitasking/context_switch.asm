@@ -62,6 +62,11 @@
     iretq
 %endmacro
 
+; ; void task_start
+; global task_start
+; task_start:
+;     pop 
+
 ; void switchTask(uint64_t *to_rsp);
 global switch_to_task
 switch_to_task:
