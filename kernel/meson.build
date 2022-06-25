@@ -28,7 +28,7 @@ kernel_c_srcs = files([
     'memory/pmm.c',
     'multitasking/task.c',
     'multitasking/scheduler.c',
-    'syscall.c',
+    'drivers/syscall_handlers/syscall.c',
     'lib/syscall_wrapper/clone.c'
 ])
 

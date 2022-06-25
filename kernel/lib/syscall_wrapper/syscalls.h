@@ -1,6 +1,4 @@
 #pragma once
-#include <multitasking/task.h>
-#include <types.h>
 enum syscalls {
     SYS_create_task,
     SYS_sleep,
@@ -14,4 +12,3 @@ enum syscalls {
 };
 
 extern void syscall();
-void clone(void* function, task_parameters_t* parameters);
