@@ -1,4 +1,5 @@
 #pragma once
+#include <types.h>
 enum syscalls {
     SYS_create_task,
     SYS_sleep,
@@ -11,4 +12,4 @@ enum syscalls {
     SYS_get_window_buffer
 };
 
-extern void syscall();
+extern uint64_t syscall();

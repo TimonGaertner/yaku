@@ -5,6 +5,7 @@
     "files.associations": {
         "vector": "c",
         "*.inc": "c",
-        "mouse_handler.h": "c"
+        "mouse_handler.h": "c",
+        "syscalls.h": "c"
     }
 }
