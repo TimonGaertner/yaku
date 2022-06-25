@@ -692,7 +692,6 @@ static int echfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
 
     struct echfs_handle_t *handle = &handles[file_info->fh];
 
-    serial_printf("hallo");
     if (!handle->occupied || file_info->fh >= MAX_HANDLES) return -EBADF;
     if (handle->path_res->target.type != DIRECTORY_TYPE)
         return -ENOTDIR;
@@ -702,7 +701,6 @@ static int echfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
     for (;; i++) {
         if (i >= (echfs.dir_size * echfs.entries_per_block)) return 0;
         struct entry_t *entry = &echfs.dir_table[i];
-        serial_printf("entry %lu: %s\n", i, entry->name);
         if (!entry->parent_id) return 0;
         if (entry->parent_id == dir_id) {
             if(fill(buf, entry->name, NULL, i + 1, 0)) return 0;

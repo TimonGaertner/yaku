@@ -81,6 +81,7 @@ void test_task2() {
 int fill_dir(void *dh_, const char *name, const struct stat *statp,
 		    off_t off, enum fuse_fill_dir_flags flags){
                 serial_printf("dir: %s\n", name);
+                return 0;
             }
 void start(stivale2_struct_t* stivale2_struct) {
     enable_sse();
@@ -150,11 +151,15 @@ void start(stivale2_struct_t* stivale2_struct) {
     struct fuse_operations fuse_ops;
     echfs_get_fuse_operations(&fuse_ops);
     fuse_ops.init(NULL);
-    fuse_ops.mkdir("/test", 0 | S_IFDIR);
     fuse_fill_dir_t ffill_dir = {0};
     struct fuse_file_info file_info = {0};
     fuse_ops.opendir("/", &file_info);
 
+    fuse_ops.mkdir("/test", 0 | S_IFDIR);
+    fuse_ops.mkdir("/jo", 0 | S_IFDIR);
+    fuse_ops.create("/test.txt", 0 | S_IFREG, &file_info);
+
+    fuse_ops.opendir("/", &file_info);
     fuse_ops.readdir("/", 0, fill_dir,0,&file_info);
     // fuse_ops.init(NULL);
     // echfs_fuse_main(NULL, NULL);
