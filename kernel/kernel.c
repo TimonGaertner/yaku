@@ -24,6 +24,7 @@
 #include <stivale2.h>
 #include <string.h>
 #include <types.h>
+#include <lib/dev/device_file.h>
 // #include <drivers/lba/lba.h>
 
 extern int enable_sse();
@@ -78,8 +79,7 @@ void test_task2() {
     scheduler_sleep(1000);
     serial_printf("hello world\n");
 }
-int fill_dir(void *dh_, const char *name, const struct stat *statp,
-		    off_t off, enum fuse_fill_dir_flags flags){
+int fill_dir(char* name, enum dev_file_type type){
                 serial_printf("dir: %s\n", name);
                 return 0;
             }
@@ -145,25 +145,32 @@ void start(stivale2_struct_t* stivale2_struct) {
     // echfs_utils_main(5, args);
     // char* args[4] = {"-v", "", "ls", "/"};
     // echfs_utils_main(4, args);
-    char* argv[4] = {"echfs", "", "512", "1"};
-    echfs_mkfs_main(4, argv);
+    // char* argv[4] = {"echfs", "", "512", "1"};
+    // echfs_mkfs_main(4, argv);
     malloc(1000*1000);
     struct fuse_operations fuse_ops;
     echfs_get_fuse_operations(&fuse_ops);
     fuse_ops.init(NULL);
-    fuse_fill_dir_t ffill_dir = {0};
-    struct fuse_file_info file_info = {0};
-    fuse_ops.opendir("/", &file_info);
+    // fuse_fill_dir_t ffill_dir = {0};
+    // struct fuse_file_info file_info = {0};
+    // fuse_ops.opendir("/", &file_info);
 
-    fuse_ops.mkdir("/test", 0 | S_IFDIR);
-    fuse_ops.mkdir("/jo", 0 | S_IFDIR);
-    fuse_ops.create("/test.txt", 0 | S_IFREG, &file_info);
+    // fuse_ops.mkdir("/test", 0 | S_IFDIR);
+    // fuse_ops.mkdir("/jo", 0 | S_IFDIR);
+    // fuse_ops.create("/test.txt", 0 | S_IFREG, &file_info);
 
-    fuse_ops.opendir("/", &file_info);
-    fuse_ops.readdir("/", 0, fill_dir,0,&file_info);
+    // fuse_ops.opendir("/", &file_info);
+    // fuse_ops.readdir("/", 0, fill_dir,0,&file_info);
     // fuse_ops.init(NULL);
     // echfs_fuse_main(NULL, NULL);
     // FILE* file=fopen("/test.txt", "w");
+    dev_dir_init();
+    dev_dir_create_file("a.txt", &fuse_ops);
+    dev_dir_add_folder("b");
+    dev_dir_create_file("b/j.txt", &fuse_ops);
+    dev_dir_create_file("b/", &fuse_ops);
+    dev_dir_readdir("b", &fill_dir);
+
     for (;;) {
         asm("hlt");
     }

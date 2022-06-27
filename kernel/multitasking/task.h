@@ -2,6 +2,7 @@
 
 #include <multitasking/scheduler.h>
 #include <types.h>
+#include <lib/FILE.h>
 
 #define TASK_STACK_SIZE 1019
 #define TASKS_MAX 500
@@ -29,6 +30,7 @@ typedef struct task {
     uint32_t parent_pid;
     enum task_state task_state;
     enum task_priority priority;
+    FILE* open_files[100];
     struct task* next;
 } task_t;
 

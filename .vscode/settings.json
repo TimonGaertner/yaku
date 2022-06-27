@@ -34,6 +34,8 @@
         "stat.h": "c",
         "stdarg.h": "c",
         "types.h": "c",
-        "stivale2.h": "c"
+        "stivale2.h": "c",
+        "cstring": "c",
+        "fuse.h": "c"
     }
 }
