@@ -32,7 +32,7 @@ iso_target = custom_target('iso',
 
 if qemu.found()
     qemu_run_target = run_target('qemu-run',
-        command: [qemu, '-cdrom', iso_target, '-m', '512M', '-enable-kvm']
+        command: [qemu, '-cdrom', iso_target, '-m', '512M','-enable-kvm']
     )
 else
     warning('the \'qemu-run\' target is not available because qemu could not be found')

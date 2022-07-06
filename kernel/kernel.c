@@ -67,7 +67,7 @@ void start(stivale2_struct_t* stivale2_struct) {
     serial_init();
     pic_init();
     idt_init();
-    pit_init(500);
+    pit_init(1000);
 
     stivale2_struct_tag_memmap_t* memory_map;
     memory_map = stivale2_get_tag(stivale2_struct, STIVALE2_STRUCT_TAG_MEMMAP_ID);
@@ -83,8 +83,8 @@ void start(stivale2_struct_t* stivale2_struct) {
     stivale2_struct_tag_framebuffer_t* fb_tag;
     fb_tag = stivale2_get_tag(stivale2_struct, STIVALE2_STRUCT_TAG_FRAMEBUFFER_ID);
     fb_init(fb_tag);
-
-    task_add(&runtime_start, TASK_PRIORITY_VERY_HIGH, 0);
+    windowmanager_init();
+    task_add(&runtime_start, TASK_PRIORITY_LOW, 0);
 
     for (;;) {
         asm("hlt");
