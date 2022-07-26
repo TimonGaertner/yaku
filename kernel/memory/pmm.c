@@ -149,7 +149,28 @@ void free(void* p) {
     }
     pmm_used_blocks -= size;
 }
-
+void* calloc(size_t num, size_t size){
+    uint64_t bytes_to_allocate = num*size;
+    void* p = malloc(bytes_to_allocate);
+    memset(p, 0, bytes_to_allocate);
+    return p;
+}
+void* realloc(void* p, size_t new_size){
+    if (p == 0) {
+        return malloc(new_size);
+    }
+    uint64_t addr = (uint64_t)p-2;
+    uint16_t size = *((uint16_t*)addr);
+    uint64_t blocks_to_allocate = (new_size+2-1)/PMM_BLOCK_SIZE+1;
+    if (blocks_to_allocate > size) {
+        void* new_p = malloc(new_size);
+        memcpy(new_p, p, size);
+        free(p);
+        return new_p;
+    } else {
+        return p;
+    }
+}
 uint64_t pmm_mmap_find_first_free() {
 
     for (uint64_t i = 0; i < pmm_get_block_count() / 32; i++) {

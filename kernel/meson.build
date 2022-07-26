@@ -39,6 +39,7 @@ kernel_c_srcs = files([
     'runtime/programs/editor.c',
     'multitasking/task.c',
     'multitasking/scheduler.c',
+    'virtual_fs/virtual_fs.c',
 ])
 
 kernel_asmflags = ['-f', 'elf64']

@@ -16,6 +16,7 @@
 #include <stivale2.h>
 #include <string.h>
 #include <types.h>
+#include <virtual_fs/virtual_fs.h>
 
 extern int enable_sse();
 
@@ -68,11 +69,13 @@ void start(stivale2_struct_t* stivale2_struct) {
     pic_init();
     idt_init();
     pit_init(500);
-
+    
     stivale2_struct_tag_memmap_t* memory_map;
     memory_map = stivale2_get_tag(stivale2_struct, STIVALE2_STRUCT_TAG_MEMMAP_ID);
     pmm_init(memory_map);
-
+    virtual_fs_init();
+    virtual_fs_create_directory("/hallo");
+    virtual_fs_create_endpoint(NULL, ENDPOINT_TYPE_FILE, "/hallo/b");
     asm("cli");
     ps2_init();
     input_device_create_device("keyboard", "keyboard", keyboard_keymap,
@@ -83,7 +86,6 @@ void start(stivale2_struct_t* stivale2_struct) {
     stivale2_struct_tag_framebuffer_t* fb_tag;
     fb_tag = stivale2_get_tag(stivale2_struct, STIVALE2_STRUCT_TAG_FRAMEBUFFER_ID);
     fb_init(fb_tag);
-
     task_add(&runtime_start, TASK_PRIORITY_VERY_HIGH, 0);
 
     for (;;) {
