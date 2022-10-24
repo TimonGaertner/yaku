@@ -3,6 +3,7 @@
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
     "files.associations": {
-        "types.h": "c"
+        "types.h": "c",
+        "fuse.h": "c"
     }
 }

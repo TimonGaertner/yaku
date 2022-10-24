@@ -6,15 +6,18 @@
 
 struct virtual_fs_directory_entry* virtual_fs_root;
 
-struct path_result {
-    struct virtual_fs_directory_entry* parent;
-    struct virtual_fs_directory_entry* endpoint; // Null if no endpoint
-    char* endpoint_path_to_be_passed;            // Null if no endpoint
-};
+
 struct create_fs_directory_entry_path_result {
     struct virtual_fs_directory_entry* parent;
-    char* name;
+    char name[MAX_NAME_LENGTH];
 };
+
+
+struct virtual_fs_handle {
+    struct virtual_fs_directory_entry* endpoint;
+    char path[MAX_PATH_LENGTH];
+};
+
 
 struct virtual_fs_directory_entry*
 virtual_fs_get_directory_entry(struct virtual_fs_directory* directory, char* name) {
@@ -25,18 +28,23 @@ virtual_fs_get_directory_entry(struct virtual_fs_directory* directory, char* nam
     }
     return NULL;
 }
-struct create_fs_directory_entry_path_result* create_fs_entry_path_resolver(char* path) {
+struct create_fs_directory_entry_path_result*
+create_fs_entry_path_resolver(char* path, struct virtual_fs_directory_entry* parent) {
     struct create_fs_directory_entry_path_result* result =
         malloc(sizeof(struct create_fs_directory_entry_path_result));
     memset(result, 0, sizeof(struct create_fs_directory_entry_path_result));
-    result->parent = virtual_fs_root;
-    result->name = NULL;
+    result->parent = parent;
     if (path[0] == '/') {
         path++;
+        result->parent = virtual_fs_root;
+    }
+    if (result->parent == NULL) {
+        result->parent = virtual_fs_root;
     }
     char* name = strtok(path, "/");
     while (name != NULL) {
-        struct virtual_fs_directory_entry* entry =            virtual_fs_get_directory_entry(result->parent->pointer, name);
+        struct virtual_fs_directory_entry* entry =
+            virtual_fs_get_directory_entry(result->parent->pointer, name);
         if (entry == NULL) {
             break;
         }
@@ -44,7 +52,35 @@ struct create_fs_directory_entry_path_result* create_fs_entry_path_resolver(char
         name = strtok(NULL, "/");
     }
     if (name != NULL) {
-        result->name = name;
+        strcpy(result->name, name);
+    }
+    return result;
+}
+struct endpoint_path_result* virtual_fs_endpoint_path_resolver(char* path) {
+    struct endpoint_path_result* result = malloc(sizeof(struct endpoint_path_result));
+    memset(result, 0, sizeof(struct endpoint_path_result));
+    result->endpoint = NULL;
+    result->parent = virtual_fs_root;
+    if (path[0] == '/') {
+        path++;
+    }
+    char* name = strtok(path, "/");
+    while (name != NULL) {
+        struct virtual_fs_directory_entry* entry =
+            virtual_fs_get_directory_entry(result->parent->pointer, name);
+        if (entry == NULL) {
+            break;
+        }
+        if (entry->type == ENTRY_TYPE_ENDPOINT) {
+            result->endpoint = entry;
+            name = strtok(NULL, "/");
+            break;
+        }
+        result->parent = entry;
+        name = strtok(NULL, "/");
+    }
+    if (name != NULL) {
+        strcpy(result->endpoint_path_to_be_passed, name);
     }
     return result;
 }
@@ -61,13 +97,12 @@ uint8_t virtual_fs_add_directory_entry(struct virtual_fs_directory* parent_direc
     strcpy(entry->name, name);
     entry->type = entry_type;
     entry->pointer = pointer;
-    serial_printf("Added entry %s\n", entry->name);
     return 0;
 }
 
 uint8_t virtual_fs_create_directory(char* path) {
     struct create_fs_directory_entry_path_result* result =
-        create_fs_entry_path_resolver(path);
+        create_fs_entry_path_resolver(path, NULL);
     serial_printf("Creating directory %s\n", result->name);
     serial_printf("Parent is %p\n", result->parent);
     if (result->parent == NULL) {
@@ -92,7 +127,7 @@ uint8_t virtual_fs_create_directory(char* path) {
 uint8_t virtual_fs_create_endpoint(struct fuse_operations* fuse_operations,
                                    enum endpoint_type endpoint_type, char* path) {
     struct create_fs_directory_entry_path_result* result =
-        create_fs_entry_path_resolver(path);
+        create_fs_entry_path_resolver(path, NULL);
     serial_printf("%s\n", path);
     serial_printf("parent %s\n", result->parent->name);
     serial_printf("name %s\n", result->name);
@@ -107,7 +142,49 @@ uint8_t virtual_fs_create_endpoint(struct fuse_operations* fuse_operations,
     free(result);
     return 0;
 }
-struct fuse_operations virtual_fs_operations = {};
+uint8_t virtual_fs_remove_directory_entries(struct virtual_fs_directory* directory) {
+    for (uint32_t i = 0; i < directory->entries_count; i++) {
+        if (directory->entries[i].type == ENTRY_TYPE_DIR) {
+            virtual_fs_remove_directory_entries(directory->entries[i].pointer);
+            free(directory->entries[i].pointer);
+        }
+        if (directory->entries[i].type == ENTRY_TYPE_ENDPOINT) {
+            free(directory->entries[i].pointer);
+        }
+    }
+    free(directory->entries);
+    return 0;
+}
+uint8_t virtual_fs_remove_directory(char* path) {
+    struct create_fs_directory_entry_path_result* result =
+        create_fs_entry_path_resolver(path, NULL);
+    serial_printf("Removing directory %s\n", result->name);
+    serial_printf("Parent is %p\n", result->parent);
+    if (result->parent == NULL) {
+        return 1;
+    }
+    if (result->name == NULL) {
+        return 1;
+    }
+    if (result->parent->type != ENTRY_TYPE_DIR) {
+        return 1;
+    }
+    if (virtual_fs_get_directory_entry(result->parent->pointer, result->name) == NULL) {
+        return 1;
+    }
+    virtual_fs_remove_directory_entries(result->parent->pointer);
+    free(result);
+    free(result->parent->pointer);
+    return 0;
+}
+
+// returns pointer to directory
+struct virtual_fs_directory_entry*
+virtual_fs_search_directory(char* path, struct virtual_fs_directory_entry* parent) {
+    struct create_fs_directory_entry_path_result* result =
+        create_fs_entry_path_resolver(path, parent);
+    return result->parent;
+}
 
 uint8_t virtual_fs_init() {
     virtual_fs_root = malloc(sizeof(struct virtual_fs_directory_entry));
@@ -116,3 +193,21 @@ uint8_t virtual_fs_init() {
     virtual_fs_root->pointer = malloc(sizeof(struct virtual_fs_directory));
     memset(virtual_fs_root->pointer, 0, sizeof(struct virtual_fs_directory));
 }
+
+// int virtual_fs_mkdir(const char* path, mode_t mode) {
+//     struct path_result* result = virtual_fs_endpoint_path_resolver((char*)path);
+//     if (result->endpoint == NULL) {
+//         virtual_fs_create_directory((char*)path);
+//     } else {
+//         ((struct virtual_fs_endpoint*) result->endpoint->pointer)->fuse_ops.mkdir(result->endpoint_path_to_be_passed, mode);
+//     }
+//     return 0;
+// }
+// int virtual_fs_rmdir(const char* path) {
+//     struct path_result* result = virtual_fs_endpoint_path_resolver((char*)path);
+//     if (result->endpoint == NULL) {
+//         virtual_fs_remove_directory((char*)path);
+//     } else {
+//         ((struct virtual_fs_endpoint*) result->endpoint->pointer)->fuse_ops.rmdir(result->endpoint_path_to_be_passed);
+//     }
+// }
