@@ -30,7 +30,15 @@ typedef struct task {
     enum task_state task_state;
     enum task_priority priority;
     struct task* next;
+    // FILES [100]
+    // char* workdir
 } task_t;
+
+// notice: pipe() allocates two file_descriptors on one tasks file_descriptor table, the task has to fork itself, the file_descriptor_table will get copied, the child now
+// has access to the copied file_descriptor table and therefore the file_descriptors used to communicate
+//@TODO
+// add fork
+// no fork added yet? -> add function to copy file_descriptor table of child process / copy file_descriptor table of parent process / copy file_descriptors of child/parent process / send file_descriptor to child/parent process / get own file_descriptor and send it on creation of task
 
 task_t* task_add(void* function, enum task_priority priority, uint32_t parent_pid);
 task_t* task_create(void* function);

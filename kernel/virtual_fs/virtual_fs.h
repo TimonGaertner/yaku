@@ -43,3 +43,11 @@ uint8_t virtual_fs_create_endpoint(struct fuse_operations* fuse_operations,
 uint8_t virtual_fs_create_directory(char* path);
 uint8_t virtual_fs_init();
 struct endpoint_path_result* virtual_fs_endpoint_path_resolver(char* path);
+
+
+/* @TODO
+virtual_fs_open
+virtual_fs_create
+virtual_fs_mkdir
+virtual_fs_rmdir
+*/
