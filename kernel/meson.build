@@ -50,6 +50,7 @@ kernel_c_srcs = files([
     'echfs/part.c',
     'lib/file.c',
     'virtual_fs/virtual_fs.c',
+    'drivers/syscall_handlers/syscall.c'
 ])
 
 kernel_asmflags = ['-f', 'elf64']
