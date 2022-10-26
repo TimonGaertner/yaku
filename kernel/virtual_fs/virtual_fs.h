@@ -43,11 +43,8 @@ uint8_t virtual_fs_create_directory(char* path);
 uint8_t virtual_fs_init();
 struct endpoint_path_result* virtual_fs_endpoint_path_resolver(char* path);
 
-
-/* @TODO
-virtual_fs_open - check
-virtual_fs_create - check
-virtual_fs_unlink - check
-virtual_fs_mkdir - check
-virtual_fs_rmdir - check
-*/
+int virtual_fs_open(const char* path, struct fuse_file_info* fi);
+int virtual_fs_create(const char* path, mode_t mode, struct fuse_file_info* fi);
+int virtual_fs_unlink(const char* path);
+int virtual_fs_mkdir(const char* path, mode_t mode);
+int virtual_fs_rmdir(const char* path);
