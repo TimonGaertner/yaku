@@ -35,5 +35,7 @@
         "stdarg.h": "c",
         "types.h": "c",
         "stivale2.h": "c"
+        "types.h": "c",
+        "fuse.h": "c"
     }
 }

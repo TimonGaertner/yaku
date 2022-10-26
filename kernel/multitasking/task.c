@@ -150,7 +150,7 @@ void task_resume(task_t* task) {
 
 // allocates memory for task and sets its stack up
 task_t* task_create(void* function) {
-    task_t* new_task = (task_t*)malloc(sizeof(task_t) / 4096); // sizeof(task_t) = 8192
+    task_t* new_task = (task_t*)malloc(sizeof(task_t)); // sizeof(task_t) = 8192
 
     memset(&new_task->stack, 0, TASK_STACK_SIZE * 8);
 

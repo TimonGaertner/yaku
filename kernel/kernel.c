@@ -1,3 +1,4 @@
+#include <drivers/fb.h>
 #include <drivers/input/input_device.h>
 #include <drivers/input/ps2.h>
 #include <drivers/lba/lba.h>
@@ -17,14 +18,15 @@
 #include <lib/input/mouse_handler.h>
 #include <lib/write_to_drive.h>
 #include <memory/pmm.h>
-#include <multitasking/scheduler.h>
 #include <multitasking/task.h>
 #include <printf.h>
 #include <resources/keyboard_keymap.h>
+#include <runtime/runtime.h>
 #include <stivale2.h>
 #include <string.h>
 #include <types.h>
 // #include <drivers/lba/lba.h>
+#include <virtual_fs/virtual_fs.h>
 
 extern int enable_sse();
 
@@ -46,8 +48,8 @@ static stivale2_header_tag_framebuffer_t framebuffer_hdr_tag = {
             .next = (uintptr_t)&terminal_hdr_tag,
         },
     // pick best automatically
-    .framebuffer_width = 0,
-    .framebuffer_height = 0,
+    .framebuffer_width = 1280,
+    .framebuffer_height = 720,
     .framebuffer_bpp = 0,
 };
 
@@ -88,19 +90,20 @@ void start(stivale2_struct_t* stivale2_struct) {
     serial_init();
     pic_init();
     idt_init();
-    pit_init(1000);
-
+    pit_init(500);
+    
     stivale2_struct_tag_memmap_t* memory_map;
     memory_map = stivale2_get_tag(stivale2_struct, STIVALE2_STRUCT_TAG_MEMMAP_ID);
     pmm_init(memory_map);
-
+    virtual_fs_init();
+    virtual_fs_create_directory("/hallo");
+    virtual_fs_create_endpoint(NULL, ENDPOINT_TYPE_FILE, "/hallo/b");
     asm("cli");
     ps2_init();
     input_device_create_device("keyboard", "keyboard", keyboard_keymap,
                                &keyboard_handler);
     input_device_create_device("mouse", "mouse", NULL, &mouse_handler);
     asm("sti");
-
     // task_add(&test_task, TASK_PRIORITY_MEDIUM, 0);
     // task_add(&test_task2, TASK_PRIORITY_MEDIUM, 0);
     lba_init();
