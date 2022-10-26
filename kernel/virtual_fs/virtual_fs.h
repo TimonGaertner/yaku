@@ -8,7 +8,6 @@ Es sollen Endpoints created werden können. Diese sollen in Ordnern strukturiert
 können. Jeder endpoint besitzt ein Fuse_operations struct. Es sollen die ganz normalen
 Fuse Operations möglich sein. Diese werden dann an die endpoint fuse_operations
 weitergegeben, dabei wird der teil des paths gestrichen, welcher zum endpoint führt.
-Wenn etwas geopened wird wird ein
 
 */
 
@@ -46,8 +45,9 @@ struct endpoint_path_result* virtual_fs_endpoint_path_resolver(char* path);
 
 
 /* @TODO
-virtual_fs_open
-virtual_fs_create
-virtual_fs_mkdir
-virtual_fs_rmdir
+virtual_fs_open - check
+virtual_fs_create - check
+virtual_fs_unlink - check
+virtual_fs_mkdir - check
+virtual_fs_rmdir - check
 */
