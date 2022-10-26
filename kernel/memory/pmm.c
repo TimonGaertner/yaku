@@ -171,6 +171,7 @@ void* realloc(void* p, size_t new_size){
         return p;
     }
 }
+
 uint64_t pmm_mmap_find_first_free() {
 
     for (uint64_t i = 0; i < pmm_get_block_count() / 32; i++) {
