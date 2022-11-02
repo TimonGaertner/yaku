@@ -3,6 +3,8 @@ kernel_asm_srcs = files([
     'interrupts/idt.asm',
     'drivers/sse.asm',
     'multitasking/context_switch.asm',
+    'drivers/lba/lba.asm',
+    'lib/syscall_wrapper/syscall.asm',
 ])
 
 kernel_c_srcs = files([
@@ -39,6 +41,16 @@ kernel_c_srcs = files([
     'runtime/programs/editor.c',
     'multitasking/task.c',
     'multitasking/scheduler.c',
+    'drivers/lba/lba.c',
+    'lib/atoi.c',
+    'lib/getopt.c',
+    'lib/uuid.c',
+    'lib/write_to_drive.c',
+    'virtual_fs/virtual_fs.c',
+    'echfs/echfs-fuse.c',
+    'echfs/mkfs.echfs.c',
+    'echfs/part.c',
+    'lib/stdio.c',
 ])
 
 kernel_asmflags = ['-f', 'elf64']
@@ -56,6 +68,11 @@ kernel_include_flags += ['-I', meson.current_source_dir()]
 kernel_include_flags += ['-I', meson.current_source_dir() + '/misc']
 kernel_include_flags += ['-I', meson.current_source_dir() + '/lib']
 
+subdir('drivers/syscall_handlers')
+foreach syscall_handler : kernel_syscall_handlers_c_srcs
+    kernel_c_srcs += 'drivers/syscall_handlers/' + syscall_handler
+endforeach
+ 
 kernel_c_objs = cc_gen.process(kernel_c_srcs,
     extra_args: [kernel_ccflags, kernel_include_flags]
 )

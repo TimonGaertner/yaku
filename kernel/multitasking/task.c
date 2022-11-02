@@ -10,7 +10,8 @@
 static uint32_t number_of_tasks = 0;
 
 // create task and schedule it
-task_t* task_add(void* function, enum task_priority priority, uint32_t parent_pid) {
+task_t* task_add(void* function, task_parameters_t* parameters,
+                 enum task_priority priority, uint32_t parent_pid) {
     asm("cli");
 
     if (number_of_tasks == TASKS_MAX) {
@@ -19,12 +20,14 @@ task_t* task_add(void* function, enum task_priority priority, uint32_t parent_pi
         return NULL;
     }
 
-    task_t* task = task_create(function);
+    task_t* task = task_create(function, parameters);
 
     number_of_tasks++;
 
     task->priority = priority;
-    task->parent_pid = parent_pid;
+    if (scheduler_get_current_task() != NULL) {
+        task->parent_pid = scheduler_get_current_task()->pid;
+    }
     task->pid = number_of_tasks;
     task->task_state = TASK_STATE_WAITING;
     scheduler_schedule_task(task);
@@ -38,7 +41,9 @@ void task_sleep(task_t* task, uint32_t ticks) {
     task->sleep_till = pit_tick_get() + ticks;
     task->task_state = TASK_STATE_SLEEP;
 }
-
+void task_change_priority(task_t* task, enum task_priority priority) {
+    task->priority = priority;
+}
 // removes task from schedule-linked-list and frees memory
 void task_terminate(task_t* task, task_t* task_pointing_to) {
     pic_mask_irq(0); // dont switch tasks anymore
@@ -53,7 +58,7 @@ void task_terminate(task_t* task, task_t* task_pointing_to) {
         return;
     }
 
-    free(task, sizeof(task_t) / 4096); // sizeof(task_t) is 8192 bytes
+    free(task); // sizeof(task_t) is 8192 bytes
 
     number_of_tasks--;
 
@@ -93,6 +98,9 @@ task_t* task_get_ptr_by_parent_pid(uint32_t pid) {
 }
 
 void task_kill(uint32_t pid) {
+    if (pid == 0) {
+        return;
+    }
     asm("cli");
 
     task_t* task = task_get_ptr_by_pid(pid);
@@ -114,7 +122,7 @@ void task_kill(uint32_t pid) {
     bool nothing_left = false;
     while (!nothing_left) {
         task = task_get_ptr_by_parent_pid(pid);
-        task_terminate(task, task_pointing_to);
+        task_kill(task->pid);
         if (task == NULL) {
             nothing_left = true;
         }
@@ -141,9 +149,24 @@ void task_resume(task_t* task) {
                           // set to task_state_running on next task_switch
 }
 
+int32_t task_add_file(task_t* task, file_handle_t* file) {
+    for (uint32_t i = 0; i < TASK_FILES_MAX; i++) {
+        if (task->files[i] == NULL) {
+            task->files[i] = file;
+            return (int32_t)i;
+        }
+    }
+    return -1;
+}
+
+int task_remove_file(task_t* task, uint64_t file_id) {
+    free(task->files[file_id]);
+    task->files[file_id] = NULL;
+}
+
 // allocates memory for task and sets its stack up
-task_t* task_create(void* function) {
-    task_t* new_task = (task_t*)malloc(sizeof(task_t) / 4096); // sizeof(task_t) = 8192
+task_t* task_create(void* function, task_parameters_t* parameters) {
+    task_t* new_task = (task_t*)malloc(sizeof(task_t)); // sizeof(task_t) = 8192
 
     memset(&new_task->stack, 0, TASK_STACK_SIZE * 8);
 
@@ -161,6 +184,17 @@ task_t* task_create(void* function) {
         (uint64_t) &
         (new_task->stack[TASK_STACK_SIZE - 1]); // rbp popped manually
                                                 // TODO: add stack needed for iretq
+
+    if (parameters != NULL) {
+        // add parameters to stack so they get popped into the right registers on first
+        // task_switch
+        new_task->stack[TASK_STACK_SIZE - 13] = parameters->first;
+        new_task->stack[TASK_STACK_SIZE - 12] = parameters->second;
+        new_task->stack[TASK_STACK_SIZE - 11] = parameters->third;
+        new_task->stack[TASK_STACK_SIZE - 10] = parameters->fourth;
+        new_task->stack[TASK_STACK_SIZE - 14] = parameters->fifth;
+        new_task->stack[TASK_STACK_SIZE - 15] = parameters->sixth;
+    }
 
     return new_task;
 }

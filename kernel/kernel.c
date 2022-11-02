@@ -1,13 +1,17 @@
 #include <drivers/fb.h>
 #include <drivers/input/input_device.h>
 #include <drivers/input/ps2.h>
+#include <drivers/lba/lba.h>
 #include <drivers/pit.h>
 #include <drivers/serial.h>
 #include <drivers/vga_text.h>
+#include <echfs/echfs-fuse.h>
+#include <echfs/mkfs.echfs.h>
 #include <interrupts/idt.h>
 #include <interrupts/pic.h>
 #include <lib/input/keyboard_handler.h>
 #include <lib/input/mouse_handler.h>
+#include <lib/write_to_drive.h>
 #include <memory/pmm.h>
 #include <multitasking/task.h>
 #include <printf.h>
@@ -16,6 +20,7 @@
 #include <stivale2.h>
 #include <string.h>
 #include <types.h>
+#include <virtual_fs/virtual_fs.h>
 
 extern int enable_sse();
 
@@ -62,6 +67,18 @@ void* stivale2_get_tag(stivale2_struct_t* stivale2_struct, uint64_t id) {
     }
 }
 
+void kernel_main_task() {
+    malloc(1000);
+    write_to_drive_init();
+    char* argv[4] = {"echfs", "/lba_drive/first_drive", "512", "1"};
+    echfs_mkfs_main(4, argv);
+    char* argv2[4] = {"echfs", "", "/lba_drive/first_drive", "/echfsa"};
+    echfs_fuse_main(4, argv2);
+    serial_printf("echfs fuse main done\n");
+
+    task_add(&runtime_start, 0, TASK_PRIORITY_VERY_HIGH, 0);
+}
+
 void start(stivale2_struct_t* stivale2_struct) {
     enable_sse();
     serial_init();
@@ -72,6 +89,8 @@ void start(stivale2_struct_t* stivale2_struct) {
     stivale2_struct_tag_memmap_t* memory_map;
     memory_map = stivale2_get_tag(stivale2_struct, STIVALE2_STRUCT_TAG_MEMMAP_ID);
     pmm_init(memory_map);
+    lba_init();
+    virtual_fs_init();
 
     asm("cli");
     ps2_init();
@@ -84,7 +103,7 @@ void start(stivale2_struct_t* stivale2_struct) {
     fb_tag = stivale2_get_tag(stivale2_struct, STIVALE2_STRUCT_TAG_FRAMEBUFFER_ID);
     fb_init(fb_tag);
 
-    task_add(&runtime_start, TASK_PRIORITY_VERY_HIGH, 0);
+    task_add(kernel_main_task, 0, 2, 0);
 
     for (;;) {
         asm("hlt");
